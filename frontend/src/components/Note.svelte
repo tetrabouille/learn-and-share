@@ -2,10 +2,7 @@
   // ---------------------------------------------------------
   //  Imports
   // ---------------------------------------------------------
-  import Fa from "svelte-fa/src/fa.svelte";
-  import { faStar } from "@fortawesome/free-solid-svg-icons/faStar";
   import { createEventDispatcher } from "svelte";
-  import { formatDate } from "@/libs/utils";
   // ---------------------------------------------------------
   //  Props
   // ---------------------------------------------------------
@@ -13,7 +10,6 @@
   export let title: string;
   export let content: string;
   export let date: string;
-  export let isFavorite: boolean;
   export let tags: string[];
   // ---------------------------------------------------------
   //  Methods Declarations
@@ -43,10 +39,8 @@
   </div>
 
   <div class="card-footer">
-    <div class="date">{formatDate(date)}</div>
-    <div class="fav-icon" on:click|stopPropagation={() => dispatch("toggleFavorite", id)}>
-      <Fa icon={faStar} color={isFavorite ? "#ffda00" : "#afaeae"} />
-    </div>
+    <div class="date">{date}</div>
+    <div class="fav-icon" on:click|stopPropagation={() => dispatch("toggleFavorite", id)}>Like</div>
   </div>
 </div>
 
