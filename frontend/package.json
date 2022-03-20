@@ -30,8 +30,8 @@
     "typescript": "^4.5.4"
   },
   "lint-staged": {
-    "*.ts": "eslint --cache --fix",
-    "*.{ts,css,md,json}": "prettier --write"
+    "*.{ts,svelte}": "cd frontend && eslint --cache --fix",
+    "*.{ts,svelte,css,md,json}": "cd frontend && prettier --write"
   },
   "dependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.39",
