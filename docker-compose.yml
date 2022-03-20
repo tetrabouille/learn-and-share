@@ -1,0 +1,32 @@
+version: '2.4'
+
+services:
+  frontend:
+    build:
+      context: .
+      target: frontend-dev
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/src:/app/src:ro
+    env_file:
+      - ./env/frontend.env
+  backend:
+    build:
+      context: .
+      target: backend-dev
+    ports:
+      - 4000:4000
+    volumes:
+      - ./backend/src:/app/src:ro
+    env_file:
+      - ./env/backend.env
+  prod:
+    build:
+      context: .
+      target: prod
+    ports:
+      - 4000:4000
+    env_file:
+      - ./env/backend.env
+      - ./env/frontend.env

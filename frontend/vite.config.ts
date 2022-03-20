@@ -10,4 +10,8 @@ export default defineConfig({
       "@": resolve("/src"),
     },
   },
+  server: {
+    host: true,
+    port: 3000,
+  },
 });
