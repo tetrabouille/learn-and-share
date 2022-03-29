@@ -1,9 +1,11 @@
-import jwt from "jsonwebtoken";
+import jwts from 'jsonwebtoken';
 
 const getUserFromToken = (token?: string) => {
   if (!token) return null;
   try {
-    return jwt.verify(token, String(process.env.JWT_SIGNATURE)) as { userId: number };
+    return jwt.verify(token, String(process.env.JWT_SIGNATURE)) as {
+      userId: number;
+    };
   } catch (e) {
     return null;
   }

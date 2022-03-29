@@ -1,6 +1,6 @@
-import { gql } from "apollo-server-express";
+import { gql } from 'apollo-server-express';
 
-import { ProfileContext, UserContext } from "../contexts";
+import { ProfileContext, UserContext } from '../contexts';
 
 type ParentArgs = {
   userId: string;

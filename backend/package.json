@@ -5,8 +5,10 @@
   "main": "src/server.ts",
   "scripts": {
     "start:dev": "nodemon --watch './**/*.ts' --exec 'ts-node' src/server.ts",
-    "start": "NODE_PATH=./build node build/index.js",
-    "build": "tsc -p ."
+    "start": "node dist/server.js",
+    "build": "tsc -p .",
+    "lint": "eslint .",
+    "prettier": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -29,7 +31,12 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.15.0",
+    "@typescript-eslint/parser": "^5.15.0",
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.5.0",
     "nodemon": "^2.0.15",
+    "prettier": "^2.6.0",
     "ts-node-dev": "^1.1.8"
   }
 }

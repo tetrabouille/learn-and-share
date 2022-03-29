@@ -1,6 +1,6 @@
-import { Post } from "prisma/prisma-client";
+import { Post } from 'prisma/prisma-client';
 
-import { prisma } from "../db/prisma";
+import { prisma } from '../db/prisma';
 
 const isAuthor = async (post: Post, userId?: number) => {
   const user = await isConnected(userId);

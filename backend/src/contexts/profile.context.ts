@@ -1,5 +1,5 @@
-import { prisma } from "../db/prisma";
-import { isConnected } from "../utils/access";
+import { prisma } from '../db/prisma';
+import { isConnected } from '../utils/access';
 
 const profileGetByUser = (userId: string | number) =>
   prisma.profile.findUnique({ where: { userId: Number(userId) } });

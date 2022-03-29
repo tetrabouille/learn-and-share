@@ -1,7 +1,7 @@
-import { prisma } from "../db/prisma";
+import { prisma } from '../db/prisma';
 
-import { PostInput } from "../schemas";
-import { isConnected, isAuthor } from "../utils/access";
+import { PostInput } from '../schemas';
+import { isConnected, isAuthor } from '../utils/access';
 
 const error = (msgList: string[]) => ({
   post: null,
@@ -11,7 +11,7 @@ const error = (msgList: string[]) => ({
 const postGetAll = () =>
   prisma.post.findMany({
     orderBy: {
-      createdAt: "desc",
+      createdAt: 'desc',
     },
     where: { published: true },
   });
@@ -21,21 +21,23 @@ const postGetById = (id: string | number) => prisma.post.findMany({ where: { id:
 const postGetManyByAuthor = async (userId: string | number, loggedUserId?: number) => {
   const loggedUser = await isConnected(loggedUserId);
 
-  const where: { authorId: number; published?: boolean } = { authorId: Number(userId) };
+  const where: { authorId: number; published?: boolean } = {
+    authorId: Number(userId),
+  };
   if (userId !== loggedUser?.id) where.published = true;
 
   return await prisma.post.findMany({
     orderBy: {
-      createdAt: "desc",
+      createdAt: 'desc',
     },
     where,
   });
 };
 
 const postCreate = async ({ title, content }: PostInput, userId?: number) => {
-  if (!title || !content) return error(["Missing title or content to create post"]);
+  if (!title || !content) return error(['Missing title or content to create post']);
   const loggedUser = await isConnected(userId);
-  if (!loggedUser) return error(["Unauthorized"]);
+  if (!loggedUser) return error(['Unauthorized']);
 
   const post = await prisma.post.create({
     data: {
@@ -52,12 +54,12 @@ const postCreate = async ({ title, content }: PostInput, userId?: number) => {
 };
 
 const postUpdate = async (id: string, { title, content }: PostInput, userId?: number) => {
-  if (!title && !content) return error(["Nothing to update"]);
+  if (!title && !content) return error(['Nothing to update']);
 
   const postFound = await prisma.post.findUnique({ where: { id: Number(id) } });
-  if (!postFound) return error(["Post not found"]);
+  if (!postFound) return error(['Post not found']);
 
-  if (!(await isAuthor(postFound, userId))) return error(["Unauthorized"]);
+  if (!(await isAuthor(postFound, userId))) return error(['Unauthorized']);
 
   const payload: any = {};
   if (title) payload.title = title;
@@ -76,8 +78,8 @@ const postUpdate = async (id: string, { title, content }: PostInput, userId?: nu
 
 const postDelete = async (id: string, userId?: number) => {
   const postFound = await prisma.post.findUnique({ where: { id: Number(id) } });
-  if (!postFound) return error(["Post not found"]);
-  if (!(await isAuthor(postFound, userId))) return error(["Unauthorized"]);
+  if (!postFound) return error(['Post not found']);
+  if (!(await isAuthor(postFound, userId))) return error(['Unauthorized']);
 
   const post = await prisma.post.delete({ where: { id: Number(id) } });
 
@@ -89,8 +91,8 @@ const postDelete = async (id: string, userId?: number) => {
 
 const postPublish = async (id: string, userId?: number, unpublish = false) => {
   const postFound = await prisma.post.findUnique({ where: { id: Number(id) } });
-  if (!postFound) return error(["Post not found"]);
-  if (!(await isAuthor(postFound, userId))) return error(["Unauthorized"]);
+  if (!postFound) return error(['Post not found']);
+  if (!(await isAuthor(postFound, userId))) return error(['Unauthorized']);
 
   const post = await prisma.post.update({
     data: { ...postFound, published: !unpublish },
