@@ -1,4 +1,4 @@
 {
-  "frontend/**/*.{ts,svelte}": "cd frontend && npm run lint",
-  "backend/**/*.ts": "cd backend && npm run lint"
+  "frontend/**/*.{ts,svelte}": "npm --prefix frontend run lint",
+  "backend/**/*.ts": "npm --prefix backend run lint"
 }

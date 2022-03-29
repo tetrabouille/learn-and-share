@@ -28,7 +28,5 @@ module.exports = {
     'svelte3/typescript': true,
   },
   ignorePatterns: ['*.js', '*.cjs', '*.config.ts'],
-  rules: {
-    '@typescript-eslint/no-explicit-any': ['error'],
-  },
+  rules: {},
 };
