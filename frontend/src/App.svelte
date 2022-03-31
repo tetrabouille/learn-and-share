@@ -16,6 +16,3 @@
     <Route path="/"><Home /></Route>
   </div>
 </Router>
-
-<style lang="scss">
-</style>
