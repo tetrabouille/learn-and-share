@@ -2,7 +2,7 @@
   // ---------------------------------------------------------
   //  Imports
   // ---------------------------------------------------------
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher } from 'svelte';
   // ---------------------------------------------------------
   //  Props
   // ---------------------------------------------------------
@@ -40,7 +40,7 @@
 
   <div class="card-footer">
     <div class="date">{date}</div>
-    <div class="fav-icon" on:click|stopPropagation={() => dispatch("toggleFavorite", id)}>Like</div>
+    <div class="fav-icon" on:click|stopPropagation={() => dispatch('toggleFavorite', id)}>Like</div>
   </div>
 </div>
 

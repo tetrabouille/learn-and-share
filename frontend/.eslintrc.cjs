@@ -28,5 +28,9 @@ module.exports = {
     'svelte3/typescript': true,
   },
   ignorePatterns: ['*.js', '*.cjs', '*.config.ts'],
-  rules: {},
+  rules: {
+    '@typescript-eslint/no-unsafe-call': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
+  },
 };

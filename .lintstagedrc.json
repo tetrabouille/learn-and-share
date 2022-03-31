@@ -1,4 +1,4 @@
 {
-  "frontend/**/*.{ts,svelte}": "npm --prefix frontend run lint",
-  "backend/**/*.ts": "npm --prefix backend run lint"
+  "frontend/**/*.{ts,svelte}": ["npm --prefix frontend run lint", "npm --prefix frontend run prettier"],
+  "backend/**/*.ts": ["npm --prefix backend run lint", "npm --prefix backend run prettier"]
 }

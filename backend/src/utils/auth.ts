@@ -1,4 +1,4 @@
-import jwts from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 const getUserFromToken = (token?: string) => {
   if (!token) return null;
