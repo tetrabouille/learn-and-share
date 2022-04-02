@@ -67,7 +67,7 @@
         </Link>
         {#if isSelected(route)}
           <div
-            class="absolute bottom-0 w-full border-2 border-orange-500"
+            class="absolute bottom-0 w-full border-t-4 border-orange-500"
             in:receive={{ key: 'link' }}
             out:send={{ key: 'link' }}
           />

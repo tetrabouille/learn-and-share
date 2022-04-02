@@ -1,0 +1,11 @@
+{
+  "message": {
+    "error": {
+      "password_required": "Please enter a password",
+      "password_invalid": "Password must be at least 8 characters long",
+      "password_mismatch": "Passwords must match",
+      "email_required": "Please enter an email",
+      "email_invalid": "Please enter a valid email"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "message": {
+    "error": {
+      "password_required": "Veillez entrer un mot de passe",
+      "password_invalid": "Le mot de passe doit contenir au moins 8 caractères",
+      "password_mismatch": "Les mots de passe doivent correspondre",
+      "email_required": "Veuillez entrer une adresse email",
+      "email_invalid": "L'adresse email est invalide"
+    }
+  }
+}
