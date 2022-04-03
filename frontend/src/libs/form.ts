@@ -1,33 +1,59 @@
-import type { ObjectSchema } from 'yup';
+import type { Writable } from 'svelte/store';
+import type { ObjectSchema, ValidationError } from 'yup';
 
 export type Error = {
   key: string;
   message: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const validateSchema = (schema: ObjectSchema<any>, values: any, previousError: Error): Promise<Error> => {
-  return schema
-    .validate(values)
-    .then(() => null as Error)
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        if (!previousError) {
-          return {
-            key: err.path,
-            message: err.errors[0],
-          };
-        }
-        if (previousError.key !== err.path) {
-          return null;
-        }
-        return {
-          key: err.path,
-          message: err.errors[0],
-        };
-      }
-      return null;
-    });
+const getError = (fieldId: string, errors: Error[]) => {
+  if (!errors.length) return;
+  const error = errors.find((error) => error.key === fieldId);
+  if (error && error.key === fieldId) {
+    return error.message;
+  }
 };
 
-export { validateSchema };
+const addError = (key: string, message: string, errorsStore: Writable<Error[]>) => {
+  errorsStore.update((errors) => {
+    if (!errors.length) return [{ key, message }];
+    const previousError = errors.find((error) => error.key === key);
+    if (previousError) {
+      previousError.message = message;
+      return [...errors];
+    }
+    return [...errors, { key, message }];
+  });
+};
+
+const removeError = (key: string, errorsStore: Writable<Error[]>) => {
+  errorsStore.update((errors) => {
+    return errors.filter((error) => error.key !== key);
+  });
+};
+
+const validateSchema = async (
+  schema: ObjectSchema<any>,
+  values: any,
+  keys: string[],
+  errorsStore: Writable<Error[]>
+): Promise<boolean> => {
+  let valide = true;
+  await Promise.all(
+    keys.map((key) =>
+      schema
+        .validateAt(key, values)
+        .then(() => removeError(key, errorsStore))
+        .catch((err: ValidationError) => {
+          if (err.name === 'ValidationError') {
+            valide = false;
+            return addError(key, err.errors[0], errorsStore);
+          }
+          console.error(err);
+        })
+    )
+  );
+  return valide;
+};
+
+export { validateSchema, getError, addError };

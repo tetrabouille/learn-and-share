@@ -1,31 +1,37 @@
 <script lang="ts">
-  import { createEventDispatcher, afterUpdate } from 'svelte';
+  import { createEventDispatcher, getContext } from 'svelte';
+
+  import { getError } from '@/libs/form';
+  import type { FormContext } from '@/contexts/form.context';
 
   export let label = null;
   export let info: string = null;
-  export let error: string = null;
   export let placeholder = '...';
-  export let initialValue = '';
   export let type: 'text' | 'email' | 'password' = 'text';
   export let fieldId: string;
+  export let formContextKey = 'form';
 
-  export let value = initialValue;
+  export const focus = () => {
+    if (inputRef) inputRef.focus();
+  };
+
+  const formContext = getContext<FormContext>(formContextKey);
+  if (!formContext) throw new Error('InputText must be used within a FormContext');
+
+  const { data, errors, touched } = formContext;
 
   let inputRef: HTMLInputElement;
 
   const dispatch = createEventDispatcher();
 
+  $: value = $data[fieldId];
+  $: error = $touched ? getError(fieldId, $errors) : null;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChange = (e: any) => {
-    value = e.target.value;
+    $data[fieldId] = e.target.value;
     dispatch('input');
   };
-
-  afterUpdate(() => {
-    if (inputRef && error) {
-      inputRef.focus();
-    }
-  });
 </script>
 
 <div class="flex flex-col">
