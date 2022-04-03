@@ -1,11 +1,11 @@
 <script lang="ts">
   import { crossfade } from 'svelte/transition';
   import { quintOut } from 'svelte/easing';
-
-  import { Link } from 'svelte-routing';
+  import type { GetPropsParams } from 'svelte-routing/types/Link';
+  import { Link, navigate } from 'svelte-routing';
 
   import logo from '@/assets/constellation-logo.svg';
-  import type { GetPropsParams } from 'svelte-routing/types/Link';
+  import Button from './Button.svelte';
 
   type Route = {
     path: string;
@@ -78,8 +78,6 @@
 
   <div class="flex flex-row items-center gap-3 text-base">
     <Link class="hover:text-orange-400 active:text-orange-500" to="login">Login</Link>
-    <Link class="rounded-full bg-orange-600 px-4 py-1 hover:bg-orange-400 active:bg-orange-500" to="signup"
-      >Signup</Link
-    >
+    <Button on:click={() => navigate('signup')}>Signup</Button>
   </div>
 </header>

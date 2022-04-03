@@ -1,4 +1,4 @@
-import { readable } from 'svelte/store';
+import { readable, writable } from 'svelte/store';
 import { BehaviorSubject } from 'rxjs';
 import { supabase } from '@/libs/supabase';
 
@@ -12,6 +12,8 @@ const token = readable(tokenInStorage, (set) => {
   });
   return () => sub.unsubscribe();
 });
+
+const accountCreated = writable(false);
 
 const login = () => {
   const newToken = supabase.auth.session()?.access_token;
@@ -28,4 +30,4 @@ const logout = () => {
   localStorage.removeItem('token');
 };
 
-export { login, token, logout };
+export { login, token, logout, accountCreated };
