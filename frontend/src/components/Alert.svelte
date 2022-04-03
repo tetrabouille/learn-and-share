@@ -32,7 +32,7 @@
       class={getClasses(alert)}
       on:click={() => removeAlert(alert)}
       in:fly={{ duration, y }}
-      out:fly={{ duration: duration + 150, y }}
+      out:fly={{ duration: duration + 300, y }}
       animate:flip={{ duration }}
     >
       {alert.message}
