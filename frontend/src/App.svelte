@@ -4,12 +4,14 @@
   import Signup from '@/pages/Signup.svelte';
   import Header from '@/components/Header.svelte';
   import Login from './pages/Login.svelte';
+  import Alert from './components/Alert.svelte';
 
   export let url = '';
 </script>
 
 <Router {url}>
   <Header />
+  <Alert />
   <div>
     <Route path="signup" component={Signup} />
     <Route path="login" component={Login} />
