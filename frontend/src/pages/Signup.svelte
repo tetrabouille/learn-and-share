@@ -32,11 +32,11 @@
   } = {};
 
   const { data, errors, touched } = setFormContest({
-    email: '_@gmail.com',
-    password: '__________',
+    email: 'thibautmandallena@gmail.com',
+    password: 'azeqsdwxc',
     firstname: '',
     lastname: '',
-    confirmPassword: '__________',
+    confirmPassword: 'azeqsdwxc',
   });
 
   const validationSchema1 = yup.object().shape({
@@ -79,9 +79,8 @@
           .signUp({ email: $data.email, password: $data.password })
           .then(({ error }) => {
             if (error) {
-              if (error.status === 400) addError('email', 'This email is already used', errors);
-              else addAlert(error.message, 'error');
-              return;
+              if (error.status === 400) return addError('email', 'This email is already used', errors);
+              return addAlert(error.message, 'error');
             }
             accountCreated.set(true);
             formState = FormState.COMPLETE;
@@ -109,7 +108,8 @@
 </script>
 
 {#if formState !== FormState.COMPLETE}
-  <form class="container mx-auto mt-10 flex max-w-sm flex-col gap-1" on:submit|preventDefault={handleSubmit}>
+  <h1 class="py-10 text-center text-2xl">Create your account and start writing stories</h1>
+  <form class="container mx-auto flex max-w-sm flex-col gap-1" on:submit|preventDefault={handleSubmit}>
     <InputText
       bind:this={inputRefs.email}
       fieldId="email"
