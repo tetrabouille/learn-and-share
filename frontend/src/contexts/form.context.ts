@@ -1,6 +1,6 @@
 import { setContext } from 'svelte';
 import { writable } from 'svelte/store';
-import type { Error } from '@/libs/form';
+import type { Error } from '@/utils/form';
 import type { Writable } from 'svelte/store';
 
 export type FormContext = {

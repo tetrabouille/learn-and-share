@@ -1,5 +1,29 @@
 <script lang="ts">
-  // TODO
+  import { query } from 'svelte-apollo';
+  import { USER_GET_ALL } from '@/graphql/user.query';
+  import type { User } from '@/types/user.type';
+  import Button from '@/components/Button.svelte';
+  import { checkUserRoles } from '@/utils/access';
+  import { loggedUser } from '@/stores/auth.store';
+  import { addAlert } from '@/stores/alert.store';
+
+  const users = query<{ users: User[] }>(USER_GET_ALL);
 </script>
 
-<p>Main Page</p>
+<div class="container mx-auto flex flex-wrap gap-5 p-10">
+  {#if $users.data?.users?.length && checkUserRoles($loggedUser.user, ['user'])}
+    {#each $users.data.users as { firstname, lastname, validated, id } (id)}
+      <div class="w-[300px] rounded-md bg-brown-50/70 p-5 text-warm-900/90 shadow-sm">
+        <h3 class="text-lg">
+          {firstname}
+          {lastname}
+        </h3>
+        <p>Validated : {validated ? 'yes' : 'no'}</p>
+        <Button
+          buttonClass="ml-auto mt-6 text-md"
+          on:click={() => addAlert(`${firstname} ${lastname} clicked !`, 'success')}>Click me</Button
+        >
+      </div>
+    {/each}
+  {/if}
+</div>

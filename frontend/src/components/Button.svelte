@@ -15,14 +15,13 @@
       'items-center',
       'self-center',
       'rounded-full',
-      'bg-orange-600/90',
       'px-4',
       'py-1',
-      'text-slate-50',
       buttonClass,
     ];
-    if (disabled) classes.push('bg-stone-500/50', 'text-stone-50');
-    else if (!loading) classes.push('hover:bg-orange-400/90', 'active:bg-orange-500/90');
+    if (disabled) classes.push('bg-warm-400/60', 'text-warm-700/90');
+    else if (!loading)
+      classes.push('text-cold-700', 'bg-yellow-400/90', 'hover:bg-yellow-200/90', 'active:bg-yellow-300/90');
     return classes.join(' ');
   };
 </script>

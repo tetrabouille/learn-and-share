@@ -1,10 +1,44 @@
 <script lang="ts">
   import { Router, Route } from 'svelte-routing';
-  import Home from '@/pages/Home.svelte';
-  import Signup from '@/pages/Signup.svelte';
+  import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client/core';
+  import { setContext } from '@apollo/client/link/context';
+  import { setClient } from 'svelte-apollo';
+  import { query } from 'svelte-apollo';
+
+  import { env } from '@/libs/env';
+  import { GET_LOGGED_USER } from '@/graphql/user.query';
+  import { setupLoggedUser, loggedUser } from '@/stores/auth.store';
+  import { routeConfigs } from '@/configs/routes';
+  import { hasRouteAccess } from '@/utils/access';
+
   import Header from '@/components/Header.svelte';
-  import Login from './pages/Login.svelte';
-  import Alert from './components/Alert.svelte';
+  import Alert from '@/components/Alert.svelte';
+  import Unknown from '@/pages/Unknown.svelte';
+
+  import type { User } from '@/types/user.type';
+
+  const httpLink = createHttpLink({
+    uri: `${String(env.VITE_SERVER_HOST)}/graphql`,
+  });
+
+  const authLink = setContext((_, { headers }) => {
+    const token = localStorage.getItem('token');
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : '',
+      },
+    };
+  });
+
+  const client = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache(),
+  });
+
+  setClient(client);
+
+  setupLoggedUser(query<{ user: User }>(GET_LOGGED_USER));
 
   export let url = '';
 </script>
@@ -13,8 +47,11 @@
   <Header />
   <Alert />
   <div>
-    <Route path="signup" component={Signup} />
-    <Route path="login" component={Login} />
-    <Route path="/"><Home /></Route>
+    {#each routeConfigs as { path, component, requireLogin, roles } (path)}
+      {#if hasRouteAccess($loggedUser, requireLogin, roles)}
+        <Route exact {path} {component} />
+      {/if}
+    {/each}
+    <Route path="*"><Unknown /></Route>
   </div>
 </Router>

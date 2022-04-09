@@ -1,34 +1,29 @@
 <script lang="ts">
   import { crossfade } from 'svelte/transition';
   import { quintOut } from 'svelte/easing';
-  import type { GetPropsParams } from 'svelte-routing/types/Link';
+  import Fa from 'svelte-fa';
   import { Link, navigate } from 'svelte-routing';
+  import type { GetPropsParams } from 'svelte-routing/types/Link';
+  import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
 
+  import { logout, loggedUser } from '@/stores/auth.store';
   import logo from '@/assets/constellation-logo.svg';
-  import Button from './Button.svelte';
+  import { routeConfigs } from '@/configs/routes';
+  import Button from '@/components/Button.svelte';
+  import { hasRouteAccess } from '@/utils/access';
 
-  type Route = {
-    path: string;
-    name: string;
-  };
-
-  const routes: Route[] = [
-    { path: '/stories', name: 'Stories' },
-    { path: '/knowledge-assets', name: 'Knowledge Assets' },
-    { path: '/new-story', name: 'New Story' },
-    { path: '/build-assets', name: 'Build Assets' },
-  ];
-
-  let selectedRoute: Route;
+  let currentPath: string;
   const getProps = ({ location, isCurrent }: GetPropsParams) => {
-    selectedRoute = routes.find((route) => route.path === location.pathname);
+    currentPath = location.pathname;
     const classes = ['font-semibold', 'p-4'];
-    if (isCurrent) classes.push('text-orange-500');
-    else classes.push('text-slate-50', 'hover:text-orange-400');
+    if (isCurrent) classes.push('text-yellow-500');
+    else classes.push('text-warm-100', 'hover:text-yellow-400');
     return { class: classes.join(' ') };
   };
 
-  $: isSelected = (route: Route) => selectedRoute?.path === route.path;
+  const clickLogout = () => logout(currentPath, navigate);
+
+  $: isSelected = (path: string) => currentPath === path;
 
   const [send, receive] = crossfade({
     duration: (d) => Math.sqrt(d * 500),
@@ -45,39 +40,50 @@
   });
 </script>
 
-<header class="flex w-full flex-row gap-10 bg-header px-4 py-2 text-base text-slate-50 md:text-lg">
+<header class="flex w-full flex-row gap-10 bg-brown-800 px-4 py-2 text-base text-warm-100 md:text-lg">
   <div class="flex flex-row items-center gap-4">
     <Link to="/">
-      <img class="h-14" src={logo} alt="The Constellation Logo" />
+      <img class="h-[4.5rem]" src={logo} alt="The Constellation Logo" />
     </Link>
     <h1 class="hidden font-light xl:block">The Constellation's Assets</h1>
   </div>
 
   <nav class="text mr-auto flex max-w-3xl flex-row items-center">
-    {#each routes as route (route.path)}
-      <div class="relative flex shrink-0 flex-col">
-        <Link
-          to={route.path}
-          on:click={() => {
-            selectedRoute = route;
-          }}
-          {getProps}
-        >
-          {route.name}
-        </Link>
-        {#if isSelected(route)}
-          <div
-            class="absolute bottom-0 w-full border-t-4 border-orange-500"
-            in:receive={{ key: 'link' }}
-            out:send={{ key: 'link' }}
-          />
-        {/if}
-      </div>
+    {#each routeConfigs as { requireLogin, roles, path, title, linkPositions } (path)}
+      {#if hasRouteAccess($loggedUser, requireLogin, roles) && linkPositions?.includes('header')}
+        <div class="relative flex shrink-0 flex-col">
+          <Link
+            to={path}
+            on:click={() => {
+              currentPath = path;
+            }}
+            {getProps}
+          >
+            {title}
+          </Link>
+          {#if isSelected(path)}
+            <div
+              class="absolute bottom-0 w-full border-t-4 border-yellow-500"
+              in:receive|local={{ key: 'link' }}
+              out:send|local={{ key: 'link' }}
+            />
+          {/if}
+        </div>
+      {/if}
     {/each}
   </nav>
 
   <div class="flex flex-row items-center gap-3 text-base">
-    <Link class="hover:text-orange-400 active:text-orange-500" to="login">Login</Link>
-    <Button on:click={() => navigate('signup')}>Signup</Button>
+    {#if $loggedUser?.isConnected}
+      <div class="underline">{$loggedUser.user.firstname} {$loggedUser.user.lastname}</div>
+      <div class="cursor-pointer hover:text-yellow-400 active:text-yellow-500" on:click={clickLogout}>
+        Logout
+      </div>
+    {:else if $loggedUser?.loading}
+      <Fa icon={faSpinner} pulse />
+    {:else}
+      <Link class="hover:text-yellow-400 active:text-yellow-500" to="login">Login</Link>
+      <Button on:click={() => navigate('signup')}>Signup</Button>
+    {/if}
   </div>
 </header>

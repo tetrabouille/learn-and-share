@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, getContext } from 'svelte';
 
-  import { getError } from '@/libs/form';
+  import { getError } from '@/utils/form';
   import type { FormContext } from '@/contexts/form.context';
 
   export let label = null;
@@ -42,21 +42,20 @@
     <input
       bind:this={inputRef}
       id={fieldId}
-      class="w-full rounded-md bg-stone-700/40 px-3 py-1 text-white placeholder:text-stone-100/80 focus:bg-stone-700/50 focus:outline-none"
+      class="w-full rounded-md bg-warm-700/70 px-3 py-1 text-white placeholder:text-warm-200/70 focus:bg-warm-800/70 focus:outline-none"
       {type}
       {placeholder}
       {value}
       on:input={handleChange}
-      autocomplete="off"
     />
     {#if error != null}
-      <div class="absolute top-0 left-0 right-0 bottom-0 -z-10 rounded-md bg-red-500/40" />
+      <div class="absolute top-0 left-0 right-0 bottom-0 -z-10 rounded-md bg-red-600/90" />
     {/if}
   </div>
   {#if error}
-    <div class="text-xs text-red-600/90">{error}</div>
+    <div class="text-xs text-red-700">{error}</div>
   {:else if info}
-    <div class="text-xs text-slate-600">{info}</div>
+    <div class="text-xs text-warm-800">{info}</div>
   {:else}
     <div class="text-xs invisible">_X_</div>
   {/if}

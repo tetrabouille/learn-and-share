@@ -5,14 +5,21 @@
   import Fa from 'svelte-fa';
   import { faCheckCircle } from '@fortawesome/free-regular-svg-icons/faCheckCircle';
   import { navigate } from 'svelte-routing';
+  import { mutation } from 'svelte-apollo';
 
+  import { USER_ADD } from '@/graphql/user.query';
   import { setFormContest } from '@/contexts/form.context';
   import { supabase } from '@/libs/supabase';
-  import { addError, validateSchema } from '@/libs/form';
+  import { addError, validateSchema } from '@/utils/form';
   import { addAlert } from '@/stores/alert.store';
   import { accountCreated } from '@/stores/auth.store';
   import InputText from '@/components/forms/InputText.svelte';
   import Button from '@/components/Button.svelte';
+
+  import { Error } from '@/types/error.type';
+  import type { UserPayload } from '@/types/user.type';
+
+  const userAdd = mutation<{ userAdd: UserPayload }>(USER_ADD);
 
   enum FormState {
     FIRST_FORM,
@@ -32,11 +39,11 @@
   } = {};
 
   const { data, errors, touched } = setFormContest({
-    email: 'thibautmandallena@gmail.com',
-    password: 'azeqsdwxc',
+    email: '',
+    password: '',
     firstname: '',
     lastname: '',
-    confirmPassword: 'azeqsdwxc',
+    confirmPassword: '',
   });
 
   const validationSchema1 = yup.object().shape({
@@ -75,20 +82,45 @@
         valid = await validateSchema2();
         if (!valid) break;
         loading = true;
-        await supabase.auth
-          .signUp({ email: $data.email, password: $data.password })
-          .then(({ error }) => {
+        try {
+          await (async () => {
+            const { error, user } = await supabase.auth.signUp({
+              email: $data.email,
+              password: $data.password,
+            });
+
             if (error) {
-              if (error.status === 400) return addError('email', 'This email is already used', errors);
+              if (error.status === 400 || error.status === 429)
+                return addError('email', 'This email is already used', errors);
               return addAlert(error.message, 'error');
             }
-            accountCreated.set(true);
-            formState = FormState.COMPLETE;
-          })
-          .catch((err) => {
-            console.error(err);
-            addAlert(err.message as string, 'error');
-          });
+
+            if (user) {
+              const response = await userAdd({
+                variables: {
+                  accountId: user.id,
+                  email: $data.email,
+                  firstname: $data.firstname,
+                  lastname: $data.lastname,
+                },
+              });
+
+              const userErrors = response.data?.userAdd?.userErrors;
+              if (userErrors?.length) {
+                if (userErrors.find((error) => error.code === Error.USER_ALREADY_EXISTS)) {
+                  return addError('email', 'This email is already used', errors);
+                }
+                return addAlert(response.data.userAdd.userErrors[0].message, 'error');
+              }
+
+              accountCreated.set(true);
+              formState = FormState.COMPLETE;
+            }
+          })();
+        } catch (err) {
+          console.error(err);
+          addAlert(err.message as string, 'error');
+        }
         loading = false;
         break;
       case FormState.COMPLETE:
@@ -107,73 +139,75 @@
   };
 </script>
 
-{#if formState !== FormState.COMPLETE}
-  <h1 class="py-10 text-center text-2xl">Create your account and start writing stories</h1>
-  <form class="container mx-auto flex max-w-sm flex-col gap-1" on:submit|preventDefault={handleSubmit}>
-    <InputText
-      bind:this={inputRefs.email}
-      fieldId="email"
-      placeholder="email"
-      type="email"
-      label="Enter your email"
-      on:input={refreshErrors('email')}
-    />
-    <InputText
-      bind:this={inputRefs.password}
-      fieldId="password"
-      placeholder="password"
-      type="password"
-      label="Enter a password"
-      info="Password must be at least 8 characters long"
-      on:input={refreshErrors('password')}
-    />
-    {#if formState === FormState.SECOND_FORM}
-      <div transition:slide|local={{ duration: 350, easing: quintOut }}>
-        <div class="flex flex-row gap-2 pt-2">
+<section>
+  {#if formState !== FormState.COMPLETE}
+    <h1 class="py-10 text-center text-2xl">Create your account and start writing stories</h1>
+    <form class="container mx-auto flex max-w-sm flex-col gap-1" on:submit|preventDefault={handleSubmit}>
+      <InputText
+        bind:this={inputRefs.email}
+        fieldId="email"
+        placeholder="email"
+        type="email"
+        label="Enter your email"
+        on:input={refreshErrors('email')}
+      />
+      <InputText
+        bind:this={inputRefs.password}
+        fieldId="password"
+        placeholder="password"
+        type="password"
+        label="Enter a password"
+        info="Password must be at least 8 characters long"
+        on:input={refreshErrors('password')}
+      />
+      {#if formState === FormState.SECOND_FORM}
+        <div transition:slide|local={{ duration: 350, easing: quintOut }}>
+          <div class="flex flex-row gap-2 pt-2">
+            <InputText
+              bind:this={inputRefs.firstname}
+              fieldId="firstname"
+              placeholder="firstname"
+              type="text"
+              label="Enter your first name"
+              on:input={refreshErrors('firstname')}
+            />
+            <InputText
+              bind:this={inputRefs.lastname}
+              fieldId="lastname"
+              placeholder="lastname"
+              type="text"
+              label="Enter your last name"
+              on:input={refreshErrors('lastname')}
+            />
+          </div>
           <InputText
-            bind:this={inputRefs.firstname}
-            fieldId="firstname"
-            placeholder="firstname"
-            type="text"
-            label="Enter your first name"
-            on:input={refreshErrors('firstname')}
-          />
-          <InputText
-            bind:this={inputRefs.lastname}
-            fieldId="lastname"
-            placeholder="lastname"
-            type="text"
-            label="Enter your last name"
-            on:input={refreshErrors('lastname')}
+            bind:this={inputRefs.confirmPassword}
+            fieldId="confirmPassword"
+            placeholder="confirm password"
+            type="password"
+            label="Confirm your password"
+            on:input={refreshErrors('confirmPassword')}
           />
         </div>
-        <InputText
-          bind:this={inputRefs.confirmPassword}
-          fieldId="confirmPassword"
-          placeholder="confirm password"
-          type="password"
-          label="Confirm your password"
-          on:input={refreshErrors('confirmPassword')}
-        />
-      </div>
-    {/if}
-    <Button buttonClass="mt-2" disabled={$errors.length && $touched} type="submit" {loading}>
-      {#if formState === FormState.FIRST_FORM}
-        Continue
-      {:else}
-        Sign up
       {/if}
-    </Button>
-  </form>
-{:else}
-  <div class="container mx-auto mt-10 flex max-w-sm flex-col gap-5">
-    <Fa class="text-green-500/90 text-7xl" icon={faCheckCircle} />
-    <div>
-      <p class="w-full text-center text-xl m-1">Your account has been created.</p>
-      <p class="w-full text-center text-xl m-1">Please check your email to validate your account.</p>
+      <Button buttonClass="mt-2" disabled={$errors.length && $touched} type="submit" {loading}>
+        {#if formState === FormState.FIRST_FORM}
+          Continue
+        {:else}
+          Sign up
+        {/if}
+      </Button>
+    </form>
+  {:else}
+    <div class="container mx-auto mt-10 flex max-w-sm flex-col gap-5">
+      <Fa class="text-green-500/90 text-7xl" icon={faCheckCircle} />
+      <div>
+        <p class="w-full text-center text-xl m-1">Your account has been created.</p>
+        <p class="w-full text-center text-xl m-1">Please check your email to validate your account.</p>
+      </div>
+      <Button buttonClass="text-lg min-w-[150px] justify-center" on:click={() => navigate('login')}>
+        Login
+      </Button>
     </div>
-    <Button buttonClass="text-lg min-w-[150px] justify-center" on:click={() => navigate('login')}>
-      Login
-    </Button>
-  </div>
-{/if}
+  {/if}
+</section>
