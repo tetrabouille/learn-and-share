@@ -25,13 +25,16 @@ const typeDefs = gql`
 
 const resolvers = {
   Profile: {
-    user: ({ userId }: ParentArgs, _: any, { userGetById }: UserContext) => userGetById(userId),
-    isOwnProfile: ({ userId: profileUserId }: ParentArgs, _: any, { isOwnProfile, userId }: ProfileContext) =>
-      isOwnProfile(profileUserId, userId),
+    user: ({ userId }: ParentArgs, _: void, { userGetById }: UserContext) => userGetById(userId),
+    isOwnProfile: (
+      { userId: profileUserId }: ParentArgs,
+      _: void,
+      { isOwnProfile, accountId }: ProfileContext
+    ) => isOwnProfile(profileUserId, accountId),
   },
 
   Query: {
-    profile: (_: any, { userId }: ProfileArgs, { profileGetByUser }: ProfileContext) =>
+    profile: (_: void, { userId }: ProfileArgs, { profileGetByUser }: ProfileContext) =>
       profileGetByUser(Number(userId)),
   },
 };

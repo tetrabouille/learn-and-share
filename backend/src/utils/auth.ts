@@ -3,9 +3,8 @@ import jwt from 'jsonwebtoken';
 const getUserFromToken = (token?: string) => {
   if (!token) return null;
   try {
-    return jwt.verify(token, String(process.env.JWT_SIGNATURE)) as {
-      userId: number;
-    };
+    const tokenData = jwt.verify(token.split(' ')[1], String(process.env.JWT_SIGNATURE));
+    return { accountId: tokenData.sub };
   } catch (e) {
     return null;
   }

@@ -1,8 +1,13 @@
 import { prisma } from '../db/prisma';
 
-const isRegistered = async (userId?: number) => {
-  if (userId == null) return null;
-  return prisma.user.findUnique({ where: { id: userId } });
+const isRegistered = async (accountId?: string) => {
+  if (!accountId) return null;
+  try {
+    const user = prisma.user.findUnique({ where: { accountId } });
+    return user;
+  } catch (e) {
+    return null;
+  }
 };
 
 export { isRegistered };

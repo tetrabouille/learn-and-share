@@ -7,31 +7,38 @@ type ParentArgs = {
 };
 
 type UserAddArgs = {
+  accountId: string;
+  email: string;
   firstname: string;
   lastname: string;
 };
 
 type UserGetArgs = {
-  userId: string;
+  userId?: string;
+  accountId?: string;
 };
 
 const typeDefs = gql`
   type User {
     id: ID!
-    name: String!
-    email: String!
-    posts: [Post!]!
+    accountId: String!
+    hash: String!
+    validated: Boolean!
+    firstname: String!
+    lastname: String!
+    roles: [String!]!
     profile: Profile!
   }
 
   type Query {
     users: [User!]!
-    user(userId: ID): User
+    user(userId: ID, accountId: ID): User
     ownUser: User!
   }
 
   type Mutation {
-    userAdd(id: ID!, firstname: String!, lastname: String!): UserPayload!
+    userAdd(accountId: String!, email: String!, firstname: String!, lastname: String!): UserPayload!
+    userValidate: UserPayload!
   }
 
   type UserPayload {
@@ -48,13 +55,16 @@ const resolvers = {
 
   Query: {
     users: (_: void, __: void, { userGetAll }: UserContext) => userGetAll(),
-    user: (_: void, { userId }: UserGetArgs, { userGetById }: UserContext) => userGetById(userId),
-    ownUser: (_: void, __: void, { userGetById, userId }: UserContext) => userGetById(userId),
+    user: (_: void, { userId, accountId }: UserGetArgs, { userGetById, userGetByAccountId }: UserContext) =>
+      accountId ? userGetByAccountId(accountId) : userGetById(userId),
+    ownUser: (_: void, __: void, { userGetByAccountId, accountId }: UserContext) =>
+      userGetByAccountId(accountId),
   },
 
   Mutation: {
-    userAdd: (_: void, { firstname, lastname }: UserAddArgs, { userAdd, userId }: UserContext) =>
-      userAdd(userId, firstname, lastname),
+    userAdd: (_: void, { accountId, email, firstname, lastname }: UserAddArgs, { userAdd }: UserContext) =>
+      userAdd(accountId, email, firstname, lastname),
+    userValidate: (_: void, __: void, { userValidate, accountId }: UserContext) => userValidate(accountId),
   },
 };
 
