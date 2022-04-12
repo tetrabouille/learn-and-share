@@ -21,12 +21,3 @@ services:
       - ./backend/src:/app/src:ro
     env_file:
       - ./env/backend.env
-  prod:
-    build:
-      context: .
-      target: prod
-    ports:
-      - 4000:4000
-    env_file:
-      - ./env/backend.env
-      - ./env/frontend.env

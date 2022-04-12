@@ -1,14 +1,17 @@
 ARG NODE_PATH="./frontend/dist"
-ARG SERVER_HOST="https://the-constellation-assets.herokuapp.com"
 
 FROM node:16-alpine as frontend-build
 ENV NODE_ENV=production
-ARG SERVER_HOST
 WORKDIR /app
 COPY frontend/package.json ./
 RUN npm i && npm cache clean --force
 COPY frontend/ .
+ARG SERVER_HOST
+ARG SUPABASE_ANON_KEY
+ARG SUPABASE_URL
 ENV VITE_SERVER_HOST=${SERVER_HOST}
+ENV VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+ENV VITE_SUPABASE_URL=${SUPABASE_URL}
 RUN npm run build
 
 FROM node:16-alpine as prod
