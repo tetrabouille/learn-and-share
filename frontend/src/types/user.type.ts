@@ -1,4 +1,6 @@
 import type { UserError } from './error.type';
+import type { Profile } from './profile.type';
+import type { Story } from './story.type';
 
 export type User = {
   id?: number;
@@ -7,10 +9,10 @@ export type User = {
   firstname?: string;
   lastname?: string;
   roles?: string[];
+  profile?: Profile;
+  stories: Story[];
   createdAt?: Date;
   updatedAt?: Date;
-  // profile: Profile;
-  // stories: Story[];
 };
 
 export type UserPayload = {
