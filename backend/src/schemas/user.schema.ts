@@ -26,6 +26,8 @@ const typeDefs = gql`
     validated: Boolean!
     firstname: String!
     lastname: String!
+    createdAt: String!
+    updatedAt: String!
     roles: [String!]!
     profile: Profile!
   }

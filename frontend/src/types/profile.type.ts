@@ -4,6 +4,6 @@ export type Profile = {
   id?: number;
   bio?: string;
   user?: User;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
 };

@@ -40,6 +40,7 @@ model Story {
   content          String
   lesson           String?
   published        Boolean  @default(false)
+  lang             String   @default("en")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   userId           Int
@@ -55,6 +56,7 @@ model Story {
 model Topic {
   id               Int     @id @default(autoincrement())
   name             String
+  lang             String  @default("en")
   translationRefId Int?
   stories          Story[]
   translations     Topic[] @relation("TopicTranslations")
@@ -64,6 +66,7 @@ model Topic {
 model Tag {
   id               Int     @id @default(autoincrement())
   name             String
+  lang             String  @default("en")
   translationRefId Int?
   meaningRefId     Int?
   stories          Story[]

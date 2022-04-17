@@ -5,18 +5,18 @@ import path from 'path';
 import fs from 'fs';
 
 import { getUserFromToken } from './utils/auth';
-import { error, user, profile } from './schemas';
-import { userContext, profileContext } from './contexts';
+import { error, user, profile, story, topic, tag } from './schemas';
+import { userContext, profileContext, storyContext, topicContext, tagContext } from './contexts';
 
 const launchServer = async () => {
   const app = express();
 
   const server = new ApolloServer({
-    typeDefs: [error.typeDefs, user.typeDefs, profile.typeDefs],
-    resolvers: merge(user.resolvers, profile.resolvers),
+    typeDefs: [error.typeDefs, user.typeDefs, profile.typeDefs, story.typeDefs, topic.typeDefs, tag.typeDefs],
+    resolvers: merge(user.resolvers, profile.resolvers, story.resolvers, topic.resolvers, tag.resolvers),
     context: ({ req }) => {
       const userInfo = getUserFromToken(req.headers.authorization);
-      return merge(userInfo, userContext, profileContext);
+      return merge(userInfo, userContext, profileContext, storyContext, topicContext, tagContext);
     },
   });
   await server.start();

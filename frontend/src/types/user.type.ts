@@ -11,8 +11,8 @@ export type User = {
   roles?: string[];
   profile?: Profile;
   stories: Story[];
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type UserPayload = {

@@ -8,11 +8,12 @@ export type Story = {
   content?: string;
   lesson?: string;
   published?: boolean;
+  lang?: string;
   user?: User;
   topic: Topic;
   tags: Tag[];
   translations?: Story[];
   translationRef?: Story;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
 };
