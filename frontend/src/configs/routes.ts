@@ -45,7 +45,7 @@ export const routeConfigs: readonly RouteConfig[] = Object.freeze([
     component: NewStory,
     linkPositions: ['header'],
     title: 'New Story',
-    requireLogin: true,
+    // requireLogin: true,
   },
   {
     path: '/build-assets',

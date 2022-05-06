@@ -8,7 +8,7 @@
   import { query } from 'svelte-apollo';
 
   import { USER_VALIDATE, GET_LOGGED_USER } from '@/graphql/user.query';
-  import { setFormContest } from '@/contexts/form.context';
+  import { setFormContext } from '@/contexts/form.context';
   import { validateSchema, addError } from '@/utils/form';
   import { supabase } from '@/libs/supabase';
   import { addAlert } from '@/stores/alert.store';
@@ -29,7 +29,7 @@
     password?: InputText;
   } = {};
 
-  const { data, errors, touched } = setFormContest({
+  const { data, errors, touched } = setFormContext({
     email: '',
     password: '',
   });

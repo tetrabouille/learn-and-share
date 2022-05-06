@@ -8,7 +8,7 @@
   import { mutation } from 'svelte-apollo';
 
   import { USER_ADD } from '@/graphql/user.query';
-  import { setFormContest } from '@/contexts/form.context';
+  import { setFormContext } from '@/contexts/form.context';
   import { supabase } from '@/libs/supabase';
   import { addError, validateSchema } from '@/utils/form';
   import { addAlert } from '@/stores/alert.store';
@@ -38,7 +38,7 @@
     confirmPassword?: InputText;
   } = {};
 
-  const { data, errors, touched } = setFormContest({
+  const { data, errors, touched } = setFormContext({
     email: '',
     password: '',
     firstname: '',

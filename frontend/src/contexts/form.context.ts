@@ -9,7 +9,7 @@ export type FormContext = {
   touched: Writable<boolean>;
 };
 
-const setFormContest = (data: any, key = 'form'): FormContext => {
+const setFormContext = (data: any, key = 'form'): FormContext => {
   const dataStore = writable<any>(data);
   const errorsStore = writable<Error[]>([]);
   const touchedStore = writable<boolean>(false);
@@ -23,4 +23,4 @@ const setFormContest = (data: any, key = 'form'): FormContext => {
   return { data: dataStore, errors: errorsStore, touched: touchedStore };
 };
 
-export { setFormContest };
+export { setFormContext };

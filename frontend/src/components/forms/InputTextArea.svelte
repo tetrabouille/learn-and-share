@@ -4,19 +4,19 @@
   export let label = null;
   export let info: string = null;
   export let placeholder = '...';
-  export let type: 'text' | 'email' | 'password' | 'textarea' = 'text';
   export let fieldId: string;
   export let formContextKey = 'form';
   export let style: 'classic' | 'h1' = 'classic';
+  export let rows = 8;
 
   export const focus = () => {
     if (inputRef) inputRef.focus();
   };
 
-  let inputRef: HTMLInputElement;
+  let inputRef: HTMLTextAreaElement;
 
   $: getClass = () => {
-    const classes = 'w-full focus:outline-none';
+    const classes = 'w-full focus:outline-none -mb-2';
     const ext = (() => {
       switch (style) {
         default:
@@ -31,13 +31,13 @@
 </script>
 
 <InputWrapper on:input {fieldId} {label} {info} {formContextKey} let:handleChange let:value>
-  <input
+  <textarea
     bind:this={inputRef}
     id={fieldId}
     class={getClass()}
-    {type}
     {placeholder}
     {value}
+    {rows}
     on:input={handleChange}
   />
 </InputWrapper>
