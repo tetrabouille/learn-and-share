@@ -7,7 +7,6 @@
   import InputSelectWrapper from './InputSelectWrapper.svelte';
   import type { FormContext } from '@/contexts/form.context';
   import { getNewOption, type FormOptions } from '@/utils/form';
-  import { lastValueFrom } from 'rxjs';
 
   export let fieldId: string;
   export let label = null;

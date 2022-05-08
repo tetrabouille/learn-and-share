@@ -5,9 +5,11 @@
 
   import InputWrapper from './InputWrapper.svelte';
   import { KeyCode } from '@/utils/enums';
+  import { isInViewport } from '@/utils/commun';
   import { clickOutside } from '@/actions/click_outside';
 
   import type { FormOptions } from '@/utils/form';
+  import { afterUpdate } from 'svelte';
 
   export let label = null;
   export let info: string = null;
@@ -24,6 +26,8 @@
   let inputValue = '';
   let selectedValue = '';
   let selectedIndex = -1;
+  let containerRef: HTMLDivElement;
+  let optionsOntop = false;
 
   const toggleMenu = (b?: boolean) => {
     opened = b == null ? opened : b;
@@ -31,8 +35,9 @@
     inputValue = '';
     selectedValue = '';
 
-    if (opened) inputRef?.focus();
-    else {
+    if (opened) {
+      inputRef?.focus();
+    } else {
       selectedIndex = -1;
       inputRef?.blur();
     }
@@ -104,10 +109,18 @@
     if (opened) return selectedValue || inputValue;
     return '';
   };
+
+  afterUpdate(() => {
+    const maxHeight = 230;
+    let bottom = containerRef ? containerRef.offsetHeight * filteredOptions.length : 0;
+    if (bottom > maxHeight) bottom = maxHeight;
+    optionsOntop = !isInViewport(containerRef, { bottom });
+  });
 </script>
 
 <InputWrapper on:input {fieldId} {label} {info} {formContextKey} let:handleChange let:value>
   <div
+    bind:this={containerRef}
     class={`${getClass()} relative flex items-center`}
     on:click={() => {
       toggleMenu(true);
@@ -130,7 +143,9 @@
   </div>
   {#if opened}
     <ul
-      class="absolute left-0 right-0 z-50 border-[1px] border-cold-600/20 bg-creme-100 shadow-xl"
+      class={`absolute left-0 right-0 z-50 flex max-h-[230px] overflow-y-auto border-[1px] border-cold-600/20 bg-creme-100 ${
+        optionsOntop ? 'ontop flex-direction flex-col-reverse shadow-md' : 'flex-col shadow-xl'
+      }`}
       in:slide={{ duration: 200, delay: 100 }}
       out:slide={{ duration: 200 }}
     >
@@ -152,3 +167,9 @@
     </ul>
   {/if}
 </InputWrapper>
+
+<style lang="scss">
+  .ontop {
+    bottom: 100%;
+  }
+</style>

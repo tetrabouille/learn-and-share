@@ -1,9 +1,15 @@
-<script>
+<script lang="ts">
+  import { query } from 'svelte-apollo';
+
   import InputTextArea from '@/components/forms/InputTextArea.svelte';
   import InputText from '@/components/forms/InputText.svelte';
   import { setFormContext } from '@/contexts/form.context';
   import InputSelect from '@/components/forms/InputSelect.svelte';
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
+  import { TOPIC_GET_ALL } from '@/graphql/topic.query';
+  import type { Topic } from '@/types/topic.type';
+
+  const topicGetAllQuery = query<{ topics: Topic[] }>(TOPIC_GET_ALL);
 
   const { data } = setFormContext({
     title: '',
@@ -12,6 +18,11 @@
     tags: [],
     topic: '',
   });
+
+  $: topics = $topicGetAllQuery.data?.topics?.map(({ id, name }) => ({
+    id: String(id),
+    text: name,
+  }));
 
   $: console.log('data :', $data);
 </script>
@@ -24,13 +35,7 @@
     <InputSelect
       fieldId="topic"
       style="h1"
-      options={[
-        { id: '1', text: 'a option 1' },
-        { id: '2', text: 'a option 2' },
-        { id: '3', text: 'b option 3' },
-        { id: '4', text: 'b option 4' },
-        { id: '5', text: 'c option 5' },
-      ]}
+      options={topics}
       placeholder="Select a topic"
       messageEmpty="No topics matches"
       label="Topic"
