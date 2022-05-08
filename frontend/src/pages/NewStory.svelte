@@ -3,6 +3,7 @@
   import InputText from '@/components/forms/InputText.svelte';
   import { setFormContext } from '@/contexts/form.context';
   import InputSelect from '@/components/forms/InputSelect.svelte';
+  import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
 
   const { data } = setFormContext({
     title: '',
@@ -12,7 +13,7 @@
     topic: '',
   });
 
-  $: console.log($data);
+  $: console.log('data :', $data);
 </script>
 
 <section class="container mx-auto w-3/4 min-w-[300px] text-warm-900/90">
@@ -31,8 +32,21 @@
         { id: '5', text: 'c option 5' },
       ]}
       placeholder="Select a topic"
+      messageEmpty="No topics matches"
       label="Topic"
     />
-    <InputText fieldId="title" placeholder="Title of your story" style="h1" label="Title" />
+    <InputMultiSelect
+      fieldId="tags"
+      style="h1"
+      placeholder="Add/Select a tag"
+      label="Tags"
+      max={3}
+      options={[
+        { id: '1', text: 'a tag 1' },
+        { id: '2', text: 'a tag 2' },
+        { id: '3', text: 'b tag 3' },
+        { id: '4', text: 'b tag 4' },
+      ]}
+    />
   </div>
 </section>

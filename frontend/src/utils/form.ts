@@ -1,9 +1,16 @@
 import type { Writable } from 'svelte/store';
 import type { ObjectSchema, ValidationError } from 'yup';
+import { v4 as uuid } from 'uuid';
 
 export type Error = {
   key: string;
   message: string;
+};
+
+export type FormOptions = {
+  text: string;
+  id: string;
+  hide?: boolean;
 };
 
 const getError = (fieldId: string, errors: Error[]) => {
@@ -56,4 +63,22 @@ const validateSchema = async (
   return valide;
 };
 
-export { validateSchema, getError, addError };
+const getNewOption = (value: string, optionsLeft: FormOptions[], values: FormOptions[]) => {
+  let id = uuid();
+  while (
+    optionsLeft.find((opt) => {
+      opt.id === id;
+    }) ||
+    values.find((opt) => {
+      opt.id === id;
+    })
+  ) {
+    id = uuid();
+  }
+  return { id, text: value };
+};
+
+const debounce = (fn: (args: any) => void, delay: number) => () => debounce(fn, delay);
+
+export { validateSchema, getError, addError, debounce, getNewOption };
+export type {};
