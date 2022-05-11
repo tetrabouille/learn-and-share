@@ -2,6 +2,7 @@
 import { Filter, Pagination, Sort } from '../schemas';
 
 const orderBy = (sortList?: Sort[], fields?: string[]): any => {
+  if (!sortList || !fields) return {};
   const orderBy: any = {};
   sortList?.forEach((sort) => {
     if (fields?.includes(sort.field) && (sort.order === 'asc' || sort.order === 'desc'))
@@ -40,4 +41,15 @@ const getFilter = (filter?: any): any => {
   return where;
 };
 
-export { orderBy, getPagination, getFilter };
+const getFindManyParams = (
+  filter?: Filter,
+  pagination?: Pagination,
+  sortList?: Sort[],
+  sortFields?: string[]
+): any => ({
+  orderBy: orderBy(sortList, sortFields),
+  where: getFilter(filter),
+  ...getPagination(pagination),
+});
+
+export { orderBy, getPagination, getFilter, getFindManyParams };
