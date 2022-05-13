@@ -1,15 +1,24 @@
 <script lang="ts">
-  import { query } from 'svelte-apollo';
+  import { mutation, query } from 'svelte-apollo';
 
+  import { addAlert } from '@/stores/alert.store';
+  import { setFormContext } from '@/contexts/form.context';
+  import { TOPIC_GET_ALL } from '@/graphql/topic.query';
+  import { TAG_ADD, TAG_GET_ALL } from '@/graphql/tag.query';
   import InputTextArea from '@/components/forms/InputTextArea.svelte';
   import InputText from '@/components/forms/InputText.svelte';
-  import { setFormContext } from '@/contexts/form.context';
   import InputSelect from '@/components/forms/InputSelect.svelte';
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
-  import { TOPIC_GET_ALL } from '@/graphql/topic.query';
+
   import type { Topic } from '@/types/topic.type';
+  import type { Tag } from '@/types/tag.type';
+  import type { FormOption } from '@/utils/form';
+  import type { TagPayload } from '@/types/tag.type';
 
   const topicGetAllQuery = query<{ topics: Topic[] }>(TOPIC_GET_ALL);
+  const tagGetAllQuery = query<{ tags: Tag[] }>(TAG_GET_ALL);
+
+  const tagAddMutation = mutation<TagPayload>(TAG_ADD);
 
   const { data } = setFormContext({
     title: '',
@@ -19,12 +28,28 @@
     topic: '',
   });
 
+  const handleTagSelected = (e: CustomEvent<{ option: FormOption }>) => {
+    if ($tagGetAllQuery.data?.tags?.find(({ name }) => e.detail.option.text === name)) return;
+
+    tagAddMutation({ variables: { input: { name: e.detail.option.text, lang: 'en' } } })
+      .then(({ data }) => {
+        const { userErrors } = data;
+        if (userErrors?.length) addAlert(userErrors.join('; '));
+      })
+      .catch((e) => addAlert(e.message));
+  };
+
   $: topics = $topicGetAllQuery.data?.topics?.map(({ id, name }) => ({
     id: String(id),
     text: name,
   }));
 
-  $: console.log('data :', $data);
+  $: tags = $tagGetAllQuery.data?.tags?.map(({ id, name }) => ({
+    id: String(id),
+    text: name,
+  }));
+
+  $: console.log('data :', data);
 </script>
 
 <section class="container mx-auto w-3/4 min-w-[300px] text-warm-900/90">
@@ -46,12 +71,8 @@
       placeholder="Add/Select a tag"
       label="Tags"
       max={3}
-      options={[
-        { id: '1', text: 'a tag 1' },
-        { id: '2', text: 'a tag 2' },
-        { id: '3', text: 'b tag 3' },
-        { id: '4', text: 'b tag 4' },
-      ]}
+      options={tags}
+      on:selected={handleTagSelected}
     />
   </div>
 </section>

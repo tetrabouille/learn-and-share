@@ -8,19 +8,19 @@
   import { isInViewport } from '@/utils/commun';
   import { clickOutside } from '@/actions/click_outside';
 
-  import type { FormOptions } from '@/utils/form';
+  import type { FormOption } from '@/utils/form';
   import { afterUpdate } from 'svelte';
 
   export let label = null;
   export let info: string = null;
   export let messageEmpty = 'No matches';
-  export let options: FormOptions[] = [];
+  export let options: FormOption[] = [];
   export let fieldId: string;
   export let formContextKey = 'form';
   export let style: 'classic' | 'h1' = 'classic';
   export let closeMenuAfterSelect = true;
   export let inputRef: HTMLInputElement;
-  export let onChange: (opt: FormOptions, cb: (o: FormOptions) => void) => void;
+  export let onChange: (opt: FormOption, cb: (o: FormOption) => void) => void;
 
   let opened = false;
   let inputValue = '';
@@ -80,7 +80,7 @@
     }
   };
 
-  const useValue = (opt: FormOptions, handleChange: (e) => void) => {
+  const useValue = (opt: FormOption, handleChange: (e) => void) => {
     onChange(opt, handleChange);
     inputValue = '';
     selectedValue = '';
@@ -144,7 +144,7 @@
   {#if opened}
     <ul
       class={`absolute left-0 right-0 z-50 flex max-h-[230px] overflow-y-auto border-[1px] border-cold-600/20 bg-creme-100 ${
-        optionsOntop ? 'ontop flex-direction flex-col-reverse shadow-md' : 'flex-col shadow-xl'
+        optionsOntop ? 'ontop flex-direction flex-col-reverse shadow-sm' : 'flex-col shadow-xl'
       }`}
       in:slide={{ duration: 200, delay: 100 }}
       out:slide={{ duration: 200 }}

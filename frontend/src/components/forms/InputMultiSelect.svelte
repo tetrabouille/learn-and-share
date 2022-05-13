@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { getContext } from 'svelte';
+  import { getContext, createEventDispatcher } from 'svelte';
   import Fa from 'svelte-fa';
   import { faTimes } from '@fortawesome/free-solid-svg-icons';
   import { faTag } from '@fortawesome/free-solid-svg-icons';
 
   import InputSelectWrapper from './InputSelectWrapper.svelte';
   import type { FormContext } from '@/contexts/form.context';
-  import { getNewOption, type FormOptions } from '@/utils/form';
+  import { getNewOption, type FormOption } from '@/utils/form';
 
   export let fieldId: string;
   export let label = null;
@@ -21,6 +21,8 @@
 
   let tagHovered: string | null = null;
 
+  const dispatch = createEventDispatcher();
+
   const formContext = getContext<FormContext>(formContextKey);
   const { data } = formContext;
 
@@ -34,24 +36,31 @@
   $: message = maxCrossed ? messageMax : messageEmpty;
 
   let inputRef: HTMLInputElement;
-  let displayOptions: FormOptions[] = [
+  $: displayOptions = [
     {
       id: '__',
       text: '',
     },
     ...options,
-  ];
+  ] as FormOption[];
 
-  const onChange = (opt: FormOptions, handleChange: (e) => void) => {
+  function dispatchSelection(option: FormOption) {
+    dispatch('selected', {
+      option,
+    });
+  }
+
+  const onChange = (opt: FormOption, handleChange: (e) => void) => {
     if (maxCrossed || values.find((v) => v.id === opt.id)) return;
     if (maxReached) toggleOptions(true);
     else toggleOptions(false);
 
     displayOptions = displayOptions.filter((o) => o.id !== opt.id);
     handleChange({ target: { value: [...values, opt] } });
+    dispatchSelection(opt);
   };
 
-  const handleDelete = (opt: FormOptions, handleChange: (e) => void) => {
+  const handleDelete = (opt: FormOption, handleChange: (e) => void) => {
     if (max === values.length) toggleOptions(false);
     displayOptions = [opt, ...displayOptions];
     const newValues = values.filter((v) => v.id !== opt.id);

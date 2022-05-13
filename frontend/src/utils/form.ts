@@ -7,7 +7,7 @@ export type Error = {
   message: string;
 };
 
-export type FormOptions = {
+export type FormOption = {
   text: string;
   id: string;
   hide?: boolean;
@@ -63,7 +63,7 @@ const validateSchema = async (
   return valide;
 };
 
-const getNewOption = (value: string, optionsLeft: FormOptions[], values: FormOptions[]) => {
+const getNewOption = (value: string, optionsLeft: FormOption[], values: FormOption[]) => {
   let id = uuid();
   while (
     optionsLeft.find((opt) => {
