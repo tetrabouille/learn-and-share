@@ -8,6 +8,13 @@ type TagGetAllArgs = {
   sortList?: Sort[];
 };
 
+export type TagAddArgs = {
+  input: {
+    name: string;
+    lang: string;
+  };
+};
+
 const typeDefs = gql`
   type Tag {
     id: ID!
@@ -23,6 +30,20 @@ const typeDefs = gql`
   type Query {
     tags(filter: Filter, pagination: Pagination, sortList: [Sort!]): [Tag!]!
   }
+
+  type Mutation {
+    tagAdd(input: TagAddInput!): TagPayload
+  }
+
+  type TagPayload {
+    tag: Tag
+    userErrors: [UserError!]!
+  }
+
+  input TagAddInput {
+    name: String!
+    lang: String!
+  }
 `;
 
 const resolvers = {
@@ -33,7 +54,9 @@ const resolvers = {
       tagGetAll(filter, pagination, sortList),
   },
 
-  Mutation: {},
+  Mutation: {
+    tagAdd: (_: void, { input }: TagAddArgs, { tagAdd, accountId }: TagContext) => tagAdd(input, accountId),
+  },
 };
 
 export default { typeDefs, resolvers };
