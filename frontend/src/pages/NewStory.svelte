@@ -1,5 +1,6 @@
 <script lang="ts">
   import { mutation, query } from 'svelte-apollo';
+  import debounce from 'lodash/debounce';
 
   import { addAlert } from '@/stores/alert.store';
   import { setFormContext } from '@/contexts/form.context';
@@ -10,13 +11,21 @@
   import InputSelect from '@/components/forms/InputSelect.svelte';
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
 
+  import type { FormOption } from '@/utils/form';
   import type { Topic } from '@/types/topic.type';
   import type { Tag } from '@/types/tag.type';
-  import type { FormOption } from '@/utils/form';
   import type { TagPayload } from '@/types/tag.type';
+  import type { GetAllArgs } from '@/types/commun.type';
+
+  let tagGetAllVar: GetAllArgs = {
+    pagination: { take: 4 },
+    sortList: [{ field: 'createdAt', order: 'desc' }],
+  };
+
+  $: tagGetAllVar.pagination.take = 4 + Number($data.tags.length);
 
   const topicGetAllQuery = query<{ topics: Topic[] }>(TOPIC_GET_ALL);
-  const tagGetAllQuery = query<{ tags: Tag[] }>(TAG_GET_ALL);
+  const tagGetAllQuery = query<{ tags: Tag[] }, GetAllArgs>(TAG_GET_ALL, { variables: tagGetAllVar });
 
   const tagAddMutation = mutation<TagPayload>(TAG_ADD);
 
@@ -27,6 +36,22 @@
     tags: [],
     topic: '',
   });
+
+  const formatInput = (input: string) =>
+    (() => {
+      const formated = input
+        .toLowerCase()
+        .replace(/^(\s)*/g, '')
+        .trim();
+      return formated.charAt(0).toUpperCase().concat(formated.slice(1));
+    })();
+
+  const handleTagSearch = (e: CustomEvent<{ value: string }>) => {
+    return tagGetAllQuery.refetch({
+      filters: [{ field: 'name', value: e.detail.value, contains: true }],
+      ...tagGetAllVar,
+    });
+  };
 
   const handleTagSelected = (e: CustomEvent<{ option: FormOption }>) => {
     if ($tagGetAllQuery.data?.tags?.find(({ name }) => e.detail.option.text === name)) return;
@@ -49,7 +74,7 @@
     text: name,
   }));
 
-  $: console.log('data :', data);
+  $: console.log('data :', $data);
 </script>
 
 <section class="container mx-auto w-3/4 min-w-[300px] text-warm-900/90">
@@ -72,7 +97,9 @@
       label="Tags"
       max={3}
       options={tags}
+      {formatInput}
       on:selected={handleTagSelected}
+      on:inputsearch={debounce(handleTagSearch, 300)}
     />
   </div>
 </section>
