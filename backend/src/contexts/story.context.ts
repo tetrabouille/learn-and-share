@@ -1,8 +1,8 @@
 import { prisma } from '../db/prisma';
 
-import { Error, getError } from '../utils/errors';
+import { errorsUtils } from '../utils';
 
-const error = getError('story');
+const error = errorsUtils.getError('story');
 
 // queries
 // TODO
