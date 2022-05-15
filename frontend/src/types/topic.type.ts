@@ -1,3 +1,4 @@
+import type { UserError } from './error.type';
 import type { Story } from './story.type';
 
 export type Topic = {
@@ -7,4 +8,9 @@ export type Topic = {
   stories?: Story[];
   translations?: Topic[];
   translationRef?: Topic;
+};
+
+export type TopicPayload = {
+  topic: Topic;
+  userErrors: UserError[];
 };

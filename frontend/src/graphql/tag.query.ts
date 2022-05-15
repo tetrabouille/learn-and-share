@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client/core';
 
 const TAG_GET_ALL = gql`
-  query TagGetAll($filter: Filter, $pagination: Pagination, $sortList: [Sort!]) {
-    tags(filter: $filter, pagination: $pagination, sortList: $sortList) {
+  query TagGetAll($filters: [Filter!], $pagination: Pagination, $sortList: [Sort!]) {
+    tags(filters: $filters, pagination: $pagination, sortList: $sortList) {
       id
       name
       lang
