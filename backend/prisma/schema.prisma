@@ -54,24 +54,28 @@ model Story {
 }
 
 model Topic {
-  id               Int     @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   name             String
-  lang             String  @default("en")
+  lang             String   @default("en")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
   translationRefId Int?
   stories          Story[]
-  translations     Topic[] @relation("TopicTranslations")
-  translationRef   Topic?  @relation("TopicTranslations", fields: [translationRefId], references: [id])
+  translations     Topic[]  @relation("TopicTranslations")
+  translationRef   Topic?   @relation("TopicTranslations", fields: [translationRefId], references: [id])
 }
 
 model Tag {
-  id               Int     @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   name             String
-  lang             String  @default("en")
+  lang             String   @default("en")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
   translationRefId Int?
   meaningRefId     Int?
   stories          Story[]
-  translations     Tag[]   @relation("TagTranslations")
-  translationRef   Tag?    @relation("TagTranslations", fields: [translationRefId], references: [id])
-  meanings         Tag[]   @relation("TagMeanings")
-  meaningRef       Tag?    @relation("TagMeanings", fields: [meaningRefId], references: [id])
+  translations     Tag[]    @relation("TagTranslations")
+  translationRef   Tag?     @relation("TagTranslations", fields: [translationRefId], references: [id])
+  meanings         Tag[]    @relation("TagMeanings")
+  meaningRef       Tag?     @relation("TagMeanings", fields: [meaningRefId], references: [id])
 }
