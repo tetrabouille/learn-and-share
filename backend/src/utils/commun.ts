@@ -35,21 +35,32 @@ const getPagination = (pagination?: Pagination): any => {
   return options;
 };
 
-const getFilter = (filter?: any): any => {
-  const where: Filter = {};
-  if (filter?.lang) where.lang = filter.lang;
+const getFilters = (filters?: Filter[]): any => {
+  const where: any = {};
+  if (!filters?.length) return where;
+
+  filters.forEach((filter) => {
+    if (filter.contains) {
+      where[filter.field] = {
+        contains: filter.value,
+      };
+    } else {
+      where[filter.field] = filter.value;
+    }
+  });
+
   return where;
 };
 
 const getFindManyParams = (
-  filter?: Filter,
+  filters?: Filter[],
   pagination?: Pagination,
   sortList?: Sort[],
   sortFields?: string[]
 ): any => ({
   orderBy: orderBy(sortList, sortFields),
-  where: getFilter(filter),
+  where: getFilters(filters),
   ...getPagination(pagination),
 });
 
-export { orderBy, getPagination, getFilter, getFindManyParams };
+export { orderBy, getPagination, getFilters, getFindManyParams };

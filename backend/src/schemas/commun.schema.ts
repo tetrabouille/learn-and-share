@@ -1,7 +1,9 @@
 import { gql } from 'apollo-server-express';
 
 type Filter = {
-  lang?: string;
+  field: string;
+  value: string;
+  contains?: boolean;
 };
 
 type Pagination = {
@@ -21,7 +23,9 @@ type Sort = {
 
 const typeDefs = gql`
   input Filter {
-    lang: String
+    field: String!
+    value: String!
+    contains: Boolean
   }
 
   input Pagination {

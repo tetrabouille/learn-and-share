@@ -4,9 +4,16 @@ import { TopicContext } from '../contexts';
 import { Filter, Pagination, Sort } from './commun.schema';
 
 type TopicGetAllArgs = {
-  filter?: Filter;
+  filters?: Filter[];
   pagination?: Pagination;
   sortList?: Sort[];
+};
+
+export type TopicAddArgs = {
+  input: {
+    name: string;
+    lang: string;
+  };
 };
 
 const typeDefs = gql`
@@ -20,7 +27,21 @@ const typeDefs = gql`
   }
 
   type Query {
-    topics(filter: Filter, pagination: Pagination, sortList: [Sort!]): [Topic!]!
+    topics(filters: [Filter!], pagination: Pagination, sortList: [Sort!]): [Topic!]!
+  }
+
+  type Mutation {
+    topicAdd(input: TopicAddInput!): TopicPayload
+  }
+
+  type TopicPayload {
+    topic: Topic
+    userErrors: [UserError!]
+  }
+
+  input TopicAddInput {
+    name: String
+    lang: String
   }
 `;
 
@@ -28,11 +49,14 @@ const resolvers = {
   // TODO
 
   Query: {
-    topics: (_: void, { filter, pagination, sortList }: TopicGetAllArgs, { topicGetAll }: TopicContext) =>
-      topicGetAll(filter, pagination, sortList),
+    topics: (_: void, { filters, pagination, sortList }: TopicGetAllArgs, { topicGetAll }: TopicContext) =>
+      topicGetAll(filters, pagination, sortList),
   },
 
-  Mutation: {},
+  Mutation: {
+    topicAdd: (_: void, { input }: TopicAddArgs, { topicAdd, accountId }: TopicContext) =>
+      topicAdd(input, accountId),
+  },
 };
 
 export default { typeDefs, resolvers };

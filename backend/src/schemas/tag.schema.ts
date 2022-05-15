@@ -3,7 +3,7 @@ import { TagContext } from '../contexts';
 import { Filter, Pagination, Sort } from './commun.schema';
 
 type TagGetAllArgs = {
-  filter?: Filter;
+  filters?: Filter[];
   pagination?: Pagination;
   sortList?: Sort[];
 };
@@ -28,7 +28,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    tags(filter: Filter, pagination: Pagination, sortList: [Sort!]): [Tag!]!
+    tags(filters: [Filter!], pagination: Pagination, sortList: [Sort!]): [Tag!]!
   }
 
   type Mutation {
@@ -50,8 +50,8 @@ const resolvers = {
   // TODO
 
   Query: {
-    tags: (_: void, { filter, pagination, sortList }: TagGetAllArgs, { tagGetAll }: TagContext) =>
-      tagGetAll(filter, pagination, sortList),
+    tags: (_: void, { filters, pagination, sortList }: TagGetAllArgs, { tagGetAll }: TagContext) =>
+      tagGetAll(filters, pagination, sortList),
   },
 
   Mutation: {
