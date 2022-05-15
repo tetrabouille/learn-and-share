@@ -31,7 +31,7 @@ export const getMessage = (error: Error) => {
       return 'Invalid language';
     // Access
     case Error.NOT_REGISTERED:
-      return 'Account not registered';
+      return 'No account registered';
     // User
     case Error.USER_ALREADY_EXISTS:
       return 'User already exists';

@@ -22,7 +22,7 @@ const tagAdd = async (input: TagAddArgs['input'], accountId: string) => {
   const { name, lang } = input;
 
   if (!name || !lang) return error([Error.FIELD_REQUIRED]);
-  if (!accessUtils.isRegistered(accountId)) return error([Error.NOT_REGISTERED]);
+  if (!(await accessUtils.isRegistered(accountId))) return error([Error.NOT_REGISTERED]);
   if (!(await validationUtils.unique({ name, lang }, prisma.tag))) return error([Error.TAG_ALREADY_EXISTS]);
   if (!validationUtils.lang(lang)) return error([Error.INVALID_LANG]);
 

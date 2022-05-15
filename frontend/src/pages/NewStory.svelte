@@ -27,7 +27,7 @@
   const topicGetAllQuery = query<{ topics: Topic[] }>(TOPIC_GET_ALL);
   const tagGetAllQuery = query<{ tags: Tag[] }, GetAllArgs>(TAG_GET_ALL, { variables: tagGetAllVar });
 
-  const tagAddMutation = mutation<TagPayload>(TAG_ADD);
+  const tagAddMutation = mutation<{ tagAdd: TagPayload }>(TAG_ADD);
 
   const { data } = setFormContext({
     title: '',
@@ -58,8 +58,10 @@
 
     tagAddMutation({ variables: { input: { name: e.detail.option.text, lang: 'en' } } })
       .then(({ data }) => {
-        const { userErrors } = data;
-        if (userErrors?.length) addAlert(userErrors.join('; '));
+        const {
+          tagAdd: { userErrors },
+        } = data;
+        if (userErrors?.length) addAlert(userErrors.map((err) => err.message).join('; '), 'error');
       })
       .catch((e) => addAlert(e.message));
   };

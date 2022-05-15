@@ -16,7 +16,7 @@ const topicAdd = async (input: TopicAddArgs['input'], accountId: string) => {
   const { name, lang } = input;
 
   if (!name || !lang) return error([Error.FIELD_REQUIRED]);
-  if (!accessUtils.isRegistered(accountId)) return error([Error.NOT_REGISTERED]);
+  if (!(await accessUtils.isRegistered(accountId))) return error([Error.NOT_REGISTERED]);
   if (!(await validationUtils.unique({ name, lang }, prisma.topic)))
     return error([Error.TOPIC_ALREADY_EXISTS]);
   if (!validationUtils.lang(lang)) return error([Error.INVALID_LANG]);
