@@ -22,7 +22,7 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChange = (e: any) => {
     $data[fieldId] = e.target.value;
-    dispatch('input');
+    dispatch('input', { value: e.target.value });
   };
 </script>
 

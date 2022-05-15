@@ -63,8 +63,10 @@ const validateSchema = async (
   return valide;
 };
 
-const getNewOption = (value: string, optionsLeft: FormOption[], values: FormOption[]) => {
-  let id = uuid();
+const NEW_OPTION = 'NEW_OPTION';
+
+const getNewOption = (value: string, optionsLeft: FormOption[], values: FormOption[]): FormOption => {
+  let id = `${NEW_OPTION}:${uuid()}`;
   while (
     optionsLeft.find((opt) => {
       opt.id === id;
@@ -78,7 +80,5 @@ const getNewOption = (value: string, optionsLeft: FormOption[], values: FormOpti
   return { id, text: value };
 };
 
-const debounce = (fn: (args: any) => void, delay: number) => () => debounce(fn, delay);
-
-export { validateSchema, getError, addError, debounce, getNewOption };
+export { validateSchema, getError, addError, getNewOption, NEW_OPTION };
 export type {};

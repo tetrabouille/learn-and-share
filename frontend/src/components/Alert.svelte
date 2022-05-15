@@ -9,7 +9,7 @@
   const y = 30;
 
   const getClasses = (alert: Alert): string => {
-    let classes = 'z-0 mb-2 mr-2 rounded-md py-1 px-5 text-center text-sm cursor-pointer';
+    let classes = 'z-50 mb-2 mr-2 rounded-md py-1 px-5 text-center text-sm cursor-pointer';
     switch (alert.type) {
       case 'success':
         classes = `${classes} bg-green-400/70 text-green-800/90`;

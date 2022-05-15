@@ -18,51 +18,59 @@
   export let formContextKey = 'form';
   export let style: 'classic' | 'h1' = 'classic';
   export let max = 8;
+  export let formatInput = (input: string) => input;
 
   let tagHovered: string | null = null;
+  let searchInput = '';
+  let inputRef: HTMLInputElement;
+  let displayOptions = [];
 
   const dispatch = createEventDispatcher();
-
-  const formContext = getContext<FormContext>(formContextKey);
-  const { data } = formContext;
 
   export const focus = () => {
     if (inputRef) inputRef?.focus();
   };
 
+  const formContext = getContext<FormContext>(formContextKey);
+  const { data } = formContext;
+
   $: values = $data[fieldId];
-  $: maxReached = max - 1 <= values.length;
   $: maxCrossed = max <= values.length;
   $: message = maxCrossed ? messageMax : messageEmpty;
 
-  let inputRef: HTMLInputElement;
-  $: displayOptions = [
-    {
-      id: '__',
-      text: '',
-    },
-    ...options,
-  ] as FormOption[];
+  $: displayOptions = (() => {
+    const beforeOptions: FormOption[] =
+      searchInput && !options.find((opt) => opt.text === searchInput)
+        ? [getNewOption(searchInput, displayOptions, values)]
+        : [];
+    return [...beforeOptions, ...options] as FormOption[];
+  })().filter((o) => !values.find(({ id }) => o.id === id));
 
-  function dispatchSelection(option: FormOption) {
+  $: maxCrossed ? toggleOptions(true) : toggleOptions(false);
+
+  const dispatchSelection = (option: FormOption) => {
     dispatch('selected', {
       option,
     });
-  }
+  };
+
+  const resetInputSearch = () => {
+    searchInput = '';
+    dispatch('inputsearch', {
+      value: '',
+    });
+    setTimeout(() => inputRef?.focus(), 5);
+  };
 
   const onChange = (opt: FormOption, handleChange: (e) => void) => {
     if (maxCrossed || values.find((v) => v.id === opt.id)) return;
-    if (maxReached) toggleOptions(true);
-    else toggleOptions(false);
-
-    displayOptions = displayOptions.filter((o) => o.id !== opt.id);
+    resetInputSearch();
     handleChange({ target: { value: [...values, opt] } });
     dispatchSelection(opt);
   };
 
   const handleDelete = (opt: FormOption, handleChange: (e) => void) => {
-    if (max === values.length) toggleOptions(false);
-    displayOptions = [opt, ...displayOptions];
+    resetInputSearch();
     const newValues = values.filter((v) => v.id !== opt.id);
     handleChange({ target: { value: newValues } });
   };
@@ -72,11 +80,13 @@
       target: { value },
     } = e;
     if (maxCrossed) return;
-    displayOptions = [getNewOption(value, displayOptions, values), ...displayOptions.splice(1)];
-    onInputChange({ target: { value } });
+    const formatedValue = formatInput(value);
+    searchInput = formatedValue;
+    displayOptions = [getNewOption(formatedValue, displayOptions, values), ...displayOptions.splice(1)];
+    onInputChange({ target: { value: formatedValue } });
   };
 
-  const toggleOptions = (hide: boolean) => {
+  $: toggleOptions = (hide: boolean) => {
     displayOptions = displayOptions.map(({ id, text }) => ({
       id,
       text,
@@ -87,6 +97,7 @@
 
 <InputSelectWrapper
   on:input
+  on:inputsearch
   {onChange}
   {inputRef}
   messageEmpty={message}
@@ -124,21 +135,21 @@
         {/if}
       </span>
     {/each}
-    {#if !maxCrossed}
-      <input
-        bind:this={inputRef}
-        class={`flex-grow bg-[transparent] outline-none ${!opened ? 'cursor-pointer' : ''}`}
-        value={inputValue}
-        {placeholder}
-        on:keydown={(e) => {
-          onInputKeyDown(e, handleChange);
-        }}
-        on:input={(e) => handleInputChange(e, onInputChange)}
-        on:focus={() => {
-          inputValue = '';
-          toggleMenu(true);
-        }}
-      />
-    {/if}
+    <input
+      bind:this={inputRef}
+      class={`flex-grow bg-[transparent] outline-none ${!opened ? 'cursor-pointer' : ''} ${
+        maxCrossed ? 'invisible w-0' : ''
+      }`}
+      value={inputValue}
+      {placeholder}
+      on:keydown={(e) => {
+        onInputKeyDown(e, handleChange);
+      }}
+      on:input={(e) => handleInputChange(e, onInputChange)}
+      on:focus={() => {
+        resetInputSearch();
+        toggleMenu(true);
+      }}
+    />
   </div>
 </InputSelectWrapper>

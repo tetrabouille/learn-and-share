@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
   import { slide } from 'svelte/transition';
   import { faAngleDown } from '@fortawesome/free-solid-svg-icons/faAngleDown';
   import Fa from 'svelte-fa';
@@ -21,6 +22,8 @@
   export let closeMenuAfterSelect = true;
   export let inputRef: HTMLInputElement;
   export let onChange: (opt: FormOption, cb: (o: FormOption) => void) => void;
+
+  const dispatch = createEventDispatcher();
 
   let opened = false;
   let inputValue = '';
@@ -49,6 +52,7 @@
     if (selectedValue && value.includes(selectedValue)) inputValue = value.replace(selectedValue, '');
     else inputValue = value;
     selectedValue = '';
+    dispatch('inputsearch', { value: inputValue });
   };
 
   const onInputKeyDown = (e, handleChange: (e) => void) => {
