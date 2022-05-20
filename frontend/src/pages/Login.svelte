@@ -7,12 +7,12 @@
   import { mutation } from 'svelte-apollo';
   import { query } from 'svelte-apollo';
 
-  import { USER_VALIDATE, GET_LOGGED_USER } from '@/graphql/user.query';
+  import { USER_VALIDATE, USER_GET } from '@/graphql/user.query';
   import { setFormContext } from '@/contexts/form.context';
   import { validateSchema, addError } from '@/utils/form';
   import { supabase } from '@/libs/supabase';
   import { addAlert } from '@/stores/alert.store';
-  import { loadingUser, login } from '@/stores/auth.store';
+  import { loadingUser, login, logout, loggedUser } from '@/stores/auth.store';
   import InputText from '@/components/forms/InputText.svelte';
   import Button from '@/components/Button.svelte';
 
@@ -39,7 +39,7 @@
     password: yup.string().required('Please enter a password'),
   });
 
-  const userQuery = query<{ user: User }>(GET_LOGGED_USER);
+  const userQuery = query<{ user: User }>(USER_GET);
 
   const handleSubmit = async () => {
     $touched = true;
@@ -103,60 +103,68 @@
 </script>
 
 <section>
-  <h1 class="py-10 text-center text-2xl">Sign in to your account</h1>
-  <form class="container mx-auto flex max-w-sm flex-col gap-1" on:submit|preventDefault={handleSubmit}>
-    <InputText
-      bind:this={inputRefs.email}
-      on:input={refreshErrors}
-      fieldId="email"
-      placeholder="email"
-      type="email"
-      label="Enter your email"
-    />
-    <InputText
-      bind:this={inputRefs.password}
-      on:input={refreshErrors}
-      fieldId="password"
-      placeholder="password"
-      type="password"
-      label="Enter a password"
-    />
-    {#if message}
-      <div transition:slide|local={{ duration: 250 }}>
-        <div class="rounded-md border-4 border-red-700/70 py-2 px-3">
-          <p class="m-0 text-base">
-            {message}
-          </p>
-          <div class="relative mt-1 text-center text-sm">
-            <span class="invisible">_X_</span>
-            {#if !emailSent}
-              <span
-                out:fade|local={{ duration: 200 }}
-                class="absolute left-0 right-0 cursor-pointer text-blue-600/80"
-                on:click={sendEmail}
-              >
-                Send again
-              </span>
-            {:else}
-              <div class="absolute left-0 right-0 top-0" in:fade|local={{ duration: 200 }}>
-                <button
-                  class="bg-green-500/30 border-2 border-green-500 rounded-md px-5 py-[0.10rem]"
-                  type="button"
-                  on:click={() => {
-                    message = '';
-                    emailSent = false;
-                  }}
+  {#if !$loggedUser.isConnected}
+    <h1 class="py-10 text-center text-2xl">Sign in to your account</h1>
+    <form class="container mx-auto flex max-w-sm flex-col gap-1" on:submit|preventDefault={handleSubmit}>
+      <InputText
+        bind:this={inputRefs.email}
+        on:input={refreshErrors}
+        fieldId="email"
+        placeholder="email"
+        type="email"
+        label="Enter your email"
+      />
+      <InputText
+        bind:this={inputRefs.password}
+        on:input={refreshErrors}
+        fieldId="password"
+        placeholder="password"
+        type="password"
+        label="Enter a password"
+      />
+      {#if message}
+        <div transition:slide|local={{ duration: 250 }}>
+          <div class="rounded-md border-4 border-red-700/70 py-2 px-3">
+            <p class="m-0 text-base">
+              {message}
+            </p>
+            <div class="relative mt-1 text-center text-sm">
+              <span class="invisible">_X_</span>
+              {#if !emailSent}
+                <span
+                  out:fade|local={{ duration: 200 }}
+                  class="absolute left-0 right-0 cursor-pointer text-blue-600/80"
+                  on:click={sendEmail}
                 >
-                  <Fa icon={faCheck} class="text-green-600/80 text-[1rem] mx-auto" />
-                </button>
-              </div>
-            {/if}
+                  Send again
+                </span>
+              {:else}
+                <div class="absolute left-0 right-0 top-0" in:fade|local={{ duration: 200 }}>
+                  <button
+                    class="bg-green-500/30 border-2 border-green-500 rounded-md px-5 py-[0.10rem]"
+                    type="button"
+                    on:click={() => {
+                      message = '';
+                      emailSent = false;
+                    }}
+                  >
+                    <Fa icon={faCheck} class="text-green-600/80 text-[1rem] mx-auto" />
+                  </button>
+                </div>
+              {/if}
+            </div>
           </div>
         </div>
-      </div>
-    {/if}
-    <Button buttonClass="mt-2" disabled={($errors.length && $touched) || !!message} type="submit" {loading}>
-      Sign in
-    </Button>
-  </form>
+      {/if}
+      <Button buttonClass="mt-2" disabled={($errors.length && $touched) || !!message} type="submit" {loading}>
+        Sign in
+      </Button>
+    </form>
+  {:else}
+    <div class="flex flex-col items-center py-10">
+      <h1 class="mb-10 text-2xl">You are logged in</h1>
+      <Button on:click={() => navigate('/profile')} buttonClass="text-xl">Your Profile</Button>
+      <div on:click={() => logout('login', navigate)} class="mt-2 cursor-pointer hover:underline">Logout</div>
+    </div>
+  {/if}
 </section>

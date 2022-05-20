@@ -44,7 +44,7 @@ const USER_GET_ALL = gql`
   }
 `;
 
-const GET_LOGGED_USER = gql`
+const USER_GET = gql`
   query User($userId: ID, $accountId: ID) {
     user(userId: $userId, accountId: $accountId) {
       id
@@ -56,4 +56,4 @@ const GET_LOGGED_USER = gql`
   }
 `;
 
-export { USER_ADD, USER_GET_ALL, USER_VALIDATE, GET_LOGGED_USER };
+export { USER_ADD, USER_GET_ALL, USER_VALIDATE, USER_GET };

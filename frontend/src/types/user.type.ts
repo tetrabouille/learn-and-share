@@ -8,7 +8,7 @@ export type User = {
   validated?: boolean;
   firstname?: string;
   lastname?: string;
-  roles?: string[];
+  roles: string[];
   profile?: Profile;
   stories: Story[];
   createdAt?: string;

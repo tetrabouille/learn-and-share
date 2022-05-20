@@ -18,11 +18,11 @@
   import type { GetAllArgs } from '@/types/commun.type';
 
   let tagGetAllVar: GetAllArgs = {
-    pagination: { take: 4 },
+    pagination: { take: 6 },
     sortList: [{ field: 'createdAt', order: 'desc' }],
   };
 
-  $: tagGetAllVar.pagination.take = 4 + Number($data.tags.length);
+  $: tagGetAllVar.pagination.take = 6 + Number($data.tags.length);
 
   const topicGetAllQuery = query<{ topics: Topic[] }>(TOPIC_GET_ALL);
   const tagGetAllQuery = query<{ tags: Tag[] }, GetAllArgs>(TAG_GET_ALL, { variables: tagGetAllVar });

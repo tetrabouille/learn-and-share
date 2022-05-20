@@ -6,7 +6,7 @@
   import { query } from 'svelte-apollo';
 
   import { env } from '@/libs/env';
-  import { GET_LOGGED_USER } from '@/graphql/user.query';
+  import { USER_GET } from '@/graphql/user.query';
   import { setupLoggedUser, loggedUser } from '@/stores/auth.store';
   import { routeConfigs } from '@/configs/routes';
   import { hasRouteAccess } from '@/utils/access';
@@ -38,7 +38,7 @@
 
   setClient(client);
 
-  setupLoggedUser(query<{ user: User }>(GET_LOGGED_USER));
+  setupLoggedUser(query<{ user: User }>(USER_GET));
 
   export let url = '';
 </script>

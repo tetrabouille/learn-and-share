@@ -3,6 +3,7 @@ import Home from '@/pages/Home.svelte';
 import KnowledgeAssets from '@/pages/KnowledgeAssets.svelte';
 import Login from '@/pages/Login.svelte';
 import NewStory from '@/pages/NewStory.svelte';
+import Profile from '@/pages/Profile.svelte';
 import Signup from '@/pages/Signup.svelte';
 import Stories from '@/pages/Stories.svelte';
 
@@ -45,7 +46,7 @@ export const routeConfigs: readonly RouteConfig[] = Object.freeze([
     component: NewStory,
     linkPositions: ['header'],
     title: 'New Story',
-    // requireLogin: true,
+    requireLogin: true,
   },
   {
     path: '/build-assets',
@@ -53,6 +54,11 @@ export const routeConfigs: readonly RouteConfig[] = Object.freeze([
     linkPositions: ['header'],
     title: 'Build Assets',
     roles: ['user'],
+    requireLogin: true,
+  },
+  {
+    path: '/profile',
+    component: Profile,
     requireLogin: true,
   },
 ]);
