@@ -6,8 +6,6 @@ export type User = {
   id?: number;
   accountId?: string;
   validated?: boolean;
-  firstname?: string;
-  lastname?: string;
   roles?: string[];
   profile?: Profile;
   stories: Story[];

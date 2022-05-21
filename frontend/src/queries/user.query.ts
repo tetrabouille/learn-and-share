@@ -18,10 +18,13 @@ const USER_VALIDATE = gql`
   mutation User {
     userValidate {
       user {
-        firstname
-        lastname
-        validated
         id
+        validated
+        profile {
+          id
+          firstname
+          lastname
+        }
       }
       userErrors {
         code
@@ -36,10 +39,17 @@ const USER_GET_ALL = gql`
     users {
       id
       accountId
-      firstname
-      lastname
       validated
       roles
+      profile {
+        id
+        firstname
+        lastname
+        birthdate
+        gender
+        avatarUrl
+        bio
+      }
     }
   }
 `;
@@ -48,10 +58,18 @@ const USER_GET = gql`
   query User($userId: ID, $accountId: ID) {
     user(userId: $userId, accountId: $accountId) {
       id
-      firstname
-      lastname
+      accountId
       validated
       roles
+      profile {
+        id
+        firstname
+        lastname
+        birthdate
+        gender
+        avatarUrl
+        bio
+      }
     }
   }
 `;

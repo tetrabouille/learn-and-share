@@ -47,12 +47,12 @@ const userAdd = async (accountId: string, email: string, firstname: string, last
       data: {
         accountId,
         hash,
-        firstname,
-        lastname,
         roles: 'user',
         profile: {
           create: {
             bio: '',
+            firstname,
+            lastname,
           },
         },
       },

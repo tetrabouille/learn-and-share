@@ -31,9 +31,16 @@
     };
   });
 
+  const cache = new InMemoryCache({
+    typePolicies: {
+      User: { keyFields: ['id'] },
+      Profile: { keyFields: ['id'] },
+    },
+  });
+
   const client = new ApolloClient({
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache(),
+    cache,
   });
 
   setClient(client);

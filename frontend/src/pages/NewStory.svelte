@@ -75,8 +75,6 @@
     id: String(id),
     text: name,
   }));
-
-  $: console.log('data :', $data);
 </script>
 
 <section class="container mx-auto w-3/4 min-w-[300px] text-warm-900/90">

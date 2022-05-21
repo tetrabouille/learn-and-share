@@ -13,6 +13,11 @@ type ProfileArgs = {
 const typeDefs = gql`
   type Profile {
     id: ID!
+    firstname: String!
+    lastname: String!
+    birthdate: String
+    gender: String
+    avatarUrl: String
     bio: String!
     isOwnProfile: Boolean!
     user: User!

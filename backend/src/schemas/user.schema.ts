@@ -24,8 +24,6 @@ const typeDefs = gql`
     accountId: String!
     hash: String!
     validated: Boolean!
-    firstname: String!
-    lastname: String!
     createdAt: String!
     updatedAt: String!
     roles: [String!]!

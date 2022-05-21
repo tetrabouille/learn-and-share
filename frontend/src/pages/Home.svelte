@@ -12,16 +12,17 @@
 
 <div class="container mx-auto flex flex-wrap gap-5 p-10">
   {#if $users.data?.users?.length && checkUserRoles($loggedUser.user, ['user'])}
-    {#each $users.data.users as { firstname, lastname, validated, id } (id)}
+    {#each $users.data.users as { profile, validated, id } (id)}
       <div class="w-[300px] rounded-md bg-brown-50/70 p-5 text-warm-900/90 shadow-sm">
         <h3 class="text-lg">
-          {firstname}
-          {lastname}
+          {profile.firstname}
+          {profile.lastname}
         </h3>
         <p>Validated : {validated ? 'yes' : 'no'}</p>
         <Button
           buttonClass="ml-auto mt-6 text-md"
-          on:click={() => addAlert(`${firstname} ${lastname} clicked !`, 'success')}>Click me</Button
+          on:click={() => addAlert(`${profile.firstname} ${profile.lastname} clicked !`, 'success')}
+          >Click me</Button
         >
       </div>
     {/each}

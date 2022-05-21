@@ -42,8 +42,8 @@
 
 <header class="flex w-full flex-row gap-10 bg-brown-800 px-4 py-2 text-base text-warm-100 md:text-lg">
   <div class="flex flex-row items-center gap-4">
-    <Link to="/">
-      <img class="h-[4.5rem]" src={logo} alt="The Constellation Logo" />
+    <Link to="/" class="shrink-0">
+      <img class="h-[4.5rem] w-[4.5rem]" src={logo} alt="The Constellation Logo" />
     </Link>
     <h1 class="hidden font-light xl:block">The Constellation's Assets</h1>
   </div>
@@ -75,9 +75,12 @@
 
   <div class="flex flex-row items-center gap-3 text-base">
     {#if $loggedUser?.isConnected}
-      <div class="cursor-pointer hover:text-yellow-400 hover:underline" on:click={() => navigate('/profile')}>
-        {$loggedUser.user.firstname}
-        {$loggedUser.user.lastname}
+      <div
+        class="cursor-pointer text-right hover:text-yellow-400 hover:underline"
+        on:click={() => navigate('/profile')}
+      >
+        {$loggedUser.user.profile?.firstname}
+        {$loggedUser.user.profile?.lastname}
       </div>
       <div class="cursor-pointer hover:text-yellow-400 active:text-yellow-500" on:click={clickLogout}>
         Logout
