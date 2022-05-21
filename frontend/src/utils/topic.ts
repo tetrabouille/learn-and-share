@@ -2,7 +2,7 @@ import random from 'node-random-name';
 import { mutation } from 'svelte-apollo';
 
 import { addAlert } from '@/stores/alert.store';
-import { TOPIC_ADD } from '@/graphql/topic.query';
+import { TOPIC_ADD } from '@/queries/topic.query';
 import type { TopicPayload } from '@/types/topic.type';
 
 const topicAddMutation = mutation<TopicPayload>(TOPIC_ADD);

@@ -7,7 +7,7 @@
   import { navigate } from 'svelte-routing';
   import { mutation } from 'svelte-apollo';
 
-  import { USER_ADD } from '@/graphql/user.query';
+  import { USER_ADD } from '@/queries/user.query';
   import { setFormContext } from '@/contexts/form.context';
   import { supabase } from '@/libs/supabase';
   import { addError, validateSchema } from '@/utils/form';

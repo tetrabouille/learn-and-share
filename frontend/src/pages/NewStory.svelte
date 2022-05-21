@@ -4,8 +4,8 @@
 
   import { addAlert } from '@/stores/alert.store';
   import { setFormContext } from '@/contexts/form.context';
-  import { TOPIC_GET_ALL } from '@/graphql/topic.query';
-  import { TAG_ADD, TAG_GET_ALL } from '@/graphql/tag.query';
+  import { TOPIC_GET_ALL } from '@/queries/topic.query';
+  import { TAG_ADD, TAG_GET_ALL } from '@/queries/tag.query';
   import InputTextArea from '@/components/forms/InputTextArea.svelte';
   import InputText from '@/components/forms/InputText.svelte';
   import InputSelect from '@/components/forms/InputSelect.svelte';

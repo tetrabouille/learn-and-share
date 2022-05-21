@@ -1,6 +1,6 @@
 <script lang="ts">
   import { query } from 'svelte-apollo';
-  import { USER_GET_ALL } from '@/graphql/user.query';
+  import { USER_GET_ALL } from '@/queries/user.query';
   import type { User } from '@/types/user.type';
   import Button from '@/components/Button.svelte';
   import { checkUserRoles } from '@/utils/access';

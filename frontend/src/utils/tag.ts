@@ -2,7 +2,7 @@ import random from 'node-random-name';
 import { mutation } from 'svelte-apollo';
 
 import { addAlert } from '@/stores/alert.store';
-import { TAG_ADD } from '@/graphql/tag.query';
+import { TAG_ADD } from '@/queries/tag.query';
 import type { TagPayload } from '@/types/tag.type';
 
 const tagAddMutation = mutation<TagPayload>(TAG_ADD);

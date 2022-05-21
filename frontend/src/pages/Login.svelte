@@ -7,7 +7,7 @@
   import { mutation } from 'svelte-apollo';
   import { query } from 'svelte-apollo';
 
-  import { USER_VALIDATE, USER_GET } from '@/graphql/user.query';
+  import { USER_VALIDATE, USER_GET } from '@/queries/user.query';
   import { setFormContext } from '@/contexts/form.context';
   import { validateSchema, addError } from '@/utils/form';
   import { supabase } from '@/libs/supabase';

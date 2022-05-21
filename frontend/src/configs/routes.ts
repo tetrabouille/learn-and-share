@@ -61,4 +61,9 @@ export const routeConfigs: readonly RouteConfig[] = Object.freeze([
     component: Profile,
     requireLogin: true,
   },
+  {
+    path: '/profile/:id',
+    component: Profile,
+    requireLogin: true,
+  },
 ]);

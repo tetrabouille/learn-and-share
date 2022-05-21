@@ -6,7 +6,7 @@
   import { query } from 'svelte-apollo';
 
   import { env } from '@/libs/env';
-  import { USER_GET } from '@/graphql/user.query';
+  import { USER_GET } from '@/queries/user.query';
   import { setupLoggedUser, loggedUser } from '@/stores/auth.store';
   import { routeConfigs } from '@/configs/routes';
   import { hasRouteAccess } from '@/utils/access';
@@ -49,7 +49,9 @@
   <div>
     {#each routeConfigs as { path, component, requireLogin, roles } (path)}
       {#if hasRouteAccess($loggedUser, requireLogin, roles)}
-        <Route exact {path} {component} />
+        <Route exact {path} let:params>
+          <svelte:component this={component} {params} />
+        </Route>
       {/if}
     {/each}
     <Route path="*"><Unknown /></Route>

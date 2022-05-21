@@ -75,7 +75,10 @@
 
   <div class="flex flex-row items-center gap-3 text-base">
     {#if $loggedUser?.isConnected}
-      <div class="underline">{$loggedUser.user.firstname} {$loggedUser.user.lastname}</div>
+      <div class="cursor-pointer hover:text-yellow-400 hover:underline" on:click={() => navigate('/profile')}>
+        {$loggedUser.user.firstname}
+        {$loggedUser.user.lastname}
+      </div>
       <div class="cursor-pointer hover:text-yellow-400 active:text-yellow-500" on:click={clickLogout}>
         Logout
       </div>
