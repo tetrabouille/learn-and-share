@@ -31,6 +31,7 @@
           loading = false;
           if (error) addAlert('Failed to upload picture', 'error');
           else {
+            addAlert('Profile updated', 'success');
             // TODO: update user avatar
           }
         });
@@ -48,23 +49,23 @@
   {#if $loggedUser.isConnected && $loggedUser.user.validated}
     <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
       <div class="-mt-8 -mr-8 flex h-7 items-end justify-end gap-2">
-        {#if !editMode}
+        {#if loading}
+          <div class="flex h-full w-7 items-center justify-center rounded-full bg-yellow-400 text-sm">
+            <Fa icon={faSpinner} pulse />
+          </div>
+        {:else if !editMode}
           <button
             class="flex h-full w-7 items-center justify-center rounded-full bg-yellow-400 text-sm"
             on:click={() => handleClickEdit()}><Fa icon={faPen} /></button
           >
-        {:else if loading}
-          <div class="flex h-full w-7 items-center justify-center rounded-full bg-yellow-400 text-sm">
-            <Fa icon={faSpinner} pulse />
-          </div>
         {:else}
-          <button
-            class="flex grow-0 h-full w-7 items-center justify-center rounded-full bg-red-400 text-sm"
-            on:click={() => handleClickEdit(false)}><Fa icon={faClose} /></button
-          >
           <button
             class="flex grow-0 h-full w-7 items-center justify-center rounded-full bg-green-400 text-sm"
             on:click={() => handleClickEdit(true)}><Fa icon={faCheck} /></button
+          >
+          <button
+            class="flex grow-0 h-full w-7 items-center justify-center rounded-full bg-red-400 text-sm"
+            on:click={() => handleClickEdit(false)}><Fa icon={faClose} /></button
           >
         {/if}
       </div>
