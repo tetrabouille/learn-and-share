@@ -10,6 +10,10 @@ const uploadFile = (blob: Blob, name: string) => {
   });
 };
 
+const getFile = (user: User, fileName: string) => {
+  return supabase.storage.from('public').getPublicUrl(`${user.accountId}/${fileName}`);
+};
+
 const onFileSelected = (e: any, handleFileChange: (fileUrl: string, blob: Blob) => void) => {
   const image: Blob = e.target.files[0];
   if (!image) return;
@@ -28,4 +32,4 @@ const getUserFileName = (user: User, fileName: string) => {
   return `${user.accountId}/${fileName}`;
 };
 
-export { uploadFile, onFileSelected, getUserFileName };
+export { uploadFile, onFileSelected, getUserFileName, getFile };

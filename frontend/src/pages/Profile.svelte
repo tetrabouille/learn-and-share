@@ -1,15 +1,17 @@
 <script lang="ts">
-  import { query } from 'svelte-apollo';
+  import { query, mutation } from 'svelte-apollo';
   import Fa from 'svelte-fa';
   import { faClose, faPen, faUserNinja, faSpinner, faCheck } from '@fortawesome/free-solid-svg-icons';
 
   import { loggedUser, setupLoggedUser } from '@/stores/auth.store';
+  import { addAlert } from '@/stores/alert.store';
   import { USER_GET } from '@/queries/user.query';
+  import { PROFILE_UPDATE } from '@/queries/profile.query';
   import { getAge, getGender } from '@/utils/profile';
   import { uploadFile, onFileSelected, getUserFileName } from '@/utils/file';
 
   import type { User } from '@/types/user.type';
-  import { addAlert } from '@/stores/alert.store';
+  import type { Profile, ProfilePayload } from '@/types/profile.type';
 
   export let params;
 
@@ -22,6 +24,10 @@
 
   setupLoggedUser(query<{ user: User }>(USER_GET));
 
+  $: avatarUrl = $loggedUser.user?.profile?.avatarUrl;
+
+  const profileUpdate = mutation<{ profileUpdate: ProfilePayload }>(PROFILE_UPDATE);
+
   const handleClickEdit = (valideChanges = false) => {
     editMode = !editMode;
     if (valideChanges && !editMode) {
@@ -29,10 +35,21 @@
         loading = true;
         void uploadFile(avatarBlob, getUserFileName($loggedUser.user, 'avatar')).then(({ error, data }) => {
           loading = false;
-          if (error) addAlert('Failed to upload picture', 'error');
-          else {
-            addAlert('Profile updated', 'success');
-            // TODO: update user avatar
+          if (error) {
+            addAlert(`Failed to upload picture`, 'error');
+          } else {
+            profileUpdate({
+              variables: { id: $loggedUser.user?.profile?.id, input: { avatarUrl: data.Key } },
+            })
+              .then((payload) => {
+                if (payload.errors || payload.data?.profileUpdate?.userErrors?.length) {
+                  return addAlert('Failed to update profile', 'error');
+                }
+                addAlert(`Profile updated`, 'success');
+              })
+              .catch(() => {
+                addAlert('Failed to update profile', 'error');
+              });
           }
         });
       }
@@ -40,7 +57,7 @@
   };
 
   const handleFileChange = (fileUrl: string, blob: Blob) => {
-    avatarUrl = fileUrl;
+    if ($loggedUser.user?.profile) $loggedUser.user.profile.avatarUrl = fileUrl;
     avatarBlob = blob;
   };
 </script>

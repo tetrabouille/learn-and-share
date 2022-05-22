@@ -2,6 +2,7 @@
   import { mutation, query } from 'svelte-apollo';
   import debounce from 'lodash/debounce';
 
+  import { handleUserErrors } from '@/stores/auth.store';
   import { addAlert } from '@/stores/alert.store';
   import { setFormContext } from '@/contexts/form.context';
   import { TOPIC_GET_ALL } from '@/queries/topic.query';
@@ -61,7 +62,9 @@
         const {
           tagAdd: { userErrors },
         } = data;
-        if (userErrors?.length) addAlert(userErrors.map((err) => err.message).join('; '), 'error');
+        if (userErrors?.length) {
+          handleUserErrors(userErrors);
+        }
       })
       .catch((e) => addAlert(e.message));
   };
