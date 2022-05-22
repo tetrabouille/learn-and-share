@@ -3,6 +3,7 @@ import { merge } from 'lodash';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
+import cors from 'cors';
 
 import { getUserFromToken } from './utils/auth';
 import { error, commun, user, profile, story, topic, tag } from './schemas';
@@ -10,6 +11,8 @@ import { userContext, profileContext, storyContext, topicContext, tagContext } f
 
 const launchServer = async () => {
   const app = express();
+
+  app.use(cors()); // TODO secure CORS policy
 
   const server = new ApolloServer({
     typeDefs: [
