@@ -7,7 +7,7 @@
 
   import { env } from '@/libs/env';
   import { USER_GET } from '@/queries/user.query';
-  import { setupLoggedUser, loggedUser } from '@/stores/auth.store';
+  import { setupLoggedUser, loggedUser, token } from '@/stores/auth.store';
   import { routeConfigs } from '@/configs/routes';
   import { hasRouteAccess } from '@/utils/access';
 
@@ -21,21 +21,20 @@
     uri: `${String(env.VITE_SERVER_HOST)}/graphql`,
   });
 
-  const authLink = setContext((_, { headers }) => {
-    const token = localStorage.getItem('token');
-    return {
-      headers: {
-        ...headers,
-        authorization: token ? `Bearer ${token}` : '',
-      },
-    };
-  });
-
   const cache = new InMemoryCache({
     typePolicies: {
       User: { keyFields: ['id'] },
       Profile: { keyFields: ['id'] },
     },
+  });
+
+  const authLink = setContext((_, { headers }) => {
+    return {
+      headers: {
+        ...headers,
+        authorization: $token ? `Bearer ${$token}` : '',
+      },
+    };
   });
 
   const client = new ApolloClient({
