@@ -9,6 +9,8 @@ export enum Error {
   // General
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   INVALID_LANG = 'INVALID_LANG',
+  // Auth
+  TOKEN_EXPIRED = 'TOKEN_EXPIRED',
   // Access
   NOT_REGISTERED = 'NOT_REGISTERED',
   // Forms
@@ -29,6 +31,9 @@ export const getMessage = (error: Error) => {
       return 'Missing required fields';
     case Error.INVALID_LANG:
       return 'Invalid language';
+    // Auth
+    case Error.TOKEN_EXPIRED:
+      return 'Token expired';
     // Access
     case Error.NOT_REGISTERED:
       return 'No account registered';

@@ -32,7 +32,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    tagAdd(input: TagAddInput!): TagPayload
+    tagAdd(input: TagAddInput!): TagPayload!
   }
 
   type TagPayload {
@@ -55,7 +55,8 @@ const resolvers = {
   },
 
   Mutation: {
-    tagAdd: (_: void, { input }: TagAddArgs, { tagAdd, accountId }: TagContext) => tagAdd(input, accountId),
+    tagAdd: (_: void, { input }: TagAddArgs, { tagAdd, accountId, error }: TagContext) =>
+      tagAdd(input, { accountId, error }),
   },
 };
 

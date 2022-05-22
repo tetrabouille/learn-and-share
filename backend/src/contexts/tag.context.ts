@@ -2,6 +2,7 @@ import { prisma } from '../db/prisma';
 import { Filter, Pagination, Sort } from '../schemas';
 import { TagAddArgs } from '../schemas/tag.schema';
 import { communUtils, accessUtils, errorsUtils, logger, validationUtils } from '../utils';
+import type { AuthData } from '../utils/auth';
 
 const { Error } = errorsUtils;
 const error = errorsUtils.getError('tag');
@@ -18,10 +19,12 @@ const tagGetAll = (filters?: Filter[], pagination?: Pagination, sortList?: Sort[
 };
 
 // mutations
-const tagAdd = async (input: TagAddArgs['input'], accountId: string) => {
+const tagAdd = async (input: TagAddArgs['input'], authData: AuthData) => {
   const { name, lang } = input;
+  const { accountId, error: authError } = authData;
 
   if (!name || !lang) return error([Error.FIELD_REQUIRED]);
+  if (authError) return error([Error.TOKEN_EXPIRED]);
   if (!(await accessUtils.isRegistered(accountId))) return error([Error.NOT_REGISTERED]);
   if (!(await validationUtils.unique({ name, lang }, prisma.tag))) return error([Error.TAG_ALREADY_EXISTS]);
   if (!validationUtils.lang(lang)) return error([Error.INVALID_LANG]);
@@ -36,7 +39,7 @@ const tagAdd = async (input: TagAddArgs['input'], accountId: string) => {
     return { tag, userErrors: [] };
   } catch (e) {
     logger.error(e);
-    error([Error.INTERNAL_ERROR]);
+    return error([Error.INTERNAL_ERROR]);
   }
 };
 
@@ -46,7 +49,7 @@ const context = {
   // mutations
   tagAdd,
 };
-type TagContext = typeof context & { accountId: string };
+type TagContext = typeof context & AuthData;
 
 export default context;
 export { TagContext };

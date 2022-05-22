@@ -54,8 +54,8 @@ const resolvers = {
   },
 
   Mutation: {
-    topicAdd: (_: void, { input }: TopicAddArgs, { topicAdd, accountId }: TopicContext) =>
-      topicAdd(input, accountId),
+    topicAdd: (_: void, { input }: TopicAddArgs, { topicAdd, accountId, error }: TopicContext) =>
+      topicAdd(input, { accountId, error }),
   },
 };
 

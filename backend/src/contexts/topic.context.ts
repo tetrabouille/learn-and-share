@@ -1,6 +1,7 @@
 import { prisma } from '../db/prisma';
 import { TopicAddArgs, Filter, Pagination, Sort } from '../schemas';
 import { logger, accessUtils, communUtils, errorsUtils, validationUtils } from '../utils';
+import { AuthData } from '../utils/auth';
 
 const { Error } = errorsUtils;
 const error = errorsUtils.getError('topic');
@@ -12,10 +13,12 @@ const topicGetAll = (filters?: Filter[], pagination?: Pagination, sortList?: Sor
 };
 
 // mutations
-const topicAdd = async (input: TopicAddArgs['input'], accountId: string) => {
+const topicAdd = async (input: TopicAddArgs['input'], authData: AuthData) => {
   const { name, lang } = input;
+  const { accountId, error: authError } = authData;
 
   if (!name || !lang) return error([Error.FIELD_REQUIRED]);
+  if (authError) return error([Error.TOKEN_EXPIRED]);
   if (!(await accessUtils.isRegistered(accountId))) return error([Error.NOT_REGISTERED]);
   if (!(await validationUtils.unique({ name, lang }, prisma.topic)))
     return error([Error.TOPIC_ALREADY_EXISTS]);
@@ -42,7 +45,7 @@ const context = {
   // mutations
   // TODO
 };
-type TopicContext = typeof context & { accountId: string };
+type TopicContext = typeof context & AuthData;
 
 export default context;
 export { TopicContext };

@@ -4,6 +4,7 @@ import { userLoader } from '../loaders/user.loader';
 import { isRegistered } from '../utils/access';
 import { Error, getError } from '../utils/errors';
 import { mapUser } from '../utils/mapping';
+import type { AuthData } from '../utils/auth';
 
 const error = getError('user');
 
@@ -13,14 +14,14 @@ const userGetAll = () => prisma.user.findMany().then((users) => users.map(mapUse
 
 const userGetById = (id: string | number | undefined) => userLoader.load(Number(id));
 
-const userGetByAccountId = (accountId: string) =>
+const userGetByAccountId = (accountId?: string) =>
   prisma.user.findUnique({ where: { accountId } }).then(mapUser);
 
 const userGetByHash = (hash: string) => prisma.user.findUnique({ where: { hash } }).then(mapUser);
 
 // mutations
 
-const userValidate = async (accountId: string) => {
+const userValidate = async (accountId?: string) => {
   const loggedUser = await isRegistered(accountId);
   if (!loggedUser) return error([Error.NOT_REGISTERED]);
 
@@ -70,7 +71,7 @@ const context = {
   userValidate,
   userAdd,
 };
-type UserContext = typeof context & { accountId: string };
+type UserContext = typeof context & AuthData;
 
 export default context;
 export { UserContext };
