@@ -23,7 +23,7 @@ const profileUpdate = async (
   input: ProfileAddArgs['input'],
   authData: AuthData
 ) => {
-  const { avatarUrl, bio, birthdate, firstname, gender, lastname } = input;
+  const { avatarUrl, bio, birthdate, firstname, gender, lastname, langs } = input;
   const { accountId, error: authError } = authData;
 
   if (authError) return error([Error.TOKEN_EXPIRED]);
@@ -39,6 +39,7 @@ const profileUpdate = async (
         firstname,
         gender,
         lastname,
+        langs,
       },
     });
     return { profile, userErrors: [] };

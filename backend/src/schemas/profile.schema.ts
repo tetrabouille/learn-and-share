@@ -19,6 +19,7 @@ export type ProfileAddArgs = {
     gender?: string;
     avatarUrl?: string;
     bio?: string;
+    langs?: string[];
   };
 };
 
@@ -31,6 +32,7 @@ const typeDefs = gql`
     gender: String
     avatarUrl: String
     bio: String!
+    langs: [String!]!
     isOwnProfile: Boolean!
     user: User!
   }
@@ -55,6 +57,7 @@ const typeDefs = gql`
     gender: String
     avatarUrl: String
     bio: String
+    langs: [String!]
   }
 `;
 
