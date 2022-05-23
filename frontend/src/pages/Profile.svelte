@@ -45,6 +45,7 @@
                 if (payload.errors || payload.data?.profileUpdate?.userErrors?.length) {
                   return addAlert('Failed to update profile', 'error');
                 }
+                if ($loggedUser.user?.profile) $loggedUser.user.profile.avatarUrl = avatarUrl;
                 addAlert(`Profile updated`, 'success');
               })
               .catch(() => {
@@ -53,11 +54,15 @@
           }
         });
       }
+    } else if (!editMode) {
+      avatarUrl = $loggedUser.user?.profile?.avatarUrl;
+      avatarBlob = null;
+      fileinput.value = '';
     }
   };
 
   const handleFileChange = (fileUrl: string, blob: Blob) => {
-    if ($loggedUser.user?.profile) $loggedUser.user.profile.avatarUrl = fileUrl;
+    avatarUrl = fileUrl;
     avatarBlob = blob;
   };
 </script>

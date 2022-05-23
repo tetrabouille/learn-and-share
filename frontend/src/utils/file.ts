@@ -1,13 +1,18 @@
 import { supabase } from '@/libs/supabase';
+import { v4 as uuid } from 'uuid';
 
 import type { User } from '@/types/user.type';
 
-const uploadFile = (blob: Blob, name: string) => {
+const uploadFile = async (blob: Blob, name: string) => {
   const ext = blob.type.split('/')[1];
-  return supabase.storage.from('public').upload(`${name}.${ext}`, blob, {
-    cacheControl: '3600',
-    upsert: true,
-  });
+  const [userDir, fileName] = name.split('/');
+  const files = await supabase.storage.from('public').list(userDir);
+  const filesToRemove = files.data?.map((file) => file.name).filter((file) => file.includes(fileName));
+  if (filesToRemove?.length)
+    filesToRemove.forEach((fileName) => {
+      void supabase.storage.from('public').remove([`${userDir}/${fileName}`]);
+    });
+  return supabase.storage.from('public').upload(`${name}-${uuid()}.${ext}`, blob);
 };
 
 const getFile = (user: User, fileName: string) => {
