@@ -31,8 +31,8 @@
     return classes.concat(` ${ext}`);
   };
 
-  const onChange = (e: any, value: string, handleChange: (e: any) => void) => {
-    inputValue = formatDate(value);
+  const onChange = (e: any, handleChange: (e: any) => void) => {
+    inputValue = formatDate(e.target.value);
     handleChange(e);
   };
 
@@ -55,6 +55,6 @@
     value={displayValue(value)}
     on:focus={() => (inputRef.type = 'date')}
     on:blur={() => (inputRef.type = 'text')}
-    on:input={(e) => onChange(e, value, handleChange)}
+    on:input={(e) => onChange(e, handleChange)}
   />
 </InputWrapper>

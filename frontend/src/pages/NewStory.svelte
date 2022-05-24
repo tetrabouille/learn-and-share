@@ -12,7 +12,7 @@
   import InputSelect from '@/components/forms/InputSelect.svelte';
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
 
-  import type { FormOption } from '@/utils/form';
+  import { formatTitle, type FormOption } from '@/utils/form';
   import type { Topic } from '@/types/topic.type';
   import type { Tag } from '@/types/tag.type';
   import type { TagPayload } from '@/types/tag.type';
@@ -37,15 +37,6 @@
     tags: [],
     topic: '',
   });
-
-  const formatInput = (input: string) =>
-    (() => {
-      const formated = input
-        .toLowerCase()
-        .replace(/^(\s)*/g, '')
-        .trim();
-      return formated.charAt(0).toUpperCase().concat(formated.slice(1));
-    })();
 
   const handleTagSearch = (e: CustomEvent<{ value: string }>) => {
     return tagGetAllQuery.refetch({
@@ -100,7 +91,7 @@
       label="Tags"
       max={3}
       options={tags}
-      {formatInput}
+      formatInput={formatTitle}
       on:selected={handleTagSelected}
       on:inputsearch={debounce(handleTagSearch, 300)}
     />

@@ -1,8 +1,10 @@
-const getAge = (strTimestamp: string) => {
-  const timestamp = Number(strTimestamp);
-  if (!strTimestamp || isNaN(timestamp)) return;
+const getAge = (value: string | number) => {
+  if (!value) return;
 
-  const date = new Date(timestamp);
+  let date: Date;
+  const timestamp = Number(value);
+  isNaN(timestamp) ? (date = new Date(value)) : (date = new Date(timestamp));
+
   const now = new Date();
   let age = now.getFullYear() - date.getFullYear();
   const m = now.getMonth() - date.getMonth();

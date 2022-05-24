@@ -49,6 +49,7 @@ const USER_GET_ALL = gql`
         gender
         avatarUrl
         bio
+        langs
       }
     }
   }
@@ -69,6 +70,7 @@ const USER_GET = gql`
         gender
         avatarUrl
         bio
+        langs
       }
     }
   }

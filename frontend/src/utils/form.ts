@@ -80,5 +80,14 @@ const getNewOption = (value: string, optionsLeft: FormOption[], values: FormOpti
   return { id, text: value };
 };
 
-export { validateSchema, getError, addError, getNewOption, NEW_OPTION };
+const formatTitle = (input: string) =>
+  (() => {
+    const formated = input
+      .toLowerCase()
+      .replace(/^(\s)*/g, '')
+      .trim();
+    return formated.charAt(0).toUpperCase().concat(formated.slice(1));
+  })();
+
+export { validateSchema, getError, addError, getNewOption, formatTitle, NEW_OPTION };
 export type {};

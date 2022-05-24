@@ -19,6 +19,7 @@
   export let style: 'classic' | 'h1' = 'classic';
   export let max = 8;
   export let formatInput = (input: string) => input;
+  export let addNewTags = true;
 
   let tagHovered: string | null = null;
   let searchInput = '';
@@ -39,11 +40,14 @@
   $: message = maxCrossed ? messageMax : messageEmpty;
 
   $: displayOptions = (() => {
-    const beforeOptions: FormOption[] =
-      searchInput && !options.find((opt) => opt.text === searchInput)
-        ? [getNewOption(searchInput, displayOptions, values)]
-        : [];
-    return [...beforeOptions, ...options] as FormOption[];
+    if (addNewTags) {
+      const beforeOptions: FormOption[] =
+        searchInput && !options.find((opt) => opt.text === searchInput)
+          ? [getNewOption(searchInput, displayOptions, values)]
+          : [];
+      return [...beforeOptions, ...options] as FormOption[];
+    }
+    return [...options];
   })().filter((o) => !values.find(({ id }) => o.id === id));
 
   $: maxCrossed ? toggleOptions(true) : toggleOptions(false);

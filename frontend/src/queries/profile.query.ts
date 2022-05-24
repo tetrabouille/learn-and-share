@@ -12,6 +12,7 @@ const PROFILE_UPDATE = gql`
         avatarUrl
         bio
         isOwnProfile
+        langs
         user {
           id
         }
