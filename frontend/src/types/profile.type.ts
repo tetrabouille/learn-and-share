@@ -9,6 +9,7 @@ export type Profile = {
   gender?: string;
   avatarUrl?: string;
   bio?: string;
+  langs?: string[];
   user?: User;
   createdAt?: string;
   updatedAt?: string;
@@ -26,4 +27,5 @@ export type ProfileUpdateInput = {
   gender?: string;
   avatarUrl?: string;
   bio?: string;
+  langs?: string[];
 };
