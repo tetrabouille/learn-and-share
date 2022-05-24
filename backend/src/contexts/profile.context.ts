@@ -35,7 +35,7 @@ const profileUpdate = async (
       data: {
         avatarUrl,
         bio,
-        birthdate,
+        birthdate: birthdate ? new Date(birthdate) : undefined,
         firstname,
         gender,
         lastname,
