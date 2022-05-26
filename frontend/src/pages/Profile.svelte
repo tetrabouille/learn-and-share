@@ -1,9 +1,8 @@
 <script lang="ts">
   import { query, mutation } from 'svelte-apollo';
   import Fa from 'svelte-fa';
-  import { faClose, faPen, faUserNinja, faSpinner, faCheck, faStar } from '@fortawesome/free-solid-svg-icons';
+  import { faClose, faPen, faSpinner, faCheck, faStar } from '@fortawesome/free-solid-svg-icons';
   import { getByTag, all as locales } from 'locale-codes';
-  import { getTime } from 'date-fns';
 
   import { loggedUser, setupLoggedUser } from '@/stores/auth.store';
   import { setFormContext } from '@/contexts/form.context';
@@ -20,6 +19,7 @@
   import InputSelect from '@/components/forms/InputSelect.svelte';
   import InputTextArea from '@/components/forms/InputTextArea.svelte';
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
+  import Avatar from '@/components/Avatar.svelte';
 
   import type { User } from '@/types/user.type';
   import type { Profile, ProfilePayload } from '@/types/profile.type';
@@ -92,9 +92,6 @@
           loading = false;
           return addAlert('Failed to update profile', 'error');
         }
-
-        if (profile) profile.avatarUrl = avatarUrl;
-
         loading = false;
         addAlert(`Profile updated`, 'success');
       } catch (e) {
@@ -135,6 +132,7 @@
         .then((payload) => {
           if (payload.errors || payload.data?.profileUpdate?.userErrors?.length)
             return addAlert('Failed to update profile', 'error');
+          return addAlert('Favorite language saved', 'success');
         })
         .catch(() => addAlert('Failed to change language', 'error'));
     }
@@ -212,7 +210,7 @@
         </div>
         <div
           title={editMode ? 'Change your profile picture' : 'Your avatar'}
-          class="flex h-[150px] w-[150px] items-center justify-center rounded-full bg-yellow-400/70 text-3xl text-cold-800"
+          class="h-[150px]"
           class:cursor-pointer={editMode}
           on:mouseenter={() => (hoverPicture = true)}
           on:mouseleave={() => (hoverPicture = false)}
@@ -220,22 +218,29 @@
             editMode && fileinput.click();
           }}
         >
-          {#if avatarUrl === 'loading'}
-            <Fa icon={faSpinner} pulse />
-          {:else if editMode && hoverPicture}
-            <Fa icon={faPen} class="text-xl" />
-          {:else if avatarUrl}
-            <img class="h-full w-full rounded-full" alt="avatar" src={avatarUrl} />
-          {:else}
-            <Fa icon={faUserNinja} />
-          {/if}
-          <input
-            class="hidden"
-            type="file"
-            accept=".jpg, .jpeg, .png"
-            on:change={(e) => onFileSelected(e, handleFileChange)}
-            bind:this={fileinput}
-          />
+          <div
+            class="flex h-full w-[150px] items-center justify-center rounded-full bg-yellow-400 text-3xl text-cold-800"
+          >
+            {#if avatarUrl === 'loading'}
+              <Fa icon={faSpinner} pulse />
+            {:else if editMode && hoverPicture}
+              <Fa icon={faPen} class="text-xl" />
+            {:else}
+              <Avatar
+                {avatarUrl}
+                lang={$data?.langs?.[0]?.id}
+                firstname={$data?.firstname}
+                lastname={$data?.lastname}
+              />
+            {/if}
+            <input
+              class="hidden"
+              type="file"
+              accept=".jpg, .jpeg, .png"
+              on:change={(e) => onFileSelected(e, handleFileChange)}
+              bind:this={fileinput}
+            />
+          </div>
         </div>
       </header>
       {#if editMode}
@@ -253,18 +258,21 @@
         />
       {:else if $data.langs?.length}
         <h1 class="mt-5 text-2xl">Languages</h1>
-        <div class="flex gap-x-1 mt-1">
+        <div class="flex gap-1 mt-1 flex-wrap">
           {#each $data.langs as lang, index (lang.id)}
             <div
-              class="text-lg bg-warm-500/30 rounded-full px-2 flex items-center mr-2"
+              class="text-lg bg-warm-500/30 rounded-full px-2 flex items-center"
               class:langselect={index !== 0}
               on:click={() => handleFavLangSelected(lang.id, index)}
             >
               {lang.text}
               {#if index === 0}
-                <Fa icon={faStar} class="ml-1 text-xs text-yellow-600" />
+                <Fa icon={faStar} class="text-xs text-yellow-600 ml-1" />
               {/if}
             </div>
+            {#if index === 0 && $data.langs.length > 1}
+              <div class="border-l-2 border-cold-900/30 my-1" />
+            {/if}
           {/each}
         </div>
       {/if}
@@ -284,6 +292,6 @@
 
 <style lang="scss">
   .langselect {
-    @apply mr-0 cursor-pointer hover:bg-yellow-500/50;
+    @apply cursor-pointer hover:bg-yellow-500/50;
   }
 </style>

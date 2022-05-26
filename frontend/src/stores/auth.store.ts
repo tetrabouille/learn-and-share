@@ -44,8 +44,8 @@ const setLoggedUser = async (token: string, query: ReadableQuery<{ user: User }>
         const user = (() => {
           if (data?.user?.profile) {
             const url = data.user.profile.avatarUrl?.split('/').pop();
-            const fileData = getFile(data.user, url);
-            if (fileData.publicURL) {
+            const fileData = url && getFile(data.user, url);
+            if (fileData?.publicURL) {
               const avatarUrl = fileData.publicURL;
               return { ...data.user, profile: { ...data.user.profile, avatarUrl } };
             }
