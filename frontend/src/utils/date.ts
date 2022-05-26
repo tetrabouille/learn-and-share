@@ -3,8 +3,6 @@ import { toDate } from 'date-fns';
 const dateFromTimestamp = (value: string) => {
   const timestamp = Number(value);
   if (!value || isNaN(timestamp)) return null;
-  console.log(timestamp);
-
   return toDate(timestamp).toISOString().split('T')[0];
 };
 

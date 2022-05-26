@@ -1,7 +1,7 @@
 <script lang="ts">
   import { query, mutation } from 'svelte-apollo';
   import Fa from 'svelte-fa';
-  import { faClose, faPen, faUserNinja, faSpinner, faCheck } from '@fortawesome/free-solid-svg-icons';
+  import { faClose, faPen, faUserNinja, faSpinner, faCheck, faStar } from '@fortawesome/free-solid-svg-icons';
   import { getByTag, all as locales } from 'locale-codes';
   import { getTime } from 'date-fns';
 
@@ -66,7 +66,10 @@
       let newAvatarUrl: string;
       if (avatarBlob && avatarUrl !== 'loading') {
         const { error, data } = await uploadFile(avatarBlob, getUserFileName($loggedUser.user, 'avatar'));
-        if (error) return addAlert(`Failed to upload picture`, 'error');
+        if (error) {
+          loading = false;
+          return addAlert(`Failed to upload picture`, 'error');
+        }
         newAvatarUrl = data?.Key;
       }
 
@@ -86,6 +89,7 @@
           },
         });
         if (payload.errors || payload.data?.profileUpdate?.userErrors?.length) {
+          loading = false;
           return addAlert('Failed to update profile', 'error');
         }
 
@@ -94,6 +98,7 @@
         loading = false;
         addAlert(`Profile updated`, 'success');
       } catch (e) {
+        loading = false;
         addAlert('Failed to update profile', 'error');
       }
     } else if (!editMode) {
@@ -113,6 +118,28 @@
     searchLangInput = e.detail.value;
   };
 
+  const handleFavLangSelected = (langId: string, index: number) => {
+    if (index === 0) return;
+    const lang = $data.langs.find((l) => l.id === langId);
+    if (lang) {
+      $data.langs.splice(index, 1);
+      data.update((d) => ({ ...d, langs: [lang, ...d.langs] }));
+      profileUpdate({
+        variables: {
+          id: $loggedUser.user?.profile?.id,
+          input: {
+            langs: $data.langs.map((l) => l.id),
+          },
+        },
+      })
+        .then((payload) => {
+          if (payload.errors || payload.data?.profileUpdate?.userErrors?.length)
+            return addAlert('Failed to update profile', 'error');
+        })
+        .catch(() => addAlert('Failed to change language', 'error'));
+    }
+  };
+
   $: getLangOptions = () => {
     return localesFiltered
       .filter((l) => l.name.toLowerCase().includes(searchLangInput.toLowerCase()))
@@ -126,6 +153,7 @@
 
 <section class="flex flex-col items-center pt-10">
   {#if $loggedUser.isConnected && $loggedUser.user.validated && $data}
+    <h1 class="pb-5 text-3xl">My profile</h1>
     <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
       <div class="-mt-8 -mr-8 flex h-7 items-end justify-end gap-2">
         {#if loading}
@@ -221,19 +249,30 @@
           messageMax="Maximum languages reached"
           formatInput={formatTitle}
           addNewTags={false}
-          label="Languages spoke"
+          label="Languages spoken"
         />
       {:else if $data.langs?.length}
-        <h1 class="mt-5 text-2xl">Languages spoke</h1>
-        <p class="mt-1 text-lg">
-          {$data.langs.map((l) => l.text).join(', ')}
-        </p>
+        <h1 class="mt-5 text-2xl">Languages</h1>
+        <div class="flex gap-x-1 mt-1">
+          {#each $data.langs as lang, index (lang.id)}
+            <div
+              class="text-lg bg-warm-500/30 rounded-full px-2 flex items-center mr-2"
+              class:langselect={index !== 0}
+              on:click={() => handleFavLangSelected(lang.id, index)}
+            >
+              {lang.text}
+              {#if index === 0}
+                <Fa icon={faStar} class="ml-1 text-xs text-yellow-600" />
+              {/if}
+            </div>
+          {/each}
+        </div>
       {/if}
       {#if editMode}
         <InputTextArea fieldId="bio" style="h1" label="About me" />
       {:else if $data.bio}
         <h1 class="mt-5 text-2xl">About me</h1>
-        <p class="mt-1 text-lg">
+        <p class="text-lg">
           {$data.bio}
         </p>
       {/if}
@@ -242,3 +281,9 @@
     <p>User not connected or not validated</p>
   {/if}
 </section>
+
+<style lang="scss">
+  .langselect {
+    @apply mr-0 cursor-pointer hover:bg-yellow-500/50;
+  }
+</style>
