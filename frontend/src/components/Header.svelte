@@ -6,10 +6,11 @@
   import type { GetPropsParams } from 'svelte-routing/types/Link';
   import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
 
+  import Button from '@/components/Button.svelte';
+  import Avatar from '@/components/Avatar.svelte';
   import { logout, loggedUser } from '@/stores/auth.store';
   import logo from '@/assets/constellation-logo.svg';
   import { routeConfigs } from '@/configs/routes';
-  import Button from '@/components/Button.svelte';
   import { hasRouteAccess } from '@/utils/access';
 
   let currentPath: string;
@@ -75,12 +76,13 @@
 
   <div class="flex flex-row items-center gap-3 text-base">
     {#if $loggedUser?.isConnected}
-      <div
-        class="cursor-pointer text-right hover:text-yellow-400 hover:underline"
-        on:click={() => navigate('/profile')}
-      >
-        {$loggedUser.user.profile?.firstname}
-        {$loggedUser.user.profile?.lastname}
+      <div class="h-full w-[72px] cursor-pointer text-right" on:click={() => navigate('/profile')}>
+        <Avatar
+          avatarUrl={$loggedUser.user.profile.avatarUrl}
+          lang={$loggedUser.user.profile.langs?.[0]}
+          firstname={$loggedUser.user.profile.firstname}
+          lastname={$loggedUser.user.profile.lastname}
+        />
       </div>
       <div class="cursor-pointer hover:text-yellow-400 active:text-yellow-500" on:click={clickLogout}>
         Logout
