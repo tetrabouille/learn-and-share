@@ -9,7 +9,7 @@
   import { addAlert } from '@/stores/alert.store';
   import { USER_GET } from '@/queries/user.query';
   import { PROFILE_UPDATE } from '@/queries/profile.query';
-  import { getAge, getGender } from '@/utils/profile';
+  import { getAge, getGender, handleLangSelected } from '@/utils/profile';
   import { uploadFile, onFileSelected, getUserFileName } from '@/utils/file';
   import { dateFromTimestamp } from '@/utils/date';
   import { formatTitle } from '@/utils/form';
@@ -121,20 +121,7 @@
     if (lang) {
       $data.langs.splice(index, 1);
       data.update((d) => ({ ...d, langs: [lang, ...d.langs] }));
-      profileUpdate({
-        variables: {
-          id: $loggedUser.user?.profile?.id,
-          input: {
-            langs: $data.langs.map((l) => l.id),
-          },
-        },
-      })
-        .then((payload) => {
-          if (payload.errors || payload.data?.profileUpdate?.userErrors?.length)
-            return addAlert('Failed to update profile', 'error');
-          return addAlert('Favorite language saved', 'success');
-        })
-        .catch(() => addAlert('Failed to change language', 'error'));
+      handleLangSelected(langId, profile, profileUpdate);
     }
   };
 
