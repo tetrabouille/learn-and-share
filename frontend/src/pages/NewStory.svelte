@@ -68,11 +68,10 @@
   }));
 </script>
 
-<section class="container mx-auto w-3/4 min-w-[300px] text-warm-900/90">
-  <h1 class="pt-10 text-center text-2xl">Write a new story</h1>
-  <div class="mx-auto mt-5 max-w-[600px]">
+<section class="flex flex-col items-center pt-10">
+  <h1 class="pb-5 text-3xl font-bold">Share your story</h1>
+  <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
     <InputText fieldId="title" placeholder="Title of your story" style="h1" label="Title" />
-    <InputTextArea fieldId="content" style="h1" label="Story" info="some info here" />
     <InputSelect
       fieldId="topic"
       style="h1"
@@ -92,5 +91,6 @@
       on:selected={handleTagSelected}
       on:inputsearch={debounce(handleTagSearch, 300)}
     />
+    <InputTextArea fieldId="content" style="h1" label="Story" />
   </div>
 </section>
