@@ -1,6 +1,6 @@
 import { prisma } from '../db/prisma';
 import { ProfileAddArgs } from '../schemas/profile.schema';
-import { accessUtils, logger, errorsUtils } from '../utils';
+import { accessUtils, logger, errorsUtils, validationUtils } from '../utils';
 
 import type { AuthData } from '../utils/auth';
 
@@ -28,6 +28,7 @@ const profileUpdate = async (
 
   if (authError) return error([Error.TOKEN_EXPIRED]);
   if (!(await accessUtils.isRegistered(accountId))) return error([Error.NOT_REGISTERED]);
+  if (!validationUtils.langs(langs)) return error([Error.INVALID_LANG]);
 
   try {
     const profile = await prisma.profile.update({
@@ -43,7 +44,8 @@ const profileUpdate = async (
       },
     });
     return { profile, userErrors: [] };
-  } catch (e) {
+  } catch (e: any) {
+    if (e.code === 'P2025') return error([Error.PROFILE_NOT_FOUND]);
     logger.error(e);
     return error([Error.INTERNAL_ERROR]);
   }

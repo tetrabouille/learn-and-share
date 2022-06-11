@@ -11,7 +11,6 @@ type TagGetAllArgs = {
 export type TagAddArgs = {
   input: {
     name: string;
-    lang: string;
   };
 };
 
@@ -25,6 +24,7 @@ const typeDefs = gql`
     translationRef: Tag
     meanings: [Tag!]!
     meaningRef: Tag
+    user: User!
   }
 
   type Query {
@@ -42,7 +42,6 @@ const typeDefs = gql`
 
   input TagAddInput {
     name: String!
-    lang: String!
   }
 `;
 

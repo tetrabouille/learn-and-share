@@ -48,7 +48,7 @@
       return [...beforeOptions, ...options] as FormOption[];
     }
     return [...options];
-  })().filter((o) => !values.find(({ id }) => o.id === id));
+  })().filter((o) => !values.find(({ text }) => o.text === text));
 
   $: maxCrossed ? toggleOptions(true) : toggleOptions(false);
 

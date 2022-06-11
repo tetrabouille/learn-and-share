@@ -18,6 +18,9 @@ export enum Error {
   // User
   USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS',
   USER_NOT_FOUND = 'USER_NOT_FOUND',
+  // Profile
+  MISSING_LANGS = 'MISSING_LANGS',
+  PROFILE_NOT_FOUND = 'PROFILE_NOT_FOUND',
   // Tag
   TAG_ALREADY_EXISTS = 'TAG_ALREADY_EXISTS',
   // Topic
@@ -42,6 +45,11 @@ export const getMessage = (error: Error) => {
       return 'User already exists';
     case Error.USER_NOT_FOUND:
       return 'User not found';
+    // Profile
+    case Error.MISSING_LANGS:
+      return 'Missing languages';
+    case Error.PROFILE_NOT_FOUND:
+      return 'Profile not found';
     // Topic
     case Error.TOPIC_ALREADY_EXISTS:
       return 'Topic already exists';

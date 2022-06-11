@@ -7,7 +7,13 @@ const unique = async (search: any, prismaClient: { findFirst: (s: any) => Promis
 };
 
 const lang = (lang: string) => {
-  return locales.getByTag(lang);
+  if (!lang) return false;
+  return !!locales.getByTag(lang);
 };
 
-export { unique, lang };
+const langs = (langsList?: string[]) => {
+  if (!langsList?.length) return true;
+  return langsList.find((l) => !lang(l)) === undefined;
+};
+
+export { unique, lang, langs };

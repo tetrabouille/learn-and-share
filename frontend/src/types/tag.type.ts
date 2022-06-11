@@ -1,5 +1,6 @@
 import type { UserError } from './error.type';
 import type { Story } from './story.type';
+import type { User } from './user.type';
 
 export type Tag = {
   id?: number;
@@ -10,6 +11,7 @@ export type Tag = {
   translationRef?: Tag;
   meanings?: Tag[];
   meaningRef?: Tag;
+  user?: User;
 };
 
 export type TagPayload = {
