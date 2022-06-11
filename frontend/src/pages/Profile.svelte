@@ -1,6 +1,7 @@
 <script lang="ts">
   import { query, mutation } from 'svelte-apollo';
   import Fa from 'svelte-fa';
+  import { navigate } from 'svelte-routing';
   import { faClose, faPen, faSpinner, faCheck, faStar } from '@fortawesome/free-solid-svg-icons';
   import { getByTag, all as locales } from 'locale-codes';
 
@@ -20,6 +21,7 @@
   import InputTextArea from '@/components/forms/InputTextArea.svelte';
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
   import Avatar from '@/components/Avatar.svelte';
+  import { handleError } from '@/utils/errors';
 
   import type { User } from '@/types/user.type';
   import type { Profile, ProfilePayload } from '@/types/profile.type';
@@ -87,13 +89,10 @@
               langs: $data.langs.map((l) => l.id),
             },
           },
-        });
-        if (payload.errors || payload.data?.profileUpdate?.userErrors?.length) {
-          loading = false;
-          return addAlert('Failed to update profile', 'error');
-        }
+        }).then(handleError('Failed to update profile', 'profileUpdate', navigate));
+
         loading = false;
-        addAlert(`Profile updated`, 'success');
+        if (!payload.isError) addAlert(`Profile updated`, 'success');
       } catch (e) {
         loading = false;
         addAlert('Failed to update profile', 'error');
@@ -121,7 +120,7 @@
     if (lang) {
       $data.langs.splice(index, 1);
       data.update((d) => ({ ...d, langs: [lang, ...d.langs] }));
-      handleLangSelected(langId, profile, profileUpdate);
+      handleLangSelected(langId, profile, profileUpdate, navigate);
     }
   };
 
@@ -138,7 +137,7 @@
 
 <section class="flex flex-col items-center pt-10">
   {#if $loggedUser.isConnected && $loggedUser.user.validated && $data}
-    <h1 class="pb-5 text-3xl">My profile</h1>
+    <h1 class="pb-5 text-3xl font-bold">My profile</h1>
     <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
       <div class="-mt-8 -mr-8 flex h-7 items-end justify-end gap-2">
         {#if loading}
@@ -169,7 +168,7 @@
               <InputText fieldId="lastname" style="h1" placeholder="Lastname" label="Lastname" />
             </div>
           {:else}
-            <h1 class="text-2xl">
+            <h1 class="text-2xl font-bold">
               {$data.firstname}
               {$data.lastname}
             </h1>
@@ -196,7 +195,7 @@
           {/if}
         </div>
         <div
-          title={editMode ? 'Change your profile picture' : 'Your avatar'}
+          title={editMode ? 'Change your avatar' : 'Your avatar'}
           class="h-[150px]"
           class:cursor-pointer={editMode}
           on:mouseenter={() => (hoverPicture = true)}

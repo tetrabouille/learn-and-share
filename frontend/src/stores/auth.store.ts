@@ -6,11 +6,8 @@ import decode from 'jwt-decode';
 
 import { routeConfigs } from '@/configs/routes';
 import { getFile } from '@/utils/file';
-import { addAlert } from '@/stores/alert.store';
-import { Error } from '@/types/error.type';
 
 import type { LoggedUser, User } from '@/types/user.type';
-import type { UserError } from '@/types/error.type';
 
 const tokenInStorage: string = localStorage.getItem('token') || null;
 
@@ -75,30 +72,16 @@ const login = async (query: ReadableQuery<{ user: User }>) => {
   }
 };
 
-const logout = (path: string, navigate: (r: string) => void) => {
+const logout = (path?: string, navigate?: (r: string) => void) => {
   void supabase.auth.signOut();
   $token.next(null);
   localStorage.removeItem('token');
   loggedUser.set({ ...emptyLoggedUser });
-  if (requireLogginRoutes.find((r) => path.includes(r))) navigate('/');
+  if (path && navigate && requireLogginRoutes.find((r) => path.includes(r))) navigate('/');
 };
 
 const setupLoggedUser = (query: ReadableQuery<{ user: User }>) => {
   $token.pipe(take(1)).subscribe((token) => void setLoggedUser(token, query));
 };
 
-const handleUserErrors = (errors: UserError[]) => {
-  if (!errors.length) return;
-  errors.forEach((error) => {
-    addAlert(error.message, 'error');
-    switch (error.code) {
-      case Error.TOKEN_EXPIRED:
-        // TODO
-        break;
-      default:
-        break;
-    }
-  });
-};
-
-export { login, token, logout, accountCreated, loggedUser, setupLoggedUser, loadingUser, handleUserErrors };
+export { login, token, logout, accountCreated, loggedUser, setupLoggedUser, loadingUser };

@@ -2,6 +2,7 @@ import { getByTag } from 'locale-codes';
 
 import type { Profile } from '@/types/profile.type';
 import { addAlert } from '@/stores/alert.store';
+import { handleError } from '@/utils/errors';
 
 const getAge = (value: string | number) => {
   if (!value) return;
@@ -24,7 +25,12 @@ const getGender = (str: string) => {
   if (str.toUpperCase() === 'F') return 'Female';
 };
 
-const handleLangSelected = (lang: string, profile: Profile, profileUpdate: any) => {
+const handleLangSelected = (
+  lang: string,
+  profile: Profile,
+  profileUpdate: any,
+  navigate: (r: string) => void
+) => {
   if (!lang || !getByTag(lang) || !profile) return;
   const langs = profile.langs && profile.langs?.filter((l) => l !== lang);
 
@@ -36,12 +42,11 @@ const handleLangSelected = (lang: string, profile: Profile, profileUpdate: any) 
       },
     },
   })
-    .then((payload) => {
-      if (payload.errors || payload.data?.profileUpdate?.userErrors?.length)
-        return addAlert('Failed to update profile', 'error');
-      return addAlert('Favorite language saved', 'success');
-    })
-    .catch(() => addAlert('Failed to change language', 'error'));
+    .then(handleError('Failed to change language', 'profileUpdate', navigate))
+    .catch((err) => {
+      console.error(err);
+      addAlert('Failed to change language', 'error');
+    });
 };
 
 export { getAge, getGender, handleLangSelected };

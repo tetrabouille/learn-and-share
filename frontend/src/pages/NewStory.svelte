@@ -1,8 +1,8 @@
 <script lang="ts">
   import { mutation, query } from 'svelte-apollo';
+  import { navigate } from 'svelte-routing';
   import debounce from 'lodash/debounce';
 
-  import { handleUserErrors } from '@/stores/auth.store';
   import { addAlert } from '@/stores/alert.store';
   import { setFormContext } from '@/contexts/form.context';
   import { TOPIC_GET_ALL } from '@/queries/topic.query';
@@ -13,6 +13,7 @@
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
 
   import { formatTitle, type FormOption } from '@/utils/form';
+  import { handleError } from '@/utils/errors';
   import type { Topic } from '@/types/topic.type';
   import type { Tag } from '@/types/tag.type';
   import type { TagPayload } from '@/types/tag.type';
@@ -49,15 +50,11 @@
     if ($tagGetAllQuery.data?.tags?.find(({ name }) => e.detail.option.text === name)) return;
 
     tagAddMutation({ variables: { input: { name: e.detail.option.text, lang: 'en' } } })
-      .then(({ data }) => {
-        const {
-          tagAdd: { userErrors },
-        } = data;
-        if (userErrors?.length) {
-          handleUserErrors(userErrors);
-        }
-      })
-      .catch((e) => addAlert(e.message));
+      .then(handleError('Failed to add tag', 'tagAdd', navigate))
+      .catch((e) => {
+        console.error(e);
+        addAlert('Failed to add tag', 'error');
+      });
   };
 
   $: topics = $topicGetAllQuery.data?.topics?.map(({ id, name }) => ({

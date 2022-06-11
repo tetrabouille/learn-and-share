@@ -144,7 +144,8 @@
                     class={`hover:bg-brown-800 cursor-pointer px-5 py-2 hover:text-yellow-500 ${
                       index === $loggedUser.user.profile.langs.length - 1 ? 'rounded-b-lg' : ''
                     }`}
-                    on:click={() => handleLangSelected(lang, $loggedUser.user.profile, profileUpdate)}
+                    on:click={() =>
+                      handleLangSelected(lang, $loggedUser.user.profile, profileUpdate, navigate)}
                   >
                     {formatTitle(getByTag(lang).name)}
                   </div>
