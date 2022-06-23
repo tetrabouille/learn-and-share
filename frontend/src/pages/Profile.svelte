@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { query, mutation } from 'svelte-apollo';
+  import { mutation } from 'svelte-apollo';
   import Fa from 'svelte-fa';
   import { navigate } from 'svelte-routing';
   import { faClose, faPen, faSpinner, faCheck } from '@fortawesome/free-solid-svg-icons';
   import { getByTag, all as locales } from 'locale-codes';
 
-  import { loggedUser, setupLoggedUser } from '@/stores/auth.store';
+  import { loggedUser } from '@/stores/auth.store';
   import { setFormContext } from '@/contexts/form.context';
   import { addAlert } from '@/stores/alert.store';
-  import { USER_GET } from '@/queries/user.query';
   import { PROFILE_UPDATE } from '@/queries/profile.query';
   import { getAge, getGender, handleLangSelected } from '@/utils/profile';
   import { uploadFile, onFileSelected, getUserFileName } from '@/utils/file';
@@ -24,7 +23,6 @@
   import SelectItems, { type Item } from '@/components/SelectItems.svelte';
   import { handleError } from '@/utils/errors';
 
-  import type { User } from '@/types/user.type';
   import type { Profile, ProfilePayload } from '@/types/profile.type';
 
   export let params;
@@ -37,8 +35,6 @@
   let editMode = false;
   let loading = false;
   let searchLangInput = '';
-
-  setupLoggedUser(query<{ user: User }>(USER_GET));
 
   const localesFiltered = locales.filter(({ tag }) => !tag.includes('-'));
 
