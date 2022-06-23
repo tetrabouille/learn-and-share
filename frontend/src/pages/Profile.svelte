@@ -2,7 +2,7 @@
   import { query, mutation } from 'svelte-apollo';
   import Fa from 'svelte-fa';
   import { navigate } from 'svelte-routing';
-  import { faClose, faPen, faSpinner, faCheck, faStar } from '@fortawesome/free-solid-svg-icons';
+  import { faClose, faPen, faSpinner, faCheck } from '@fortawesome/free-solid-svg-icons';
   import { getByTag, all as locales } from 'locale-codes';
 
   import { loggedUser, setupLoggedUser } from '@/stores/auth.store';
@@ -21,6 +21,7 @@
   import InputTextArea from '@/components/forms/InputTextArea.svelte';
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
   import Avatar from '@/components/Avatar.svelte';
+  import SelectItems, { type Item } from '@/components/SelectItems.svelte';
   import { handleError } from '@/utils/errors';
 
   import type { User } from '@/types/user.type';
@@ -114,8 +115,9 @@
     searchLangInput = e.detail.value;
   };
 
-  const handleFavLangSelected = (langId: string, index: number) => {
+  const handleFavLangSelected = ({ item, index }: { item: Item; index: number }) => {
     if (index === 0) return;
+    const langId = item.id;
     const lang = $data.langs.find((l) => l.id === langId);
     if (lang) {
       $data.langs.splice(index, 1);
@@ -245,21 +247,7 @@
       {:else if $data.langs?.length}
         <h1 class="mt-5 text-2xl">Languages</h1>
         <div class="flex gap-1 mt-1 flex-wrap">
-          {#each $data.langs as lang, index (lang.id)}
-            <div
-              class="text-lg bg-warm-500/30 rounded-full px-2 flex items-center"
-              class:langselect={index !== 0}
-              on:click={() => handleFavLangSelected(lang.id, index)}
-            >
-              {lang.text}
-              {#if index === 0}
-                <Fa icon={faStar} class="text-xs text-yellow-600 ml-1" />
-              {/if}
-            </div>
-            {#if index === 0 && $data.langs.length > 1}
-              <div class="border-l-2 border-cold-900/30 my-1" />
-            {/if}
-          {/each}
+          <SelectItems items={$data.langs} on:select={(e) => handleFavLangSelected(e.detail)} />
         </div>
       {/if}
       {#if editMode}
@@ -275,9 +263,3 @@
     <p>User not connected or not validated</p>
   {/if}
 </section>
-
-<style lang="scss">
-  .langselect {
-    @apply cursor-pointer hover:bg-yellow-500/50;
-  }
-</style>
