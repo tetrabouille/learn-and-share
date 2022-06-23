@@ -6,7 +6,7 @@
   import { Link, navigate } from 'svelte-routing';
   import type { GetPropsParams } from 'svelte-routing/types/Link';
   import { getByTag } from 'locale-codes';
-  import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
+  import { faSpinner, faExchange } from '@fortawesome/free-solid-svg-icons';
 
   import Button from '@/components/Button.svelte';
   import Avatar from '@/components/Avatar.svelte';
@@ -14,10 +14,10 @@
   import logo from '@/assets/constellation-logo.svg';
   import { routeConfigs } from '@/configs/routes';
   import { hasRouteAccess } from '@/utils/access';
+  import { handleLangSelected, updateLoggedUserLangs } from '@/utils/profile';
   import { formatTitle } from '@/utils/form';
   import type { ProfilePayload } from '@/types/profile.type';
   import { PROFILE_UPDATE } from '@/queries/profile.query';
-  import { handleLangSelected } from '@/utils/profile';
 
   let profileMenuOpen = false;
   let langMenuOpen = false;
@@ -135,19 +135,28 @@
             </div>
           {:else if langMenuOpen && $loggedUser.user.profile?.langs?.length > 1}
             <div
-              class="profilemenu absolute -right-4 z-10 w-[150px] rounded-b-lg bg-yellow-400 text-lg font-bold text-black shadow-lg"
+              class="profilemenu absolute -right-4 z-10 w-[150px] rounded-b-lg bg-yellow-400 text-lg text-black shadow-lg text-center"
               transition:slide|local={{ duration: 150 }}
             >
+              <Fa icon={faExchange} class="w-full mt-2 mb-1" />
               {#each $loggedUser.user.profile?.langs as lang, index}
                 {#if index}
                   <div
-                    class={`hover:bg-brown-800 cursor-pointer px-5 py-2 hover:text-yellow-500 ${
+                    class={`lang-option cursor-pointer px-5 py-2 hover:text-yellow-500 hover:font-bold ${
                       index === $loggedUser.user.profile.langs.length - 1 ? 'rounded-b-lg' : ''
                     }`}
                     on:click={() =>
-                      handleLangSelected(lang, $loggedUser.user.profile, profileUpdate, navigate)}
+                      handleLangSelected(
+                        lang,
+                        $loggedUser.user.profile,
+                        profileUpdate,
+                        updateLoggedUserLangs,
+                        navigate
+                      )}
                   >
-                    {formatTitle(getByTag(lang).name)}
+                    <span class="px-2 py-1 rounded-full bg-creme-50/60"
+                      >{formatTitle(getByTag(lang).name)}</span
+                    >
                   </div>
                 {/if}
               {/each}
@@ -167,5 +176,10 @@
 <style lang="scss">
   .profilemenu {
     top: calc(100% + 0.5rem);
+  }
+  .lang-option:hover {
+    span {
+      @apply bg-brown-800;
+    }
   }
 </style>

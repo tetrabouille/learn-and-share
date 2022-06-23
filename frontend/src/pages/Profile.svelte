@@ -3,13 +3,19 @@
   import Fa from 'svelte-fa';
   import { navigate } from 'svelte-routing';
   import { faClose, faPen, faSpinner, faCheck } from '@fortawesome/free-solid-svg-icons';
-  import { getByTag, all as locales } from 'locale-codes';
+  import { all as locales } from 'locale-codes';
 
   import { loggedUser } from '@/stores/auth.store';
   import { setFormContext } from '@/contexts/form.context';
   import { addAlert } from '@/stores/alert.store';
   import { PROFILE_UPDATE } from '@/queries/profile.query';
-  import { getAge, getGender, handleLangSelected } from '@/utils/profile';
+  import {
+    getAge,
+    getGender,
+    handleLangSelected,
+    langsToOptions,
+    updateLoggedUserLangs,
+  } from '@/utils/profile';
   import { uploadFile, onFileSelected, getUserFileName } from '@/utils/file';
   import { dateFromTimestamp } from '@/utils/date';
   import { formatTitle } from '@/utils/form';
@@ -48,7 +54,7 @@
     birthdate: dateFromTimestamp(profile?.birthdate),
     gender: profile?.gender,
     bio: profile?.bio || '',
-    langs: profile?.langs?.map((id) => ({ id, text: getByTag(id).name })) || [],
+    langs: langsToOptions(profile?.langs),
   };
 
   $: formContext = setFormContext({ ...defaultData });
@@ -90,8 +96,10 @@
 
         loading = false;
         if (!payload.isError) addAlert(`Profile updated`, 'success');
+        else data.set({ ...defaultData });
       } catch (e) {
         loading = false;
+        data.set({ ...defaultData });
         addAlert('Failed to update profile', 'error');
       }
     } else if (!editMode) {
@@ -114,12 +122,7 @@
   const handleFavLangSelected = ({ item, index }: { item: Item; index: number }) => {
     if (index === 0) return;
     const langId = item.id;
-    const lang = $data.langs.find((l) => l.id === langId);
-    if (lang) {
-      $data.langs.splice(index, 1);
-      data.update((d) => ({ ...d, langs: [lang, ...d.langs] }));
-      handleLangSelected(langId, profile, profileUpdate, navigate);
-    }
+    handleLangSelected(langId, profile, profileUpdate, updateLoggedUserLangs, navigate);
   };
 
   $: getLangOptions = () => {
@@ -242,9 +245,7 @@
         />
       {:else if $data.langs?.length}
         <h1 class="mt-5 text-2xl">Languages</h1>
-        <div class="flex gap-1 mt-1 flex-wrap">
-          <SelectItems items={$data.langs} on:select={(e) => handleFavLangSelected(e.detail)} />
-        </div>
+        <SelectItems items={$data.langs} on:select={(e) => handleFavLangSelected(e.detail)} />
       {/if}
       {#if editMode}
         <InputTextArea fieldId="bio" style="h1" label="About me" />

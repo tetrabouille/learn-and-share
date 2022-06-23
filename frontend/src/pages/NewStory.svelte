@@ -3,26 +3,36 @@
   import { navigate } from 'svelte-routing';
   import debounce from 'lodash/debounce';
 
+  import { loggedUser } from '@/stores/auth.store';
   import { addAlert } from '@/stores/alert.store';
   import { setFormContext } from '@/contexts/form.context';
   import { TOPIC_GET_ALL } from '@/queries/topic.query';
   import { TAG_ADD, TAG_GET_ALL } from '@/queries/tag.query';
+  import { PROFILE_UPDATE } from '@/queries/profile.query';
   import InputTextArea from '@/components/forms/InputTextArea.svelte';
   import InputText from '@/components/forms/InputText.svelte';
   import InputSelect from '@/components/forms/InputSelect.svelte';
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
-
+  import SelectItems from '@/components/SelectItems.svelte';
   import { formatTitle, type FormOption } from '@/utils/form';
   import { handleError } from '@/utils/errors';
+  import { handleLangSelected, langsToOptions, updateLoggedUserLangs } from '@/utils/profile';
   import type { Topic } from '@/types/topic.type';
   import type { Tag } from '@/types/tag.type';
   import type { TagPayload } from '@/types/tag.type';
   import type { GetAllArgs } from '@/types/commun.type';
+  import type { Profile, ProfilePayload } from '@/types/profile.type';
+  import type { Item } from '@/components/SelectItems.svelte';
 
   let tagGetAllVar: GetAllArgs = {
     pagination: { take: 6 },
     sortList: [{ field: 'createdAt', order: 'desc' }],
   };
+  let profile: Profile;
+
+  const profileUpdate = mutation<{ profileUpdate: ProfilePayload }>(PROFILE_UPDATE);
+
+  $: profile = $loggedUser.user?.profile;
 
   $: tagGetAllVar.pagination.take = 6 + Number($data.tags.length);
 
@@ -57,6 +67,11 @@
       });
   };
 
+  const handleFavLangSelected = ({ item, index }: { item: Item; index: number }) => {
+    if (index === 0) return;
+    handleLangSelected(item.id, profile, profileUpdate, updateLoggedUserLangs, navigate);
+  };
+
   $: topics = $topicGetAllQuery.data?.topics?.map(({ id, name }) => ({
     id: String(id),
     text: name,
@@ -71,7 +86,10 @@
 <section class="flex flex-col items-center pt-10">
   <h1 class="pb-5 text-3xl font-bold">Share your story</h1>
   <div class="container mb-8 max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
-    <h2 class="mb-3 pl-4 text-xl">Select the language you are using</h2>
+    <h2 class="mb-3 pl-4 text-xl">Language used to write this story</h2>
+    <div class="mt-1 flex flex-wrap gap-1">
+      <SelectItems items={langsToOptions(profile.langs)} on:select={(e) => handleFavLangSelected(e.detail)} />
+    </div>
   </div>
   <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
     <h2 class="mb-3 pl-4 text-xl">Title</h2>
