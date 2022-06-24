@@ -83,36 +83,41 @@
   }));
 </script>
 
-<section class="flex flex-col items-center pt-10">
-  <h1 class="pb-5 text-3xl font-bold">Share your story</h1>
-  <div class="container mb-8 max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
-    <h2 class="mb-3 pl-4 text-xl">Language used to write this story</h2>
-    <div class="mt-1 flex flex-wrap gap-1">
-      <SelectItems items={langsToOptions(profile.langs)} on:select={(e) => handleFavLangSelected(e.detail)} />
+{#if $loggedUser.isConnected}
+  <section class="flex flex-col items-center pt-10">
+    <h1 class="pb-5 text-3xl font-bold">Share your story</h1>
+    <div class="container mb-8 max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
+      <h2 class="mb-3 pl-4 text-xl">Language used to write this story</h2>
+      <div class="mt-1 flex flex-wrap gap-1">
+        <SelectItems
+          items={langsToOptions(profile.langs)}
+          on:select={(e) => handleFavLangSelected(e.detail)}
+        />
+      </div>
     </div>
-  </div>
-  <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
-    <h2 class="mb-3 pl-4 text-xl">Title</h2>
-    <InputText fieldId="title" placeholder="Title of your story" style="h1" />
-    <h2 class="mb-3 pl-4 text-xl">Key words</h2>
-    <InputSelect
-      fieldId="topic"
-      style="h1"
-      options={topics}
-      placeholder="Select a topic"
-      messageEmpty="No topics matches"
-    />
-    <InputMultiSelect
-      fieldId="tags"
-      style="h1"
-      placeholder="Add/Select a tag"
-      max={3}
-      options={tags}
-      formatInput={formatTitle}
-      on:selected={handleTagSelected}
-      on:inputsearch={debounce(handleTagSearch, 300)}
-    />
-    <h2 class="mb-3 pl-4 text-xl">Your story</h2>
-    <InputTextArea fieldId="content" style="h1" placeholder="Share here" />
-  </div>
-</section>
+    <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
+      <h2 class="mb-3 pl-4 text-xl">Title</h2>
+      <InputText fieldId="title" placeholder="Title of your story" style="h1" />
+      <h2 class="mb-3 pl-4 text-xl">Key words</h2>
+      <InputSelect
+        fieldId="topic"
+        style="h1"
+        options={topics}
+        placeholder="Select a topic"
+        messageEmpty="No topics matches"
+      />
+      <InputMultiSelect
+        fieldId="tags"
+        style="h1"
+        placeholder="Add/Select a tag"
+        max={3}
+        options={tags}
+        formatInput={formatTitle}
+        on:selected={handleTagSelected}
+        on:inputsearch={debounce(handleTagSearch, 300)}
+      />
+      <h2 class="mb-3 pl-4 text-xl">Your story</h2>
+      <InputTextArea fieldId="content" style="h1" placeholder="Share here" />
+    </div>
+  </section>
+{/if}
