@@ -1,6 +1,6 @@
 <script lang="ts">
   import { mutation, query } from 'svelte-apollo';
-  import { navigate } from 'svelte-routing';
+  import { Link, navigate } from 'svelte-routing';
   import debounce from 'lodash/debounce';
 
   import { loggedUser } from '@/stores/auth.store';
@@ -14,7 +14,7 @@
   import InputSelect from '@/components/forms/InputSelect.svelte';
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
   import SelectItems from '@/components/SelectItems.svelte';
-  import { formatTitle, type FormOption } from '@/utils/form';
+  import { formatTitle, getLangNameFromCode, type FormOption } from '@/utils/form';
   import { handleError } from '@/utils/errors';
   import { handleLangSelected, langsToOptions, updateLoggedUserLangs } from '@/utils/profile';
   import type { Topic } from '@/types/topic.type';
@@ -87,13 +87,25 @@
   <section class="flex flex-col items-center pt-10">
     <h1 class="pb-5 text-3xl font-bold">Share your story</h1>
     <div class="container mb-8 max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
-      <h2 class="mb-3 pl-4 text-xl">Language used to write this story</h2>
-      <div class="mt-1 flex flex-wrap gap-1">
-        <SelectItems
-          items={langsToOptions(profile.langs)}
-          on:select={(e) => handleFavLangSelected(e.detail)}
-        />
-      </div>
+      {#if !profile.langs?.length}
+        <h2 class="text-xl text-red-600">
+          You need at least one language in your <Link to="profile" class="underline">profile</Link> to write a
+          story
+        </h2>
+      {:else}
+        <h2 class="text-xl">
+          Language used for this story : <span class="font-bold">{getLangNameFromCode(profile.langs[0])}</span
+          >
+        </h2>
+        {#if profile.langs?.length > 1}
+          <div class="mt-3 flex flex-wrap gap-1">
+            <SelectItems
+              items={langsToOptions(profile.langs)}
+              on:select={(e) => handleFavLangSelected(e.detail)}
+            />
+          </div>
+        {/if}
+      {/if}
     </div>
     <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
       <h2 class="mb-3 pl-4 text-xl">Title</h2>

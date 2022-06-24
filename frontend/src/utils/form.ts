@@ -1,6 +1,7 @@
 import type { Writable } from 'svelte/store';
 import type { ObjectSchema, ValidationError } from 'yup';
 import { v4 as uuid } from 'uuid';
+import { getByTag } from 'locale-codes';
 
 export type Error = {
   key: string;
@@ -89,5 +90,7 @@ const formatTitle = (input: string) =>
     return formated.charAt(0).toUpperCase().concat(formated.slice(1));
   })();
 
-export { validateSchema, getError, addError, getNewOption, formatTitle, NEW_OPTION };
+const getLangNameFromCode = (code: string) => formatTitle(getByTag(code)?.name) || 'Unknown';
+
+export { validateSchema, getError, addError, getNewOption, formatTitle, getLangNameFromCode, NEW_OPTION };
 export type {};

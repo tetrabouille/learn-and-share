@@ -1,6 +1,6 @@
 import { getByTag } from 'locale-codes';
 
-import { formatTitle } from './form';
+import { getLangNameFromCode } from './form';
 import { handleError } from './errors';
 import { addAlert } from '@/stores/alert.store';
 import { loggedUser } from '@/stores/auth.store';
@@ -64,7 +64,7 @@ const langsToOptions = (langs: string[]) => {
   if (!langs) return [];
   return langs.map((l) => ({
     id: l,
-    text: formatTitle(getByTag(l)?.name) || 'Unknown',
+    text: getLangNameFromCode(l),
   }));
 };
 

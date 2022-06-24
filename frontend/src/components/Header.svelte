@@ -5,7 +5,6 @@
   import { mutation } from 'svelte-apollo';
   import { Link, navigate } from 'svelte-routing';
   import type { GetPropsParams } from 'svelte-routing/types/Link';
-  import { getByTag } from 'locale-codes';
   import { faSpinner, faExchange } from '@fortawesome/free-solid-svg-icons';
 
   import Button from '@/components/Button.svelte';
@@ -15,7 +14,7 @@
   import { routeConfigs } from '@/configs/routes';
   import { hasRouteAccess } from '@/utils/access';
   import { handleLangSelected, updateLoggedUserLangs } from '@/utils/profile';
-  import { formatTitle } from '@/utils/form';
+  import { getLangNameFromCode } from '@/utils/form';
   import type { ProfilePayload } from '@/types/profile.type';
   import { PROFILE_UPDATE } from '@/queries/profile.query';
 
@@ -154,9 +153,7 @@
                         navigate
                       )}
                   >
-                    <span class="px-2 py-1 rounded-full bg-creme-50/60"
-                      >{formatTitle(getByTag(lang).name)}</span
-                    >
+                    <span class="px-2 py-1 rounded-full bg-creme-50/60">{getLangNameFromCode(lang)}</span>
                   </div>
                 {/if}
               {/each}
