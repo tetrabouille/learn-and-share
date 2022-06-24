@@ -20,6 +20,7 @@
   export let max = 8;
   export let formatInput = (input: string) => input;
   export let addNewTags = true;
+  export let disabled = false;
 
   let tagHovered: string | null = null;
   let searchInput = '';
@@ -112,6 +113,7 @@
   {formContextKey}
   closeMenuAfterSelect={false}
   {style}
+  {disabled}
   let:inputValue
   let:opened
   let:handleChange
@@ -141,9 +143,9 @@
     {/each}
     <input
       bind:this={inputRef}
-      class={`flex-grow bg-[transparent] outline-none ${!opened ? 'cursor-pointer' : ''} ${
-        maxCrossed ? 'invisible w-0' : ''
-      }`}
+      class={`flex-grow bg-[transparent] outline-none placeholder:text-warm-700/70 disabled:placeholder:text-warm-700/90 ${
+        !opened && !disabled ? 'cursor-pointer' : ''
+      } ${maxCrossed ? 'invisible w-0' : ''}`}
       value={inputValue}
       {placeholder}
       on:keydown={(e) => {
@@ -154,6 +156,7 @@
         resetInputSearch();
         toggleMenu(true);
       }}
+      {disabled}
     />
   </div>
 </InputSelectWrapper>

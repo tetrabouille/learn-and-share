@@ -1,8 +1,5 @@
 <script lang="ts">
-  import { getContext } from 'svelte';
-
   import InputSelectWrapper from './InputSelectWrapper.svelte';
-  import type { FormContext } from '@/contexts/form.context';
 
   export let label = null;
   export let info: string = null;
@@ -12,13 +9,11 @@
   export let fieldId: string;
   export let formContextKey = 'form';
   export let style: 'classic' | 'h1' = 'classic';
+  export let disabled = false;
 
   export const focus = () => {
     if (inputRef) inputRef.focus();
   };
-
-  const formContext = getContext<FormContext>(formContextKey);
-  const { data } = formContext;
 
   let inputRef: HTMLInputElement;
 
@@ -40,6 +35,7 @@
   {info}
   {formContextKey}
   {style}
+  {disabled}
   let:value
   let:inputValue
   let:opened
@@ -50,7 +46,9 @@
 >
   <input
     bind:this={inputRef}
-    class={`flex-grow bg-[transparent] outline-none ${!opened ? 'cursor-pointer' : ''}`}
+    class={`flex-grow bg-[transparent] outline-none placeholder:text-warm-700/70 disabled:placeholder:text-warm-700/90 ${
+      !opened && !disabled ? 'cursor-pointer' : ''
+    }`}
     value={opened ? inputValue : getValue(value)}
     {placeholder}
     on:keydown={(e) => {
@@ -60,5 +58,6 @@
     on:focus={() => {
       toggleMenu(true);
     }}
+    {disabled}
   />
 </InputSelectWrapper>

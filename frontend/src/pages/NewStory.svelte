@@ -109,7 +109,12 @@
     </div>
     <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
       <h2 class="mb-3 pl-4 text-xl">Title</h2>
-      <InputText fieldId="title" placeholder="Title of your story" style="h1" />
+      <InputText
+        fieldId="title"
+        placeholder="Title of your story"
+        style="h1"
+        disabled={!profile.langs?.length}
+      />
       <h2 class="mb-3 pl-4 text-xl">Key words</h2>
       <InputSelect
         fieldId="topic"
@@ -117,6 +122,7 @@
         options={topics}
         placeholder="Select a topic"
         messageEmpty="No topics matches"
+        disabled={!profile.langs?.length}
       />
       <InputMultiSelect
         fieldId="tags"
@@ -127,9 +133,15 @@
         formatInput={formatTitle}
         on:selected={handleTagSelected}
         on:inputsearch={debounce(handleTagSearch, 300)}
+        disabled={!profile.langs?.length}
       />
       <h2 class="mb-3 pl-4 text-xl">Your story</h2>
-      <InputTextArea fieldId="content" style="h1" placeholder="Share here" />
+      <InputTextArea
+        fieldId="content"
+        style="h1"
+        placeholder="Share here"
+        disabled={!profile.langs?.length}
+      />
     </div>
   </section>
 {/if}

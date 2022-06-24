@@ -22,6 +22,7 @@
   export let closeMenuAfterSelect = true;
   export let inputRef: HTMLInputElement;
   export let onChange: (opt: FormOption, cb: (o: FormOption) => void) => void;
+  export let disabled = false;
 
   const dispatch = createEventDispatcher();
 
@@ -33,6 +34,7 @@
   let optionsOntop = false;
 
   const toggleMenu = (b?: boolean) => {
+    if (disabled) return;
     opened = b == null ? opened : b;
 
     inputValue = '';
@@ -96,14 +98,17 @@
   );
 
   $: getClass = () => {
-    let classes = 'w-full focus:outline-none cursor-pointer';
+    let classes = `w-full focus:outline-none ${!disabled ? 'cursor-pointer' : ''}`;
     const ext = (() => {
       switch (style) {
         default:
         case 'classic':
-          return 'rounded-md bg-warm-700/70 px-3 py-1 text-white focus:bg-warm-800/70 placeholder:text-warm-200/70';
+          return 'rounded-md bg-warm-700/70 px-3 py-1 text-white focus:bg-warm-800/70';
         case 'h1':
-          return 'px-4 pt-2 pb-2 py-1 text-xl bg-creme-50/90 focus:border-b-4 focus:border-b-cold-500 focus:pb-1 placeholder:text-warm-700/70';
+          return (
+            'px-4 pt-2 pb-2 py-1 text-xl focus:border-b-4 focus:border-b-cold-500 focus:pb-1 ' +
+            `${disabled ? 'bg-cold-200/30' : 'bg-creme-50/90'}`
+          );
       }
     })();
     return classes.concat(` ${ext}`);
