@@ -2,7 +2,7 @@
   import { mutation } from 'svelte-apollo';
   import Fa from 'svelte-fa';
   import { navigate } from 'svelte-routing';
-  import { faClose, faPen, faSpinner, faCheck } from '@fortawesome/free-solid-svg-icons';
+  import { faClose, faPen, faSpinner, faCheck, faWarning } from '@fortawesome/free-solid-svg-icons';
   import { all as locales } from 'locale-codes';
 
   import { loggedUser } from '@/stores/auth.store';
@@ -246,6 +246,13 @@
       {:else if $data.langs?.length}
         <h1 class="mt-5 text-2xl">Languages</h1>
         <SelectItems items={$data.langs} on:select={(e) => handleFavLangSelected(e.detail)} />
+      {:else}
+        <div class="text-red-600 flex items-center gap-x-2">
+          <Fa icon={faWarning} />
+          <span class="text-xl hover:underline cursor-pointer" on:click={() => handleClickEdit(true)}
+            >Add languages to share stories</span
+          >
+        </div>
       {/if}
       {#if editMode}
         <InputTextArea fieldId="bio" style="h1" label="About me" />
