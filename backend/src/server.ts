@@ -8,6 +8,7 @@ import cors from 'cors';
 import { getUserFromToken } from './utils/auth';
 import { error, commun, user, profile, story, topic, tag } from './schemas';
 import { userContext, profileContext, storyContext, topicContext, tagContext } from './contexts';
+import { logger } from './utils';
 
 const launchServer = async () => {
   const app = express();
@@ -44,6 +45,8 @@ const launchServer = async () => {
   app.listen(process.env.PORT || 4000, () => {
     console.log('server on', server.graphqlPath);
   });
+
+  logger.debug('debug mode on');
 };
 
 launchServer();

@@ -11,14 +11,14 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  accountId String    @unique
-  hash      String    @unique
-  validated Boolean   @default(false)
-  roles     String    @default("user")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  profile   Profile[]
+  id        Int      @id @default(autoincrement())
+  accountId String   @unique
+  hash      String   @unique
+  validated Boolean  @default(false)
+  roles     String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  profile   Profile?
   stories   Story[]
   tags      Tag[]
 }
