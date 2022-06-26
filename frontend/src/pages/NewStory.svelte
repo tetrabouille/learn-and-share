@@ -20,7 +20,7 @@
   import type { Topic } from '@/types/topic.type';
   import type { Tag } from '@/types/tag.type';
   import type { TagPayload } from '@/types/tag.type';
-  import type { GetAllArgs } from '@/types/commun.type';
+  import type { Filter, GetAllArgs } from '@/types/commun.type';
   import type { Profile, ProfilePayload } from '@/types/profile.type';
   import type { Item } from '@/components/SelectItems.svelte';
   import Button from '@/components/Button.svelte';
@@ -52,7 +52,7 @@
 
   const handleTagSearch = (e: CustomEvent<{ value: string }>) => {
     return tagGetAllQuery.refetch({
-      filters: [{ field: 'name', value: e.detail.value, contains: true }],
+      filters: [{ field: 'name', value: e.detail.value, option: 'contains' } as Filter],
       ...tagGetAllVar,
     });
   };
@@ -60,7 +60,7 @@
   const handleTagSelected = (e: CustomEvent<{ option: FormOption }>) => {
     if ($tagGetAllQuery.data?.tags?.find(({ name }) => e.detail.option.text === name)) return;
 
-    tagAddMutation({ variables: { input: { name: e.detail.option.text, lang: 'en' } } })
+    tagAddMutation({ variables: { input: { name: e.detail.option.text } } })
       .then(handleError('Failed to add tag', 'tagAdd', navigate))
       .catch((e) => {
         console.error(e);

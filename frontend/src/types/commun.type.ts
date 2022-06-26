@@ -1,7 +1,7 @@
 export type Filter = {
   field: string;
-  value: string;
-  contains?: boolean;
+  value: string | string[] | boolean | number | number[];
+  option?: 'contains' | 'in';
 };
 
 export type Pagination = {
