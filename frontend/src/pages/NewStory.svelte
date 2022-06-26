@@ -23,6 +23,7 @@
   import type { GetAllArgs } from '@/types/commun.type';
   import type { Profile, ProfilePayload } from '@/types/profile.type';
   import type { Item } from '@/components/SelectItems.svelte';
+  import Button from '@/components/Button.svelte';
 
   let tagGetAllVar: GetAllArgs = {
     pagination: { take: 6 },
@@ -72,6 +73,11 @@
     handleLangSelected(item.id, profile, profileUpdate, updateLoggedUserLangs, navigate);
   };
 
+  const handleSubmit = () => {
+    // TODO
+    console.log('submit', $data);
+  };
+
   $: topics = $topicGetAllQuery.data?.topics?.map(({ id, name }) => ({
     id: String(id),
     text: name,
@@ -84,7 +90,7 @@
 </script>
 
 {#if $loggedUser.isConnected}
-  <section class="flex flex-col items-center pt-10">
+  <form class="mb-80 flex flex-col items-center pt-10" on:submit|preventDefault={handleSubmit}>
     <h1 class="pb-5 text-3xl font-bold">Share your story</h1>
     <div class="container mb-8 max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
       {#if !profile.langs?.length}
@@ -107,7 +113,7 @@
         {/if}
       {/if}
     </div>
-    <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
+    <div class="container mb-8 max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
       <h2 class="mb-3 pl-4 text-xl">Title</h2>
       <InputText
         fieldId="title"
@@ -143,5 +149,16 @@
         disabled={!profile.langs?.length}
       />
     </div>
-  </section>
+    <div class="container mb-10 max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
+      <h2 class="mb-3 pl-4 text-2xl font-bold">Principle for Action</h2>
+      <InputTextArea
+        fieldId="lesson"
+        style="h1"
+        placeholder="The lesson of your story"
+        disabled={!profile.langs?.length}
+        rows={5}
+      />
+    </div>
+    <Button buttonClass="text-xl font-bold px-10 py-3" type="submit">Share your story</Button>
+  </form>
 {/if}

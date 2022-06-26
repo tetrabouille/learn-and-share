@@ -66,7 +66,7 @@
   };
 </script>
 
-<header class="bg-brown-800 text-base text-warm-100 md:text-lg">
+<header class="sticky top-0 z-50 bg-brown-800 text-base text-warm-100 md:text-lg">
   <div class="mx-auto flex w-full max-w-[1285px] flex-row gap-10 px-4 py-2">
     <div class="flex flex-row items-center gap-4">
       <Link to="/" class="shrink-0">
