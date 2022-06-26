@@ -12,6 +12,10 @@ const topicGetAll = (filters?: Filter[], pagination?: Pagination, sortList?: Sor
   return prisma.topic.findMany(communUtils.getFindManyParams(filters, pagination, sortList, sortFields));
 };
 
+const topicGetById = (id: string | number) => {
+  return prisma.topic.findUnique({ where: { id: Number(id) } });
+};
+
 // mutations
 const topicAdd = async (input: TopicAddArgs['input'], authData: AuthData) => {
   const { name, lang } = input;
@@ -41,9 +45,9 @@ const topicAdd = async (input: TopicAddArgs['input'], authData: AuthData) => {
 const context = {
   // queries
   topicGetAll,
-  topicAdd,
+  topicGetById,
   // mutations
-  // TODO
+  topicAdd,
 };
 type TopicContext = typeof context & AuthData;
 

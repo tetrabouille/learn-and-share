@@ -1,8 +1,8 @@
 import locales from 'locale-codes';
 
 const unique = async (search: any, prismaClient: { findFirst: (s: any) => Promise<any> }) => {
-  const existingTag = await prismaClient.findFirst({ where: search });
-  if (existingTag) return false;
+  const exists = await prismaClient.findFirst({ where: search });
+  if (exists) return false;
   return true;
 };
 

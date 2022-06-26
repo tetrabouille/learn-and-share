@@ -2,8 +2,8 @@ import { gql } from 'apollo-server-express';
 
 type Filter = {
   field: string;
-  value: string;
-  contains?: boolean;
+  value: string | string[] | boolean | number | number[];
+  option?: 'contains' | 'in';
 };
 
 type Pagination = {
@@ -25,7 +25,7 @@ const typeDefs = gql`
   input Filter {
     field: String!
     value: String!
-    contains: Boolean
+    option: String
   }
 
   input Pagination {

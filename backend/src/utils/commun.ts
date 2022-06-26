@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { set } from 'lodash';
 import { Filter, Pagination, Sort } from '../schemas';
 
 const orderBy = (sortList?: Sort[], fields?: string[]): any => {
@@ -6,13 +7,17 @@ const orderBy = (sortList?: Sort[], fields?: string[]): any => {
   const orderBy: any = {};
   sortList?.forEach((sort) => {
     if (fields?.includes(sort.field) && (sort.order === 'asc' || sort.order === 'desc'))
-      orderBy[sort.field] = sort.order;
+      set(orderBy, sort.field, sort.order);
   });
   return orderBy;
 };
 
-const getPagination = (pagination?: Pagination): any => {
-  const options: any = {};
+const getPagination = (pagination?: Pagination) => {
+  const options: {
+    take?: number;
+    skip?: number;
+    cursor?: any;
+  } = {};
   if (pagination?.take) options.take = pagination.take;
   if (pagination?.skip) options.skip = pagination.skip;
   if (pagination?.cursor?.field) {
@@ -40,12 +45,12 @@ const getFilters = (filters?: Filter[]): any => {
   if (!filters?.length) return where;
 
   filters.forEach((filter) => {
-    if (filter.contains) {
-      where[filter.field] = {
-        contains: filter.value,
+    if (filter.option) {
+      where[filter.field as string] = {
+        [filter.option]: filter.value,
       };
     } else {
-      where[filter.field] = filter.value;
+      where[filter.field as string] = filter.value;
     }
   });
 
@@ -57,7 +62,7 @@ const getFindManyParams = (
   pagination?: Pagination,
   sortList?: Sort[],
   sortFields?: string[]
-): any => ({
+) => ({
   orderBy: orderBy(sortList, sortFields),
   where: getFilters(filters),
   ...getPagination(pagination),
