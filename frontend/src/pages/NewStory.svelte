@@ -7,23 +7,24 @@
   import { addAlert } from '@/stores/alert.store';
   import { setFormContext } from '@/contexts/form.context';
   import { TOPIC_GET_ALL } from '@/queries/topic.query';
-  import { TAG_ADD, TAG_GET_ALL } from '@/queries/tag.query';
+  import { TAG_GET_ALL } from '@/queries/tag.query';
   import { PROFILE_UPDATE } from '@/queries/profile.query';
+  import { STORY_ADD } from '@/queries/story.query';
   import InputTextArea from '@/components/forms/InputTextArea.svelte';
   import InputText from '@/components/forms/InputText.svelte';
   import InputSelect from '@/components/forms/InputSelect.svelte';
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
   import SelectItems from '@/components/SelectItems.svelte';
-  import { formatTitle, getLangNameFromCode, type FormOption } from '@/utils/form';
+  import Button from '@/components/Button.svelte';
+  import { formatTitle, getLangNameFromCode, NEW_OPTION, type FormOption } from '@/utils/form';
   import { handleError } from '@/utils/errors';
   import { handleLangSelected, langsToOptions, updateLoggedUserLangs } from '@/utils/profile';
+  import type { Item } from '@/components/SelectItems.svelte';
   import type { Topic } from '@/types/topic.type';
   import type { Tag } from '@/types/tag.type';
-  import type { TagPayload } from '@/types/tag.type';
   import type { Filter, GetAllArgs } from '@/types/commun.type';
   import type { Profile, ProfilePayload } from '@/types/profile.type';
-  import type { Item } from '@/components/SelectItems.svelte';
-  import Button from '@/components/Button.svelte';
+  import type { StoryAddArgs, StoryPayload } from '@/types/story.type';
 
   let tagGetAllVar: GetAllArgs = {
     pagination: { take: 6 },
@@ -37,10 +38,10 @@
 
   $: tagGetAllVar.pagination.take = 6 + Number($data.tags.length);
 
+  const storyAddMutation = mutation<{ storyAdd: StoryPayload }>(STORY_ADD);
+
   const topicGetAllQuery = query<{ topics: Topic[] }>(TOPIC_GET_ALL);
   const tagGetAllQuery = query<{ tags: Tag[] }, GetAllArgs>(TAG_GET_ALL, { variables: tagGetAllVar });
-
-  const tagAddMutation = mutation<{ tagAdd: TagPayload }>(TAG_ADD);
 
   const { data } = setFormContext({
     title: '',
@@ -57,25 +58,41 @@
     });
   };
 
-  const handleTagSelected = (e: CustomEvent<{ option: FormOption }>) => {
-    if ($tagGetAllQuery.data?.tags?.find(({ name }) => e.detail.option.text === name)) return;
-
-    tagAddMutation({ variables: { input: { name: e.detail.option.text } } })
-      .then(handleError('Failed to add tag', 'tagAdd', navigate))
-      .catch((e) => {
-        console.error(e);
-        addAlert('Failed to add tag', 'error');
-      });
-  };
-
   const handleFavLangSelected = ({ item, index }: { item: Item; index: number }) => {
     if (index === 0) return;
     handleLangSelected(item.id, profile, profileUpdate, updateLoggedUserLangs, navigate);
   };
 
   const handleSubmit = () => {
-    // TODO
-    console.log('submit', $data);
+    const [tagIds, newTags] = $data.tags.reduce(
+      (acc: unknown, tag: FormOption) => {
+        if (tag.id.includes(NEW_OPTION)) {
+          acc[1].push(tag.text);
+        } else {
+          acc[0].push(tag.id);
+        }
+        return acc;
+      },
+      [[], []]
+    );
+
+    storyAddMutation({
+      variables: {
+        input: {
+          title: $data.title,
+          content: $data.content,
+          lesson: $data.lesson,
+          topicId: $data.topic,
+          tagIds,
+          newTags,
+        } as StoryAddArgs['input'],
+      },
+    })
+      .then(handleError('Failed to add new story', 'storyAdd', navigate))
+      .then(({ isError }) => {
+        if (!isError) addAlert('Your story have been registered', 'success');
+      })
+      .catch(() => addAlert('Failed to add new story', 'error'));
   };
 
   $: topics = $topicGetAllQuery.data?.topics?.map(({ id, name }) => ({
@@ -134,10 +151,9 @@
         fieldId="tags"
         style="h1"
         placeholder="Add/Select a tag"
-        max={3}
+        max={10}
         options={tags}
         formatInput={formatTitle}
-        on:selected={handleTagSelected}
         on:inputsearch={debounce(handleTagSearch, 300)}
         disabled={!profile.langs?.length}
       />

@@ -97,6 +97,10 @@
     --color-cold-900: 25 30 55; /* official black */
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

@@ -1,3 +1,4 @@
+import { Subject } from 'rxjs';
 import { writable } from 'svelte/store';
 
 const alertDelay = 7000;
@@ -9,8 +10,10 @@ export type Alert = {
 };
 
 const alertStore = writable<Alert[]>([]);
+const newAlert = new Subject<void>();
 
 const addAlert = (message: Alert['message'], type: Alert['type'] = 'info') => {
+  newAlert.next();
   let existingAlert: Alert;
   alertStore.update((alerts) => {
     existingAlert = alerts.find((alert) => alert.message === message);
@@ -24,7 +27,7 @@ const addAlert = (message: Alert['message'], type: Alert['type'] = 'info') => {
         }),
       alertDelay
     );
-    return [...alerts, { message, type, timeout }];
+    return [{ message, type, timeout }, ...alerts];
   });
 };
 
@@ -39,4 +42,11 @@ const removeAlert = (alert: Alert) => {
   });
 };
 
-export { addAlert, alertStore, removeAlert };
+const removeAllAlerts = () => {
+  alertStore.update((alerts) => {
+    alerts.forEach((alert) => clearTimeout(alert.timeout));
+    return [];
+  });
+};
+
+export { addAlert, alertStore, removeAlert, removeAllAlerts, newAlert };

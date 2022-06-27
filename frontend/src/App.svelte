@@ -8,6 +8,7 @@
   import { env } from '@/libs/env';
   import { USER_GET } from '@/queries/user.query';
   import { setupLoggedUser, loggedUser, token } from '@/stores/auth.store';
+  import { newAlert } from './stores/alert.store';
   import { routeConfigs } from '@/configs/routes';
   import { hasRouteAccess } from '@/utils/access';
 
@@ -46,16 +47,20 @@
 
   setupLoggedUser(query<{ user: User }>(USER_GET));
 
+  newAlert.subscribe(() => {
+    scrollTo(0, 0);
+  });
+
   export let url = '';
 </script>
 
 <Router {url}>
   <Header />
-  <Alert />
   <div>
     {#each routeConfigs as { path, component, requireLogin, roles } (path)}
       {#if hasRouteAccess($loggedUser, requireLogin, roles)}
         <Route exact {path} let:params>
+          <Alert />
           <svelte:component this={component} {params} />
         </Route>
       {/if}

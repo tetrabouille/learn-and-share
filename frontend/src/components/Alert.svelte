@@ -1,15 +1,20 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
 
-  import { alertStore, removeAlert } from '@/stores/alert.store';
+  import { alertStore, removeAlert, removeAllAlerts } from '@/stores/alert.store';
   import type { Alert } from '@/stores/alert.store';
 
   const duration = 200;
-  const y = 30;
+  const x = 300;
+
+  onMount(() => {
+    removeAllAlerts();
+  });
 
   const getClasses = (alert: Alert): string => {
-    let classes = 'z-50 mb-2 mr-2 rounded-md py-1 px-5 text-center text-sm cursor-pointer';
+    let classes = 'z-10 mx-1 rounded-sm py-1 px-5 text-center text-sm cursor-pointer shadow-md min-w-[200px]';
     switch (alert.type) {
       case 'success':
         classes = `${classes} bg-green-400/70 text-green-800/90`;
@@ -24,15 +29,29 @@
     }
     return classes;
   };
+
+  $: getBg = () => {
+    const alert = $alertStore[0];
+    switch (alert?.type) {
+      case 'success':
+        return 'bg-green-400/30';
+      case 'error':
+        return 'bg-red-500/30';
+      case 'info':
+        return 'bg-blue-300/30';
+      default:
+        return '';
+    }
+  };
 </script>
 
-<div class="absolute bottom-0 -z-10 flex w-full flex-col items-end">
+<div class={`absolute top-[87px] left-0 right-0 flex w-full items-center justify-center ${getBg()}`}>
   {#each $alertStore as alert (alert.message)}
     <div
       class={getClasses(alert)}
       on:click={() => removeAlert(alert)}
-      in:fly={{ duration, y }}
-      out:fly={{ duration: duration + 300, y }}
+      in:fly|local={{ duration, x: -x }}
+      out:fly|local={{ duration: duration + 300, x }}
       animate:flip={{ duration }}
     >
       {alert.message}

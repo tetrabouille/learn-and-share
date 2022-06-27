@@ -64,10 +64,10 @@ const validateSchema = async (
   return valide;
 };
 
-const NEW_OPTION = 'NEW_OPTION';
+const NEW_OPTION = '__NEW_OPTION__';
 
 const getNewOption = (value: string, optionsLeft: FormOption[], values: FormOption[]): FormOption => {
-  let id = `${NEW_OPTION}:${uuid()}`;
+  let id = `${NEW_OPTION}${uuid()}`;
   while (
     optionsLeft.find((opt) => {
       opt.id === id;
