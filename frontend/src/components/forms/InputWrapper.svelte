@@ -26,7 +26,7 @@
   };
 </script>
 
-<div class="flex flex-col">
+<div class="flex w-full flex-col">
   {#if label}
     <label for={fieldId}>{label}</label>
   {/if}

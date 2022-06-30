@@ -15,6 +15,20 @@ export type Profile = {
   updatedAt?: string;
 };
 
+export enum GenderEnum {
+  F = 'F',
+  M = 'M',
+  X = 'X',
+  C = 'C',
+}
+
+export const Gender = Object.freeze({
+  [GenderEnum.F]: 'Female',
+  [GenderEnum.M]: 'Male',
+  [GenderEnum.X]: 'Prefer not to say',
+  [GenderEnum.C]: 'Prefer to self-describe',
+});
+
 export type ProfilePayload = {
   profile: Profile;
   userErrors: UserError[];

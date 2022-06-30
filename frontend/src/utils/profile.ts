@@ -1,10 +1,12 @@
 import { getByTag } from 'locale-codes';
+import { map } from 'lodash';
 
 import { getLangNameFromCode } from './form';
 import { handleError } from './errors';
 import { addAlert } from '@/stores/alert.store';
 import { loggedUser } from '@/stores/auth.store';
-import type { Profile } from '@/types/profile.type';
+import { GenderEnum } from '@/types/profile.type';
+import { type Profile, Gender } from '@/types/profile.type';
 import type { LoggedUser } from '@/types/user.type';
 
 const getAge = (value: string | number) => {
@@ -22,10 +24,24 @@ const getAge = (value: string | number) => {
   return `${age} years old`;
 };
 
-const getGender = (str: string) => {
-  if (!str) return;
-  if (str.toUpperCase() === 'M') return 'Male';
-  if (str.toUpperCase() === 'F') return 'Female';
+const getGenderOptions = () => {
+  return map(Gender, (text: string, id: string) => {
+    return { text, id: getGenderCode(id) };
+  });
+};
+
+const getGenderLabel = (code: string, customeGender: string) => {
+  if (code === GenderEnum.X) return '';
+  if (code === GenderEnum.C) return customeGender;
+  return Gender[code] || code;
+};
+
+const getGenderCode = (value: string) => {
+  return Gender[value] ? value : GenderEnum.C;
+};
+
+const getCustomGender = (code: string) => {
+  return Gender[code] ? '' : code;
 };
 
 const handleLangSelected = (
@@ -83,7 +99,10 @@ const updateLoggedUserLangs = (langs: string[]) => {
 
 export {
   getAge,
-  getGender,
+  getGenderLabel,
+  getGenderOptions,
+  getGenderCode,
+  getCustomGender,
   handleLangSelected,
   langsToOptions,
   getLoggedUserWithNewLangs,

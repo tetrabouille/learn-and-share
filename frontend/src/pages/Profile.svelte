@@ -11,7 +11,10 @@
   import { PROFILE_UPDATE } from '@/queries/profile.query';
   import {
     getAge,
-    getGender,
+    getGenderLabel,
+    getGenderOptions,
+    getGenderCode,
+    getCustomGender,
     handleLangSelected,
     langsToOptions,
     updateLoggedUserLangs,
@@ -19,7 +22,6 @@
   import { uploadFile, onFileSelected, getUserFileName } from '@/utils/file';
   import { dateFromTimestamp } from '@/utils/date';
   import { formatTitle } from '@/utils/form';
-
   import InputText from '@/components/forms/InputText.svelte';
   import InputDate from '@/components/forms/InputDate.svelte';
   import InputSelect from '@/components/forms/InputSelect.svelte';
@@ -28,8 +30,7 @@
   import Avatar from '@/components/Avatar.svelte';
   import SelectItems, { type Item } from '@/components/SelectItems.svelte';
   import { handleError } from '@/utils/errors';
-
-  import type { Profile, ProfilePayload } from '@/types/profile.type';
+  import { GenderEnum, type Profile, type ProfilePayload } from '@/types/profile.type';
 
   export let params;
 
@@ -41,6 +42,7 @@
   let editMode = false;
   let loading = false;
   let searchLangInput = '';
+  let isSelfDescribe = false;
 
   const localesFiltered = locales.filter(({ tag }) => !tag.includes('-'));
 
@@ -52,7 +54,8 @@
     firstname: profile?.firstname || '',
     lastname: profile?.lastname || '',
     birthdate: dateFromTimestamp(profile?.birthdate),
-    gender: profile?.gender,
+    gender: getGenderCode(profile?.gender),
+    customGender: getCustomGender(profile?.gender),
     bio: profile?.bio || '',
     langs: langsToOptions(profile?.langs),
   };
@@ -60,6 +63,8 @@
   $: formContext = setFormContext({ ...defaultData });
 
   $: data = formContext?.data;
+
+  $: isSelfDescribe = $data?.gender === GenderEnum.C;
 
   const profileUpdate = mutation<{ profileUpdate: ProfilePayload }>(PROFILE_UPDATE);
 
@@ -87,7 +92,7 @@
               firstname: $data.firstname,
               lastname: $data.lastname,
               birthdate: $data.birthdate,
-              gender: $data.gender,
+              gender: $data.gender === GenderEnum.C ? $data.customGender : $data.gender,
               bio: $data.bio,
               langs: $data.langs.map((l) => l.id),
             },
@@ -161,8 +166,8 @@
           >
         {/if}
       </div>
-      <header class="flex justify-between">
-        <div>
+      <div class="flex justify-between">
+        <div class="max-w-[495px]">
           {#if editMode}
             <div class="flex items-center gap-3">
               <InputText fieldId="firstname" style="h1" placeholder="Firstname" label="Firstname" />
@@ -180,19 +185,20 @@
             <p>{getAge($data.birthdate)}</p>
           {/if}
           {#if editMode}
-            <InputSelect
-              fieldId="gender"
-              style="h1"
-              options={[
-                { id: 'M', text: 'Male' },
-                { id: 'F', text: 'Female' },
-                { id: '', text: 'None' },
-              ]}
-              placeholder="Select your gender"
-              label="Gender"
-            />
+            <div class="flex items-end gap-3">
+              <InputSelect
+                fieldId="gender"
+                style="h1"
+                options={getGenderOptions()}
+                placeholder="Select your gender"
+                label="Gender"
+              />
+              {#if isSelfDescribe}
+                <InputText fieldId="customGender" style="h1" placeholder="Tell your gender" />
+              {/if}
+            </div>
           {:else if $data.gender}
-            <p>{getGender($data.gender)}</p>
+            <p>{getGenderLabel($data.gender, $data.customGender)}</p>
           {/if}
         </div>
         <div
@@ -229,7 +235,7 @@
             />
           </div>
         </div>
-      </header>
+      </div>
       {#if editMode}
         <InputMultiSelect
           fieldId="langs"

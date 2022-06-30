@@ -155,8 +155,7 @@
       class={`absolute left-0 right-0 z-50 flex max-h-[230px] overflow-y-auto border-[1px] border-cold-600/20 bg-creme-100 ${
         optionsOntop ? 'ontop flex-direction flex-col-reverse shadow-sm' : 'flex-col shadow-xl'
       }`}
-      in:slide={{ duration: 200, delay: 100 }}
-      out:slide={{ duration: 200 }}
+      in:slide={{ duration: 200 }}
     >
       {#if filteredOptions.length}
         {#each filteredOptions as option, index (option.id)}
