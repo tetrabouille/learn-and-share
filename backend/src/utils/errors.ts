@@ -9,6 +9,7 @@ export enum Error {
   // General
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   INVALID_LANG = 'INVALID_LANG',
+  INVALID_COUNTRY = 'INVALID_COUNTRY',
   // Auth
   TOKEN_EXPIRED = 'TOKEN_EXPIRED',
   // Access
@@ -38,6 +39,8 @@ export const getMessage = (error: Error) => {
       return 'Missing required fields';
     case Error.INVALID_LANG:
       return 'Invalid language';
+    case Error.INVALID_COUNTRY:
+      return 'Invalid country';
     // Auth
     case Error.TOKEN_EXPIRED:
       return 'Token expired';

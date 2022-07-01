@@ -29,6 +29,7 @@ model Profile {
   lastname  String
   birthdate DateTime?
   gender    String?
+  country   String?
   avatarUrl String?
   bio       String?
   langs     String[]

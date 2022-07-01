@@ -7,6 +7,7 @@ export type Profile = {
   lastname?: string;
   birthdate?: string;
   gender?: string;
+  country?: string;
   avatarUrl?: string;
   bio?: string;
   langs?: string[];
@@ -39,6 +40,7 @@ export type ProfileUpdateInput = {
   lastname?: string;
   birthdate?: string;
   gender?: string;
+  country?: string;
   avatarUrl?: string;
   bio?: string;
   langs?: string[];

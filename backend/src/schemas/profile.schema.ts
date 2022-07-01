@@ -17,6 +17,7 @@ export type ProfileAddArgs = {
     lastname?: string;
     birthdate?: string;
     gender?: string;
+    country?: string;
     avatarUrl?: string;
     bio?: string;
     langs?: string[];
@@ -30,6 +31,7 @@ const typeDefs = gql`
     lastname: String!
     birthdate: String
     gender: String
+    country: String
     avatarUrl: String
     bio: String!
     langs: [String!]!
@@ -55,6 +57,7 @@ const typeDefs = gql`
     lastname: String
     birthdate: String
     gender: String
+    country: String
     avatarUrl: String
     bio: String
     langs: [String!]

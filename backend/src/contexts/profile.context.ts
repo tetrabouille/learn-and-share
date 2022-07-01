@@ -23,12 +23,13 @@ const profileUpdate = async (
   input: ProfileAddArgs['input'],
   authData: AuthData
 ) => {
-  const { avatarUrl, bio, birthdate, firstname, gender, lastname, langs } = input;
+  const { avatarUrl, bio, birthdate, firstname, gender, country, lastname, langs } = input;
   const { accountId, error: authError } = authData;
 
   if (authError) return error([Error.TOKEN_EXPIRED]);
   if (!(await accessUtils.isRegistered(accountId))) return error([Error.NOT_REGISTERED]);
   if (!validationUtils.langs(langs)) return error([Error.INVALID_LANG]);
+  if (country && !validationUtils.country(country)) return error([Error.INVALID_COUNTRY]);
 
   try {
     const profile = await prisma.profile.update({
@@ -39,6 +40,7 @@ const profileUpdate = async (
         birthdate: birthdate ? new Date(birthdate) : undefined,
         firstname,
         gender,
+        country,
         lastname,
         langs,
       },

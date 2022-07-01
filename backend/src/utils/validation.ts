@@ -1,4 +1,5 @@
 import locales from 'locale-codes';
+import countries from 'country-list';
 
 const unique = async (search: any, prismaClient: { findFirst: (s: any) => Promise<any> }) => {
   const exists = await prismaClient.findFirst({ where: search });
@@ -6,7 +7,7 @@ const unique = async (search: any, prismaClient: { findFirst: (s: any) => Promis
   return true;
 };
 
-const lang = (lang: string) => {
+const lang = (lang?: string) => {
   if (!lang) return false;
   return !!locales.getByTag(lang);
 };
@@ -16,4 +17,9 @@ const langs = (langsList?: string[]) => {
   return langsList.find((l) => !lang(l)) === undefined;
 };
 
-export { unique, lang, langs };
+const country = (country?: string) => {
+  if (!country) return false;
+  return !!countries.getName(country);
+};
+
+export { unique, lang, langs, country };

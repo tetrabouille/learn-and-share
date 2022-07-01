@@ -47,6 +47,7 @@ const USER_GET_ALL = gql`
         lastname
         birthdate
         gender
+        country
         avatarUrl
         bio
         langs
@@ -68,6 +69,7 @@ const USER_GET = gql`
         lastname
         birthdate
         gender
+        country
         avatarUrl
         bio
         langs

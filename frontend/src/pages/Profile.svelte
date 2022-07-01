@@ -4,6 +4,7 @@
   import { navigate } from 'svelte-routing';
   import { faClose, faPen, faSpinner, faCheck, faWarning } from '@fortawesome/free-solid-svg-icons';
   import { all as locales } from 'locale-codes';
+  import country from 'country-list';
 
   import { loggedUser } from '@/stores/auth.store';
   import { setFormContext } from '@/contexts/form.context';
@@ -42,7 +43,8 @@
   let editMode = false;
   let loading = false;
   let searchLangInput = '';
-  let isSelfDescribe = false;
+  let searchCountryInput = '';
+  let isCustomGender = false;
 
   const localesFiltered = locales.filter(({ tag }) => !tag.includes('-'));
 
@@ -55,6 +57,7 @@
     lastname: profile?.lastname || '',
     birthdate: dateFromTimestamp(profile?.birthdate),
     gender: getGenderCode(profile?.gender),
+    country: profile?.country,
     customGender: getCustomGender(profile?.gender),
     bio: profile?.bio || '',
     langs: langsToOptions(profile?.langs),
@@ -64,7 +67,7 @@
 
   $: data = formContext?.data;
 
-  $: isSelfDescribe = $data?.gender === GenderEnum.C;
+  $: isCustomGender = $data?.gender === GenderEnum.C;
 
   const profileUpdate = mutation<{ profileUpdate: ProfilePayload }>(PROFILE_UPDATE);
 
@@ -93,6 +96,7 @@
               lastname: $data.lastname,
               birthdate: $data.birthdate,
               gender: $data.gender === GenderEnum.C ? $data.customGender : $data.gender,
+              country: $data.country,
               bio: $data.bio,
               langs: $data.langs.map((l) => l.id),
             },
@@ -124,6 +128,10 @@
     searchLangInput = e.detail.value;
   };
 
+  const handleCountrySearch = (e: CustomEvent<{ value: string }>) => {
+    searchCountryInput = e.detail.value;
+  };
+
   const handleFavLangSelected = ({ item, index }: { item: Item; index: number }) => {
     if (index === 0) return;
     const langId = item.id;
@@ -138,6 +146,27 @@
         text: l.name,
       }))
       .slice(0, 20);
+  };
+
+  $: getCountryOptions = () => {
+    const current = $data.country
+      ? {
+          id: $data.country,
+          text: country.getName($data.country),
+        }
+      : null;
+
+    const opts = country
+      .getData()
+      .filter((c) => c.name.toLowerCase().includes(searchCountryInput.toLowerCase()))
+      .map((c) => ({
+        id: c.code,
+        text: c.name,
+      }))
+      .slice(0, 20);
+
+    if (current && !opts.find(({ id }) => id === current.id)) opts.unshift(current);
+    return opts;
   };
 </script>
 
@@ -193,12 +222,25 @@
                 placeholder="Select your gender"
                 label="Gender"
               />
-              {#if isSelfDescribe}
+              {#if isCustomGender}
                 <InputText fieldId="customGender" style="h1" placeholder="Tell your gender" />
               {/if}
             </div>
-          {:else if $data.gender}
+          {:else if getGenderLabel($data.gender, $data.customGender)}
             <p>{getGenderLabel($data.gender, $data.customGender)}</p>
+          {/if}
+          {#if editMode}
+            <InputSelect
+              fieldId="country"
+              style="h1"
+              on:inputsearch={handleCountrySearch}
+              formatInput={formatTitle}
+              options={getCountryOptions()}
+              placeholder="Select where you live"
+              label="Country"
+            />
+          {:else if country.getName($data.country || '')}
+            <p>{country.getName($data.country || '')}</p>
           {/if}
         </div>
         <div

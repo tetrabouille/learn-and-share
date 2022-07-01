@@ -9,6 +9,7 @@ const PROFILE_UPDATE = gql`
         lastname
         birthdate
         gender
+        country
         avatarUrl
         bio
         isOwnProfile
