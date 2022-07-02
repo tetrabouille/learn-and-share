@@ -8,8 +8,11 @@
   import logo from '@/assets/constellation-logo.svg';
   import ProfileMenu from './ProfileMenu.svelte';
   import HeaderLinks from './HeaderLinks.svelte';
+  import { cubicIn, cubicOut } from 'svelte/easing';
+  import { backdropStore } from '@/stores/backdrop.store';
 
   let currentPath: string;
+  let isMenuOpen: boolean;
 
   const getProps = ({ location, isCurrent }: GetPropsParams) => {
     currentPath = location.pathname;
@@ -19,19 +22,54 @@
     return { class: classes.join(' ') };
   };
 
-  const clickLogout = () => logout(currentPath, navigate);
+  const clickLogout = () => {
+    toggleMenu();
+    logout(currentPath, navigate);
+  };
+
+  const toggleMenu = (open?: boolean) => {
+    isMenuOpen = open == null ? !isMenuOpen : open;
+    backdropStore.set({ open: isMenuOpen });
+  };
+
+  $: {
+    if (!$backdropStore.open) isMenuOpen = false;
+  }
 
   $: isSelected = (path: string) => currentPath === path;
+
+  const getSlideMenu =
+    (direction: 'in' | 'out') =>
+    (node, { duration }) => {
+      const easeFn = direction === 'in' ? cubicOut : cubicIn;
+      return {
+        duration,
+        css: (t) => {
+          const eased = easeFn(t);
+          return `transform: translate(${eased * 18 - 18}rem);`;
+        },
+      };
+    };
+  const slideMenuIn = getSlideMenu('in');
+  const slideMenuOut = getSlideMenu('out');
 </script>
 
 <header class="sticky top-0 z-50 bg-brown-800 text-base text-warm-100 md:text-lg">
   <div class="relative mx-auto flex w-full max-w-[1285px] flex-row justify-center gap-10 px-4 py-2">
-    <div class="absolute top-0 bottom-0 left-0 flex items-center bg-brown-700 p-2 md:hidden">
-      <!-- <Fa icon={faBars} /> -->
-      <Fa icon={faClose} />
+    <div
+      class={`absolute top-0 bottom-0 left-0 flex items-center p-2 md:hidden ${
+        isMenuOpen ? 'bg-brown-700' : ''
+      }`}
+      on:mousedown={() => toggleMenu()}
+    >
+      {#if !isMenuOpen}
+        <Fa icon={faBars} />
+      {:else}
+        <Fa icon={faClose} />
+      {/if}
     </div>
 
-    <div class="flex flex-col items-center gap-x-4 md:flex-row">
+    <div class="flex flex-col items-center gap-x-4 md:flex-row" on:click={() => toggleMenu(false)}>
       <Link to="/" class="shrink-0">
         <img class="h-[4.5rem] w-[4.5rem]" src={logo} alt="The Constellation Logo" />
       </Link>
@@ -53,22 +91,23 @@
     </div>
   </div>
 
-  <div class="menu absolute top-[100%] h-screen w-72 bg-brown-700 md:hidden">
-    <div class="relative my-3 flex h-[125px] pl-5">
-      <ProfileMenu on:logout={clickLogout} />
+  {#if isMenuOpen}
+    <div
+      class="absolute top-[100%] h-screen w-72 bg-brown-700 md:hidden"
+      in:slideMenuIn|local={{ duration: 220 }}
+      out:slideMenuOut|local={{ duration: 120 }}
+    >
+      <div class="relative my-3 flex h-[125px] pl-5">
+        <ProfileMenu on:logout={clickLogout} on:clicklink={() => toggleMenu()} />
+      </div>
+      <HeaderLinks
+        on:click={(path) => {
+          toggleMenu();
+          currentPath = path.detail.path;
+        }}
+        {getProps}
+        {isSelected}
+      />
     </div>
-    <HeaderLinks
-      on:click={(path) => {
-        currentPath = path.detail.path;
-      }}
-      {getProps}
-      {isSelected}
-    />
-  </div>
+  {/if}
 </header>
-
-<style lang="scss">
-  .menu {
-    top: calc;
-  }
-</style>

@@ -36,6 +36,11 @@
     toggleProfileMenu(false);
     toggleLangMenu(false);
   };
+
+  const goTo = (path: string) => {
+    dispatch('clicklink', { path });
+    navigate(path);
+  };
 </script>
 
 <svelte:window on:click={handleWindowClick} />
@@ -60,7 +65,7 @@
       >
         <div
           class="cursor-pointer px-5 py-2 hover:bg-brown-800 hover:text-yellow-500 md:rounded-t-lg"
-          on:click={() => navigate('/profile')}
+          on:click={() => goTo('/profile')}
         >
           Profile
         </div>
@@ -103,8 +108,10 @@
   {:else if $loggedUser?.loading}
     <Fa icon={faSpinner} pulse />
   {:else}
-    <Link class="hover:text-yellow-400 active:text-yellow-500" to="login">Login</Link>
-    <Button on:click={() => navigate('signup')}>Signup</Button>
+    <Link class="hover:text-yellow-400 active:text-yellow-500" to="login" on:click={() => goTo('login')}
+      >Login</Link
+    >
+    <Button on:click={() => goTo('signup')}>Signup</Button>
   {/if}
 </div>
 
