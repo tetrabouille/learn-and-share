@@ -12,8 +12,9 @@
   import { routeConfigs } from '@/configs/routes';
   import { hasRouteAccess } from '@/utils/access';
 
-  import Header from '@/components/Header.svelte';
+  import Header from '@/components/header/Header.svelte';
   import Alert from '@/components/Alert.svelte';
+  import Backdrop from './components/Backdrop.svelte';
   import Unknown from '@/pages/Unknown.svelte';
 
   import type { User } from '@/types/user.type';
@@ -61,6 +62,7 @@
       {#if hasRouteAccess($loggedUser, requireLogin, roles)}
         <Route exact {path} let:params>
           <Alert />
+          <Backdrop />
           <svelte:component this={component} {params} />
         </Route>
       {/if}
