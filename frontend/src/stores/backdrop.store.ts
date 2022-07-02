@@ -5,7 +5,7 @@ export type Backdrop = {
 };
 
 const backdropStore = writable<Backdrop>({
-  open: true,
+  open: false,
 });
 
 export { backdropStore };
