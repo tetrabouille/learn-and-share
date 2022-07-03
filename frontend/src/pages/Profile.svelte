@@ -173,8 +173,8 @@
 <section class="flex flex-col items-center pt-10">
   {#if $loggedUser.isConnected && $loggedUser.user.validated && $data}
     <h1 class="pb-5 text-3xl font-bold">My profile</h1>
-    <div class="container max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
-      <div class="-mt-8 -mr-8 flex h-7 items-end justify-end gap-2">
+    <div class="container max-w-[770px] bg-yellow-400/30 p-5 md:rounded-lg">
+      <div class="-mt-8 flex h-7 items-end justify-end gap-2">
         {#if loading}
           <div class="flex h-full w-7 items-center justify-center rounded-full bg-yellow-400 text-sm">
             <Fa icon={faSpinner} pulse />
@@ -195,10 +195,10 @@
           >
         {/if}
       </div>
-      <div class="flex justify-between">
-        <div class="max-w-[495px]">
+      <div class={`flex flex-col-reverse justify-between gap-5 ${editMode ? 'md:flex-row' : 'xs:flex-row'}`}>
+        <div class="md:max-w-[495px]">
           {#if editMode}
-            <div class="flex items-center gap-3">
+            <div class="flex flex-col items-center gap-x-3 xs:flex-row">
               <InputText fieldId="firstname" style="h1" placeholder="Firstname" label="Firstname" />
               <InputText fieldId="lastname" style="h1" placeholder="Lastname" label="Lastname" />
             </div>
@@ -243,38 +243,40 @@
             <p>{country.getName($data.country || '')}</p>
           {/if}
         </div>
-        <div
-          title={editMode ? 'Change your avatar' : 'Your avatar'}
-          class="h-[150px]"
-          class:cursor-pointer={editMode}
-          on:mouseenter={() => (hoverPicture = true)}
-          on:mouseleave={() => (hoverPicture = false)}
-          on:click={() => {
-            editMode && fileinput.click();
-          }}
-        >
+        <div class={`flex grow items-center justify-center ${!editMode ? 'sm:justify-end' : '-mr-5'}`}>
           <div
-            class="flex h-full w-[150px] items-center justify-center rounded-full bg-yellow-400 text-3xl text-cold-800"
+            title={editMode ? 'Change your avatar' : 'Your avatar'}
+            class="h-[150px]"
+            class:cursor-pointer={editMode}
+            on:mouseenter={() => (hoverPicture = true)}
+            on:mouseleave={() => (hoverPicture = false)}
+            on:click={() => {
+              editMode && fileinput.click();
+            }}
           >
-            {#if avatarUrl === 'loading'}
-              <Fa icon={faSpinner} pulse />
-            {:else if editMode && hoverPicture}
-              <Fa icon={faPen} class="text-xl" />
-            {:else}
-              <Avatar
-                {avatarUrl}
-                lang={$data?.langs?.[0]?.id}
-                firstname={$data?.firstname}
-                lastname={$data?.lastname}
+            <div
+              class="flex h-full w-[150px] items-center justify-center rounded-full bg-yellow-400 text-3xl text-cold-800"
+            >
+              {#if avatarUrl === 'loading'}
+                <Fa icon={faSpinner} pulse />
+              {:else if editMode && hoverPicture}
+                <Fa icon={faPen} class="text-xl" />
+              {:else}
+                <Avatar
+                  {avatarUrl}
+                  lang={$data?.langs?.[0]?.id}
+                  firstname={$data?.firstname}
+                  lastname={$data?.lastname}
+                />
+              {/if}
+              <input
+                class="hidden"
+                type="file"
+                accept=".jpg, .jpeg, .png"
+                on:change={(e) => onFileSelected(e, handleFileChange)}
+                bind:this={fileinput}
               />
-            {/if}
-            <input
-              class="hidden"
-              type="file"
-              accept=".jpg, .jpeg, .png"
-              on:change={(e) => onFileSelected(e, handleFileChange)}
-              bind:this={fileinput}
-            />
+            </div>
           </div>
         </div>
       </div>
