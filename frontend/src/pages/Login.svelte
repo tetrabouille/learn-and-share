@@ -102,7 +102,7 @@
   };
 </script>
 
-<section>
+<section class="px-5">
   {#if !$loggedUser.isConnected}
     <h1 class="py-10 text-center text-2xl">Sign in to your account</h1>
     <form class="container mx-auto flex max-w-sm flex-col gap-1" on:submit|preventDefault={handleSubmit}>

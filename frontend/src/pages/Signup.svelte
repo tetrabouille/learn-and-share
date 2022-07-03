@@ -139,7 +139,7 @@
   };
 </script>
 
-<section>
+<section class="px-5">
   {#if formState !== FormState.COMPLETE}
     <h1 class="py-10 text-center text-2xl">Create your account and start writing stories</h1>
     <form class="container mx-auto flex max-w-sm flex-col gap-1" on:submit|preventDefault={handleSubmit}>
@@ -162,7 +162,7 @@
       />
       {#if formState === FormState.SECOND_FORM}
         <div transition:slide|local={{ duration: 350, easing: quintOut }}>
-          <div class="flex flex-row gap-2 pt-2">
+          <div class="flex flex-col gap-x-2 pt-2 xs:flex-row">
             <InputText
               bind:this={inputRefs.firstname}
               fieldId="firstname"
