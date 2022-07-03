@@ -45,7 +45,9 @@
   };
 </script>
 
-<div class={`absolute top-[87px] left-0 right-0 flex w-full items-center justify-center ${getBg()}`}>
+<div
+  class={`absolute top-[112px] left-0 right-0 flex w-full items-center justify-center md:top-[87px] ${getBg()}`}
+>
   {#each $alertStore as alert (alert.message)}
     <div
       class={getClasses(alert)}
