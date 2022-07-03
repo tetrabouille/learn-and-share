@@ -109,7 +109,7 @@
 {#if $loggedUser.isConnected}
   <form class="mb-80 flex flex-col items-center pt-10" on:submit|preventDefault={handleSubmit}>
     <h1 class="pb-5 text-3xl font-bold">Share your story</h1>
-    <div class="container mb-8 max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
+    <div class="container max-w-[770px] bg-yellow-400/30 p-5 pb-8 md:mb-8 md:rounded-lg">
       {#if !profile.langs?.length}
         <h2 class="text-xl text-red-600">
           You need at least one language in your <Link to="profile" class="underline">profile</Link> to write a
@@ -130,7 +130,7 @@
         {/if}
       {/if}
     </div>
-    <div class="container mb-8 max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
+    <div class="container max-w-[770px] bg-yellow-400/30 p-5 pb-8 md:mb-8 md:rounded-lg">
       <h2 class="mb-3 pl-4 text-xl">Title</h2>
       <InputText
         fieldId="title"
@@ -165,7 +165,7 @@
         disabled={!profile.langs?.length}
       />
     </div>
-    <div class="container mb-10 max-w-[770px] rounded-lg bg-yellow-400/30 p-5">
+    <div class="container max-w-[770px] bg-yellow-400/30 p-5 pb-8 md:mb-8 md:rounded-lg">
       <h2 class="mb-3 pl-4 text-2xl font-bold">Principle for Action</h2>
       <InputTextArea
         fieldId="lesson"
@@ -175,6 +175,6 @@
         rows={5}
       />
     </div>
-    <Button buttonClass="text-xl font-bold px-10 py-3" type="submit">Share your story</Button>
+    <Button buttonClass="text-xl font-bold px-10 py-3 mt-8" type="submit">Share your story</Button>
   </form>
 {/if}
