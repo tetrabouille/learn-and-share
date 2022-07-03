@@ -24,7 +24,7 @@
   });
 </script>
 
-{#each routeConfigs as { requireLogin, roles, path, title, linkPositions } (path)}
+{#each routeConfigs as { id, requireLogin, roles, path, title, linkPositions } (id || path)}
   {#if hasRouteAccess($loggedUser, requireLogin, roles) && linkPositions?.includes('header')}
     <div class="relative flex shrink-0 flex-col">
       <Link

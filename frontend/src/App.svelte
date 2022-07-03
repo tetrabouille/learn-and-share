@@ -58,7 +58,7 @@
 <Router {url}>
   <Header />
   <div>
-    {#each routeConfigs as { path, component, requireLogin, roles } (path)}
+    {#each routeConfigs as { id, path, component, requireLogin, roles } (id || path)}
       {#if hasRouteAccess($loggedUser, requireLogin, roles)}
         <Route exact {path} let:params>
           <Alert />

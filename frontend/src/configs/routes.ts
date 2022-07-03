@@ -8,6 +8,7 @@ import Signup from '@/pages/Signup.svelte';
 import Stories from '@/pages/Stories.svelte';
 
 export type RouteConfig = {
+  id?: string;
   path: string;
   component: any;
   requireLogin?: boolean;
@@ -60,6 +61,18 @@ export const routeConfigs: readonly RouteConfig[] = Object.freeze([
     path: '/profile',
     component: Profile,
     requireLogin: true,
+    linkPositions: ['profile'],
+    roles: ['user'],
+    title: 'Profile',
+  },
+  {
+    id: 'my-stories',
+    path: '/stories',
+    component: Profile,
+    requireLogin: true,
+    linkPositions: ['profile'],
+    roles: ['user'],
+    title: 'My Stories',
   },
   {
     path: '/profile/:id',

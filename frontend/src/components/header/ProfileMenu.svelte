@@ -14,6 +14,9 @@
   import { getLangNameFromCode } from '@/utils/form';
   import type { ProfilePayload } from '@/types/profile.type';
   import { PROFILE_UPDATE } from '@/queries/profile.query';
+  import { routeConfigs } from '@/configs/routes';
+  import { hasRouteAccess } from '@/utils/access';
+  import { getUrlWithParams } from '@/utils/commun';
 
   const dispatch = createEventDispatcher();
 
@@ -37,7 +40,14 @@
     toggleLangMenu(false);
   };
 
-  const goTo = (path: string) => {
+  const goTo = (pathParam: string) => {
+    let path = pathParam;
+    if (path.includes('stories')) {
+      if (!$loggedUser.isConnected) return;
+      path = getUrlWithParams(path, {
+        accountId: $loggedUser.user.accountId,
+      });
+    }
     dispatch('clicklink', { path });
     navigate(path);
   };
@@ -63,14 +73,18 @@
         class="absolute top-[100%] left-2 right-2 z-10 mt-5 bg-yellow-400 text-lg font-bold text-black shadow-2xl md:right-0 md:left-auto md:w-[150px] md:rounded-md md:shadow-lg"
         in:slide|local={{ duration: 150 }}
       >
-        <div
-          class="cursor-pointer px-5 py-2 hover:bg-brown-800 hover:text-yellow-500 md:rounded-t-lg"
-          on:click={() => goTo('/profile')}
-        >
-          Profile
-        </div>
-        <div class="cursor-pointer px-5 py-2 hover:bg-brown-800 hover:text-yellow-500">Stories</div>
-        <div class="cursor-pointer px-5 py-2 hover:bg-brown-800 hover:text-yellow-500">Favorites</div>
+        {#each routeConfigs as { id, requireLogin, roles, path, title, linkPositions }, index (id || path)}
+          {#if hasRouteAccess($loggedUser, requireLogin, roles) && linkPositions?.includes('profile')}
+            <div
+              class={`cursor-pointer px-5 py-2 hover:bg-brown-800 hover:text-yellow-500 ${
+                index === 0 ? 'md:rounded-t-lg' : ''
+              }`}
+              on:click={() => goTo(path)}
+            >
+              {title}
+            </div>
+          {/if}
+        {/each}
         <div
           class="cursor-pointer px-5 py-2 hover:bg-brown-800 hover:text-yellow-500 md:rounded-b-lg"
           on:click={() => dispatch('logout')}
