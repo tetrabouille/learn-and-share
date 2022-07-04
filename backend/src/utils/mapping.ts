@@ -1,7 +1,11 @@
-import { User } from 'prisma/prisma-client';
+import { User, Story } from 'prisma/prisma-client';
 
 export type MappedUser = Omit<User, 'roles'> & {
   roles: string[];
+};
+
+export type MappedStory = Story & {
+  isOwn: boolean;
 };
 
 const mapUser = (user: User | null): MappedUser | null => {
@@ -12,4 +16,15 @@ const mapUser = (user: User | null): MappedUser | null => {
   };
 };
 
-export { mapUser };
+const mapStory = (story: Story | null, user: MappedUser | null): MappedStory | null => {
+  if (!story) return null;
+  if (!user) return { ...story, isOwn: false };
+  return {
+    ...story,
+    isOwn: story.userId === user.id,
+  };
+};
+
+const getMapStory = (user: MappedUser | null) => (story: Story | null) => mapStory(story, user);
+
+export { mapUser, getMapStory };

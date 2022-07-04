@@ -31,6 +31,7 @@ const typeDefs = gql`
     lesson: String
     published: Boolean!
     lang: String!
+    isOwn: Boolean!
     createdAt: String!
     updatedAt: String!
     user: User!
@@ -69,14 +70,18 @@ const resolvers = {
   // TODO
 
   Query: {
-    stories: (_: void, { filters, pagination, sortList }: StoryGetAllArgs, { storyGetAll }: StoryContext) =>
-      storyGetAll(filters, pagination, sortList),
+    stories: (
+      _: void,
+      { filters, pagination, sortList }: StoryGetAllArgs,
+      { storyGetAll, error, accountId }: StoryContext
+    ) => storyGetAll({ error, accountId }, filters, pagination, sortList),
     ownStories: (
       _: void,
       { filters, pagination, sortList }: StoryGetAllArgs,
       { storyOwnGetAll, accountId, error }: StoryContext
     ) => storyOwnGetAll({ accountId, error }, filters, pagination, sortList),
-    story: (_: void, { id }: StoryGetByIdArgs, { storyGetById }: StoryContext) => storyGetById(id),
+    story: (_: void, { id }: StoryGetByIdArgs, { storyGetById, accountId, error }: StoryContext) =>
+      storyGetById(id, { accountId, error }),
   },
 
   Mutation: {

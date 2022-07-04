@@ -4,6 +4,7 @@ import { prisma } from '../db/prisma';
 import { accessUtils, communUtils, errorsUtils, logger } from '../utils';
 import type { Filter, Pagination, Sort } from '../schemas/commun.schema';
 import type { AuthData } from '../utils/auth';
+import { getMapStory } from '../utils/mapping';
 import { Error, getMessage } from '../utils/errors';
 import type { StoryAddArgs } from '../schemas/story.schema';
 import { tagContext, topicContext } from '.';
@@ -12,9 +13,42 @@ const error = errorsUtils.getError('story');
 const sortFields = ['title', 'content', 'lesson', 'published', 'lang', 'createdAt'];
 
 // queries
-const storyGetAll = (filters?: Filter[], pagination?: Pagination, sortList?: Sort[]) => {
+const storyGetAll = async (
+  authData: AuthData = {},
+  filters?: Filter[],
+  pagination?: Pagination,
+  sortList?: Sort[]
+) => {
+  const { accountId, error: authError } = authData;
+  const loggedUser = await accessUtils.isRegistered(accountId);
+
+  if (authError) {
+    logger.error(getMessage(Error.TOKEN_EXPIRED));
+    return [];
+  }
+
+  const findManyParams = communUtils.getFindManyParams(filters, pagination, sortList, sortFields);
+
+  let onlyPublished = true;
+  if (loggedUser) {
+    const filterAccountId = filters?.find(({ field }) => field === 'accountId');
+    if (!filterAccountId) {
+      findManyParams.where = {
+        OR: [{ user: { accountId: loggedUser.accountId } }, { published: true }],
+      };
+      onlyPublished = false;
+    }
+    if (loggedUser.accountId === filterAccountId?.value) onlyPublished = false;
+  }
+  if (onlyPublished) {
+    findManyParams.where = {
+      published: true,
+    };
+  }
+
   return prisma.story
-    .findMany(communUtils.getFindManyParams(filters, pagination, sortList, sortFields))
+    .findMany(findManyParams)
+    .then((stories) => stories.map(getMapStory(loggedUser)))
     .catch((e) => {
       logger.error(e);
       return [];
@@ -41,19 +75,35 @@ const storyOwnGetAll = async (
 
   const findManyParams = communUtils.getFindManyParams(filters, pagination, sortList, sortFields);
   findManyParams.where = {
-    'user.accountId': authData.accountId,
+    user: { accountId: authData.accountId },
   };
-  return prisma.story.findMany(findManyParams).catch((e) => {
-    logger.error(e);
-    return [];
-  });
+  return prisma.story
+    .findMany(findManyParams)
+    .then((stories) => stories.map(getMapStory(loggedUser)))
+    .catch((e) => {
+      logger.error(e);
+      return [];
+    });
 };
 
-const storyGetById = (id: string) => {
-  return prisma.story.findUnique({ where: { id: Number(id) } }).catch((e) => {
-    logger.error(e);
+const storyGetById = async (id: string, authData: AuthData = {}) => {
+  const { accountId, error: authError } = authData;
+  const loggedUser = await accessUtils.isRegistered(accountId);
+
+  if (authError) {
+    logger.error(getMessage(Error.TOKEN_EXPIRED));
     return null;
-  });
+  }
+
+  const params = { where: { id: Number(id), OR: [{ published: true } as any] } };
+  if (loggedUser) params.where.OR.push({ user: { accountId: loggedUser.accountId } });
+  return prisma.story
+    .findFirst(params)
+    .then(getMapStory(loggedUser))
+    .catch((e) => {
+      logger.error(e);
+      return null;
+    });
 };
 
 // mutations
