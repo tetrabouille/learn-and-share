@@ -17,7 +17,7 @@
   let inputRef: HTMLInputElement;
 </script>
 
-<InputWrapper on:input {fieldId} {label} {info} {formContextKey} let:handleChange let:value>
+<InputWrapper on:input {fieldId} {label} {info} {formContextKey} let:handleChange let:handleFocus let:value>
   <input
     bind:this={inputRef}
     id={fieldId}
@@ -37,5 +37,6 @@
     {value}
     {disabled}
     on:input={handleChange}
+    on:focus={handleFocus}
   />
 </InputWrapper>

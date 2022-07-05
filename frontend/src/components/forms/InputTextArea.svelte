@@ -31,7 +31,7 @@
   };
 </script>
 
-<InputWrapper on:input {fieldId} {label} {info} {formContextKey} let:handleChange let:value>
+<InputWrapper on:input {fieldId} {label} {info} {formContextKey} let:handleChange let:handleFocus let:value>
   <textarea
     bind:this={inputRef}
     id={fieldId}
@@ -49,6 +49,7 @@
     {value}
     {rows}
     on:input={handleChange}
+    on:focus={handleFocus}
     {disabled}
   />
 </InputWrapper>

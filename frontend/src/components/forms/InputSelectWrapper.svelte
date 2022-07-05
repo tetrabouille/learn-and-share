@@ -32,6 +32,7 @@
   let selectedIndex = -1;
   let containerRef: HTMLDivElement;
   let optionsOntop = false;
+  let isMenuReady = true;
 
   const toggleMenu = (b?: boolean) => {
     if (disabled) return;
@@ -42,6 +43,10 @@
 
     if (opened) {
       inputRef?.focus();
+      isMenuReady = false;
+      setTimeout(() => {
+        isMenuReady = true;
+      }, 1000);
     } else {
       selectedIndex = -1;
       inputRef?.blur();
@@ -127,9 +132,9 @@
   });
 </script>
 
-<svelte:window on:scroll={() => toggleMenu(false)} />
+<svelte:window on:scroll={() => isMenuReady && toggleMenu(false)} />
 
-<InputWrapper on:input {fieldId} {label} {info} {formContextKey} let:handleChange let:value>
+<InputWrapper on:input {fieldId} {label} {info} {formContextKey} let:handleChange let:handleFocus let:value>
   <div
     bind:this={containerRef}
     class={`${getClass()} relative flex items-center`}
@@ -146,6 +151,7 @@
       inputValue={displayValue()}
       {opened}
       {handleChange}
+      {handleFocus}
       {onInputKeyDown}
       {onInputChange}
       {toggleMenu}

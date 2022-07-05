@@ -117,6 +117,7 @@
   let:inputValue
   let:opened
   let:handleChange
+  let:handleFocus
   let:onInputChange
   let:onInputKeyDown
   let:toggleMenu
@@ -153,6 +154,7 @@
       }}
       on:input={(e) => handleInputChange(e, onInputChange)}
       on:focus={() => {
+        handleFocus();
         resetInputSearch();
         toggleMenu(true);
       }}

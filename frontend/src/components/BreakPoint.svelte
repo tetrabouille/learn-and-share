@@ -27,6 +27,7 @@
     listeners = [];
     getBreakPoints().forEach(({ value, code }) => {
       const mql = window.matchMedia(`(min-width: ${value}px)`);
+      mql.matches && updateBreakPoint(code, mql.matches);
       const listener = (e: MediaQueryListEvent) => {
         updateBreakPoint(code, e.matches);
       };

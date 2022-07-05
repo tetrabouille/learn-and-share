@@ -47,6 +47,7 @@
   let:inputValue
   let:opened
   let:handleChange
+  let:handleFocus
   let:onInputChange
   let:onInputKeyDown
   let:toggleMenu
@@ -63,6 +64,7 @@
     }}
     on:input={onInputChange}
     on:focus={() => {
+      handleFocus();
       dispatch('inputsearch', { value: '' });
       toggleMenu(true);
     }}
