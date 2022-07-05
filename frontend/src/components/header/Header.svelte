@@ -11,8 +11,12 @@
   import { cubicIn, cubicOut } from 'svelte/easing';
   import { backdropStore } from '@/stores/backdrop.store';
 
+  let isMenuReady = false;
   let currentPath: string;
   let isMenuOpen: boolean;
+  let y: number;
+
+  $: isMenuReady = y === 0 && isMenuOpen;
 
   const getProps = ({ location, isCurrent }: GetPropsParams) => {
     currentPath = location.pathname;
@@ -29,6 +33,7 @@
 
   const toggleMenu = (open?: boolean) => {
     isMenuOpen = open == null ? !isMenuOpen : open;
+    if (!isMenuReady) scrollTo(0, 0);
     backdropStore.set({ open: isMenuOpen });
   };
 
@@ -54,7 +59,9 @@
   const slideMenuOut = getSlideMenu('out');
 </script>
 
-<header class="sticky top-0 z-50 bg-brown-800 text-base text-warm-100 md:text-lg">
+<svelte:window on:scroll={() => isMenuReady && toggleMenu(false)} bind:scrollY={y} />
+
+<header class={`relative top-0 z-50 bg-brown-800 text-base text-warm-100 md:sticky md:text-lg`}>
   <div class="relative mx-auto flex w-full max-w-[1285px] flex-row justify-center gap-10 px-4 py-2">
     <div
       class={`absolute top-0 bottom-0 left-0 flex items-center p-2 md:hidden ${
@@ -93,7 +100,7 @@
 
   {#if isMenuOpen}
     <div
-      class="absolute top-[100%] h-screen w-72 bg-brown-700 md:hidden"
+      class="menu absolute top-[100%] w-72 bg-brown-700 md:hidden"
       in:slideMenuIn|local={{ duration: 220 }}
       out:slideMenuOut|local={{ duration: 120 }}
     >
@@ -111,3 +118,9 @@
     </div>
   {/if}
 </header>
+
+<style lang="scss">
+  .menu {
+    height: calc(100vh - 110px);
+  }
+</style>

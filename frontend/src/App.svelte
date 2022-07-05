@@ -18,6 +18,7 @@
   import Unknown from '@/pages/Unknown.svelte';
 
   import type { User } from '@/types/user.type';
+  import BreakPoint from './components/BreakPoint.svelte';
 
   const httpLink = createHttpLink({
     uri: `${String(env.VITE_SERVER_HOST)}/graphql`,
@@ -56,6 +57,7 @@
 </script>
 
 <Router {url}>
+  <BreakPoint />
   <Header />
   <div>
     {#each routeConfigs as { id, path, component, requireLogin, roles } (id || path)}

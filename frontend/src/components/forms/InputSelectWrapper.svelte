@@ -127,6 +127,8 @@
   });
 </script>
 
+<svelte:window on:scroll={() => toggleMenu(false)} />
+
 <InputWrapper on:input {fieldId} {label} {info} {formContextKey} let:handleChange let:value>
   <div
     bind:this={containerRef}
