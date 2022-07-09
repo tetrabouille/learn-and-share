@@ -173,7 +173,11 @@
 <section class="flex flex-col items-center pt-10">
   {#if $loggedUser.isConnected && $loggedUser.user.validated && $data}
     <h1 class="pb-5 text-3xl font-bold">My profile</h1>
-    <div class="container max-w-[770px] bg-yellow-400/30 p-5 md:rounded-lg">
+    <div
+      class={`container max-w-[770px] p-5 md:rounded-md ${
+        editMode ? 'bg-yellow-400/20 md:shadow-md' : 'bg-brown-50/70 md:shadow-sm'
+      }`}
+    >
       <div class="-mt-8 flex h-7 items-end justify-end gap-2">
         {#if loading}
           <div class="flex h-full w-7 items-center justify-center rounded-full bg-yellow-400 text-sm">
@@ -214,7 +218,7 @@
             <p>{getAge($data.birthdate)}</p>
           {/if}
           {#if editMode}
-            <div class="flex items-end gap-3">
+            <div class="flex flex-col items-end gap-x-3 sm:flex-row">
               <InputSelect
                 fieldId="gender"
                 style="h1"

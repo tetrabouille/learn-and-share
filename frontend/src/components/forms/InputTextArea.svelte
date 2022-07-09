@@ -15,20 +15,6 @@
   };
 
   let inputRef: HTMLTextAreaElement;
-
-  $: getClass = () => {
-    const classes = 'w-full focus:outline-none -mb-2';
-    const ext = (() => {
-      switch (style) {
-        default:
-        case 'classic':
-          return 'rounded-md bg-warm-700/70 px-3 py-1 text-white focus:bg-warm-800/70 placeholder:text-warm-200/70';
-        case 'h1':
-          return 'px-4 pt-2 pb-2 py-1 text-xl bg-creme-50/90 focus:border-b-4 focus:border-b-cold-500 focus:pb-1 placeholder:text-warm-700/70';
-      }
-    })();
-    return classes.concat(` ${ext}`);
-  };
 </script>
 
 <InputWrapper on:input {fieldId} {label} {info} {formContextKey} let:handleChange let:handleFocus let:value>
@@ -41,8 +27,9 @@
         : ''
     } ${
       style === 'h1'
-        ? 'bg-creme-50/90 placeholder:text-warm-700/70 focus:border-b-cold-500 disabled:bg-cold-200/30 ' +
-          'px-4 py-1 pt-2 pb-2 text-xl focus:border-b-4 focus:pb-1 disabled:placeholder:text-warm-700/90'
+        ? 'bg-creme-50/90 placeholder:text-warm-700/70 focus:border-b-cold-500 disabled:bg-brown-400/30 ' +
+          'px-4 py-1 pt-2 pb-2 text-xl focus:border-b-4 focus:pb-1 disabled:placeholder:text-warm-700/90 ' +
+          'shadow-sm md:shadow-none'
         : ''
     }`}
     {placeholder}

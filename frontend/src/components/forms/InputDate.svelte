@@ -25,7 +25,10 @@
         case 'classic':
           return 'rounded-md bg-warm-700/70 px-3 py-1 text-white focus:bg-warm-800/70 placeholder:text-warm-200/70';
         case 'h1':
-          return 'px-4 pt-2 pb-2 py-1 text-xl bg-creme-50/90 focus:border-b-4 focus:border-b-cold-500 focus:pb-1 placeholder:text-warm-700/70 h-[44px]';
+          return (
+            'px-4 pt-2 pb-2 py-1 text-xl bg-creme-50/90 focus:border-b-4 focus:border-b-cold-500 focus:pb-1 ' +
+            'placeholder:text-warm-700/70 h-[44px] md:shadow-none shadow-sm'
+          );
       }
     })();
     return classes.concat(` ${ext}`);

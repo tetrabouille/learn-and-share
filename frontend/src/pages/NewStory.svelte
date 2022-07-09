@@ -109,7 +109,7 @@
 {#if $loggedUser.isConnected}
   <form class="mb-80 flex flex-col items-center pt-10" on:submit|preventDefault={handleSubmit}>
     <h1 class="pb-5 text-3xl font-bold">Share your story</h1>
-    <div class="container max-w-[770px] bg-yellow-400/30 p-5 pb-8 md:mb-8 md:rounded-lg">
+    <div class="container mb-8 max-w-[770px] bg-brown-50/70 px-5 pt-3 pb-5 md:rounded-sm md:shadow-sm">
       {#if !profile.langs?.length}
         <h2 class="text-xl text-red-600">
           You need at least one language in your <Link to="profile" class="underline">profile</Link> to write a
@@ -130,12 +130,19 @@
         {/if}
       {/if}
     </div>
-    <div class="container max-w-[770px] bg-yellow-400/30 p-5 pb-8 md:mb-8 md:rounded-lg">
+    <div class="container max-w-[770px] bg-yellow-400/20 p-5 pb-8 md:mb-8 md:rounded-lg md:shadow-md">
       <h2 class="mb-3 pl-4 text-xl">Title</h2>
       <InputText
         fieldId="title"
         placeholder="Title of your story"
         style="h1"
+        disabled={!profile.langs?.length}
+      />
+      <h2 class="mb-3 pl-4 text-xl">Your story</h2>
+      <InputTextArea
+        fieldId="content"
+        style="h1"
+        placeholder="Share here"
         disabled={!profile.langs?.length}
       />
       <h2 class="mb-3 pl-4 text-xl">Key words</h2>
@@ -157,15 +164,8 @@
         on:inputsearch={debounce(handleTagSearch, 300)}
         disabled={!profile.langs?.length}
       />
-      <h2 class="mb-3 pl-4 text-xl">Your story</h2>
-      <InputTextArea
-        fieldId="content"
-        style="h1"
-        placeholder="Share here"
-        disabled={!profile.langs?.length}
-      />
     </div>
-    <div class="container max-w-[770px] bg-yellow-400/30 p-5 pb-8 md:mb-8 md:rounded-lg">
+    <div class="container max-w-[770px] bg-yellow-400/20 p-5 pb-8 md:mb-8 md:rounded-lg md:shadow-md">
       <h2 class="mb-3 pl-4 text-2xl font-bold">Principle for Action</h2>
       <InputTextArea
         fieldId="lesson"
