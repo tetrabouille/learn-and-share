@@ -10,16 +10,18 @@
   import HeaderLinks from './HeaderLinks.svelte';
   import { cubicIn, cubicOut } from 'svelte/easing';
   import { backdropStore } from '@/stores/backdrop.store';
+  import { locationStore } from '@/stores/location.store';
 
   let isMenuReady = false;
   let currentPath: string;
   let isMenuOpen: boolean;
   let y: number;
 
+  $: currentPath = $locationStore.pathname;
+
   $: isMenuReady = y === 0 && isMenuOpen;
 
-  const getProps = ({ location, isCurrent }: GetPropsParams) => {
-    currentPath = location.pathname;
+  const getProps = ({ isCurrent }: GetPropsParams) => {
     const classes = ['font-semibold', 'p-4'];
     if (isCurrent) classes.push('text-yellow-500');
     else classes.push('text-warm-100', 'hover:text-yellow-400');
@@ -84,13 +86,7 @@
     </div>
 
     <nav class="text mr-auto hidden max-w-3xl flex-row items-center md:flex">
-      <HeaderLinks
-        on:click={(path) => {
-          currentPath = path.detail.path;
-        }}
-        {getProps}
-        {isSelected}
-      />
+      <HeaderLinks {getProps} {isSelected} />
     </nav>
 
     <div class="hidden md:flex">
@@ -108,9 +104,8 @@
         <ProfileMenu on:logout={clickLogout} on:clicklink={() => toggleMenu()} />
       </div>
       <HeaderLinks
-        on:click={(path) => {
+        on:click={() => {
           toggleMenu();
-          currentPath = path.detail.path;
         }}
         {getProps}
         {isSelected}

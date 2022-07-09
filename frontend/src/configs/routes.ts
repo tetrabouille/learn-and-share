@@ -15,6 +15,7 @@ export type RouteConfig = {
   linkPositions?: string[];
   title?: string;
   roles?: string[];
+  bis?: boolean;
 };
 
 export const routeConfigs: readonly RouteConfig[] = Object.freeze([
@@ -73,6 +74,7 @@ export const routeConfigs: readonly RouteConfig[] = Object.freeze([
     linkPositions: ['profile'],
     roles: ['user'],
     title: 'My Stories',
+    bis: true,
   },
   {
     path: '/profile/:id',

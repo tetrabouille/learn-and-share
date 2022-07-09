@@ -25,6 +25,11 @@
   let profileMenuOpen = false;
   let langMenuOpen = false;
 
+  $: filteredRouteConfigs = routeConfigs.filter(
+    ({ roles, requireLogin, linkPositions }) =>
+      hasRouteAccess($loggedUser, requireLogin, roles) && linkPositions?.includes('profile')
+  );
+
   const toggleProfileMenu = (open: boolean) => {
     langMenuOpen = false;
     profileMenuOpen = open;
@@ -73,17 +78,15 @@
         class="absolute top-[100%] left-2 right-2 z-10 mt-5 bg-yellow-400 text-lg font-bold text-black shadow-2xl md:right-0 md:left-auto md:w-[150px] md:rounded-md md:shadow-lg"
         in:slide|local={{ duration: 150 }}
       >
-        {#each routeConfigs as { id, requireLogin, roles, path, title, linkPositions }, index (id || path)}
-          {#if hasRouteAccess($loggedUser, requireLogin, roles) && linkPositions?.includes('profile')}
-            <div
-              class={`cursor-pointer px-5 py-2 hover:bg-brown-800 hover:text-yellow-500 ${
-                index === 0 ? 'md:rounded-t-lg' : ''
-              }`}
-              on:click={() => goTo(path)}
-            >
-              {title}
-            </div>
-          {/if}
+        {#each filteredRouteConfigs as { id, path, title }, index (id || path)}
+          <div
+            class={`cursor-pointer px-5 py-2 hover:bg-brown-800 hover:text-yellow-500 ${
+              index === 0 ? 'md:rounded-t-md' : ''
+            }`}
+            on:click={() => goTo(path)}
+          >
+            {title}
+          </div>
         {/each}
         <div
           class="cursor-pointer px-5 py-2 hover:bg-brown-800 hover:text-yellow-500 md:rounded-b-lg"
