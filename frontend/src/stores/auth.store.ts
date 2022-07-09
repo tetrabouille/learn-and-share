@@ -36,7 +36,11 @@ const loggedUser = writable<LoggedUser>({ ...emptyLoggedUser });
 const setLoggedUser = async (token: string, query: ReadableQuery<{ user: User }>) => {
   if (token) {
     try {
-      await query.refetch({ accountId: decode<{ sub: string }>(token).sub });
+      const decoded = decode<{ sub: string; exp: number }>(token);
+
+      if (decoded.exp < Date.now() / 1000) return logout();
+
+      await query.refetch({ accountId: decoded.sub });
       query.subscribe(({ data, loading }) => {
         const user = (() => {
           if (data?.user?.profile) {
@@ -52,10 +56,10 @@ const setLoggedUser = async (token: string, query: ReadableQuery<{ user: User }>
         loggedUser.set({ user, loading, isConnected: !!user?.id });
       });
     } catch (err) {
-      logout('', null);
+      logout();
     }
   } else {
-    logout('', null);
+    logout();
   }
 };
 
