@@ -2,6 +2,7 @@ import { prisma } from '../db/prisma';
 import { TopicAddArgs, Filter, Pagination, Sort } from '../schemas';
 import { logger, accessUtils, communUtils, errorsUtils, validationUtils } from '../utils';
 import { AuthData } from '../utils/auth';
+import { topicLoader } from './../loaders/topic.loader';
 
 const { Error } = errorsUtils;
 const error = errorsUtils.getError('topic');
@@ -12,9 +13,7 @@ const topicGetAll = (filters?: Filter[], pagination?: Pagination, sortList?: Sor
   return prisma.topic.findMany(communUtils.getFindManyParams(filters, pagination, sortList, sortFields));
 };
 
-const topicGetById = (id: string | number) => {
-  return prisma.topic.findUnique({ where: { id: Number(id) } });
-};
+const topicGetById = (id: string | number) => topicLoader.load(Number(id));
 
 // mutations
 const topicAdd = async (input: TopicAddArgs['input'], authData: AuthData) => {

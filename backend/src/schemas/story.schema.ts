@@ -1,5 +1,5 @@
 import { gql } from 'apollo-server-express';
-import { StoryContext } from '../contexts';
+import { StoryContext, TagContext, TopicContext, UserContext } from '../contexts';
 import { Filter, Pagination, Sort } from './commun.schema';
 
 type StoryGetAllArgs = {
@@ -9,6 +9,12 @@ type StoryGetAllArgs = {
 };
 
 type StoryGetByIdArgs = {
+  id: string;
+};
+
+type ParentArgs = {
+  userId: string;
+  topicId: string;
   id: string;
 };
 
@@ -67,7 +73,12 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
-  // TODO
+  Story: {
+    user: ({ userId }: ParentArgs, _: void, { userGetById }: UserContext) => userGetById(userId),
+    topic: ({ topicId }: ParentArgs, _: void, { topicGetById }: TopicContext) => topicGetById(topicId),
+    tags: ({ id }: ParentArgs, _: void, { tagGetAll }: TagContext) =>
+      tagGetAll([{ field: 'stories.some.id', value: id }]),
+  },
 
   Query: {
     stories: (

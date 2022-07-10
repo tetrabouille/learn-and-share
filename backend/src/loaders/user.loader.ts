@@ -5,7 +5,7 @@ import { MappedUser, mapUser } from '../utils/mapping';
 
 const batchUsers = async (ids: readonly number[]) => {
   const users = await prisma.user
-    .findMany({ where: { id: { in: [...ids] } } })
+    .findMany({ where: { id: { in: [...ids] } }, include: { profile: true } })
     .then((users) => users.map(mapUser));
   const mapUsers = keyBy(users, 'id');
   return ids.map((id) => mapUsers[id]);
