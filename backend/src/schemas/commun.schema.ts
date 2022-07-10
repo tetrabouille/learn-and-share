@@ -4,6 +4,7 @@ type Filter = {
   field: string;
   value: string | string[] | boolean | number | number[];
   option?: 'contains' | 'in';
+  type?: 'string' | 'string[]' | 'number' | 'number[]' | 'boolean';
 };
 
 type Pagination = {
@@ -26,6 +27,7 @@ const typeDefs = gql`
     field: String!
     value: String!
     option: String
+    type: String
   }
 
   input Pagination {

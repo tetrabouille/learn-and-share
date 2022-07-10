@@ -2,6 +2,7 @@ export type Filter = {
   field: string;
   value: string | string[] | boolean | number | number[];
   option?: 'contains' | 'in';
+  type?: 'string' | 'string[]' | 'number' | 'number[]' | 'boolean';
 };
 
 export type Pagination = {

@@ -29,7 +29,7 @@
   };
 
   const clickLogout = () => {
-    toggleMenu();
+    toggleMenu(false);
     logout(currentPath, navigate);
   };
 
@@ -101,11 +101,11 @@
       out:slideMenuOut|local={{ duration: 120 }}
     >
       <div class="relative my-3 flex h-[125px] pl-5">
-        <ProfileMenu on:logout={clickLogout} on:clicklink={() => toggleMenu()} />
+        <ProfileMenu on:logout={clickLogout} on:clicklink={() => toggleMenu(false)} />
       </div>
       <HeaderLinks
         on:click={() => {
-          toggleMenu();
+          toggleMenu(false);
         }}
         {getProps}
         {isSelected}

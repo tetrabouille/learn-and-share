@@ -36,6 +36,12 @@
   }));
   $: usersOptions.unshift({ id: undefined, text: 'All' });
 
+  $: formContext = setFormContext({
+    accountId: $locationStore.params.accountId,
+  });
+
+  $: formData = formContext.data;
+
   let params: {
     accountId: string;
   };
@@ -44,6 +50,7 @@
   $: getFilters = () => {
     const filters = [];
     if (params.accountId) filters.push({ field: 'user.accountId', value: params.accountId });
+    else filters.push({ field: 'published', value: 'true', type: 'boolean' });
     return filters;
   };
 
@@ -51,7 +58,10 @@
     variables: {
       filters: getFilters(),
       pagination: { take: 6 },
-      sortList: [{ field: 'createdAt', order: 'desc' }],
+      sortList: [
+        { field: 'published', order: 'asc' },
+        { field: 'createdAt', order: 'desc' },
+      ],
     },
   });
 
@@ -63,16 +73,19 @@
       loading = false;
     });
 
-  $: stories = ($storyGetAllQuery.data?.stories || []).map((story) => ({
-    ...story,
-    user: { ...story.user, profile: addAvatarToProfile(story.user) },
-  }));
-
-  $: formContext = setFormContext({
-    accountId: $locationStore.params.accountId,
-  });
-
-  $: formData = formContext.data;
+  $: storiesTab = ($storyGetAllQuery.data?.stories || [])
+    .map((story) => ({
+      ...story,
+      user: { ...story.user, profile: addAvatarToProfile(story.user) },
+    }))
+    .reduce(
+      (acc, story) => {
+        if (!story.published) acc[0].push(story);
+        else acc[1].push(story);
+        return acc;
+      },
+      [[], []]
+    );
 
   let loading = true;
   $: loading = $userGetAllQuery.loading || $storyGetAllQuery.loading;
@@ -104,43 +117,57 @@
     </div>
   </form>
   <h1 class="pb-5 text-3xl font-bold">{isOwn ? 'My stories' : 'Stories'}</h1>
-  {#if stories.length}
-    <div class="flex w-full flex-col items-center">
-      {#each stories as story}
-        <Container
-          isInput={story.isOwn && !story.published}
-          extraClass="mb-8 flex flex-col sm:flex-row gap-x-5"
-        >
-          <div class="flex-grow">
-            <h2 class="text-xl font-bold">
-              {story.title}
-            </h2>
-            <p class="pb-2 text-sm text-warm-800/70">({getLangNameFromCode(story.lang)})</p>
-            {#if story.topic}<p class="pb-2 underline">{story.topic.name}</p>{/if}
-            {#if story?.tags?.length}
-              <div class="flex flex-wrap gap-2 pb-4 text-sm">
-                {#each story?.tags || [] as tag}
-                  <span class="inline-block rounded-full bg-brown-800/80 px-2 text-white">{tag.name}</span>
-                {/each}
+  {#each storiesTab as stories, index}
+    {#if stories.length}
+      <div class="container flex max-w-[770px] gap-4 text-center text-warm-600/80">
+        {#if isOwn}
+          <div class="my-auto h-full flex-grow border-b-2" />
+          {#if index === 0}
+            <h2 class="py-3 text-lg text-warm-900/90">Drafts</h2>
+          {/if}
+          {#if index === 1}
+            <h2 class="py-3 text-lg text-warm-900/90">Published</h2>
+          {/if}
+          <div class="my-auto h-full flex-grow border-b-2" />
+        {/if}
+      </div>
+      <div class="flex w-full flex-col items-center">
+        {#each stories as story}
+          <Container
+            isInput={story.isOwn && !story.published}
+            extraClass="mb-8 flex flex-col sm:flex-row gap-x-5"
+          >
+            <div class="flex-grow">
+              <h2 class="text-xl font-bold">
+                {story.title}
+              </h2>
+              <p class="pb-2 text-sm text-warm-800/70">({getLangNameFromCode(story.lang)})</p>
+              {#if story.topic}<p class="pb-2 underline">{story.topic.name}</p>{/if}
+              {#if story?.tags?.length}
+                <div class="flex flex-wrap gap-2 pb-4 text-sm">
+                  {#each story?.tags || [] as tag}
+                    <span class="inline-block rounded-full bg-brown-800/80 px-2 text-white">{tag.name}</span>
+                  {/each}
+                </div>
+              {/if}
+              <p class="pb-5">{story.content}</p>
+              <h2 class="pb-1 text-xl">Lesson</h2>
+              <p>{story.lesson}</p>
+            </div>
+            <div class="mx-auto mt-3 flex flex-col items-center justify-center self-start">
+              <div class="h-[70px] w-[70px] sm:h-[150px] sm:w-[150px]">
+                <Avatar avatarUrl={story.user.profile.avatarUrl} lang={story.user.profile.langs?.[0]} />
               </div>
-            {/if}
-            <p class="pb-5">{story.content}</p>
-            <h2 class="pb-1 text-xl">Lesson</h2>
-            <p>{story.lesson}</p>
-          </div>
-          <div class="mt-3 flex flex-col justify-center self-start">
-            <div class="mx-auto h-[70px] w-[70px] sm:h-[150px] sm:w-[150px]">
-              <Avatar avatarUrl={story.user.profile.avatarUrl} lang={story.user.profile.langs?.[0]} />
+              <div class="whitespace-nowrap text-center">
+                {story.user.profile.firstname || ''}
+                {story.user.profile.lastname || ''}
+              </div>
             </div>
-            <div class="whitespace-nowrap text-center">
-              {story.user.profile.firstname || ''}
-              {story.user.profile.lastname || ''}
-            </div>
-          </div>
-        </Container>
-      {/each}
-    </div>
-  {:else if $storyGetAllQuery.loading}
-    loading
-  {/if}
+          </Container>
+        {/each}
+      </div>
+    {:else if $storyGetAllQuery.loading}
+      loading
+    {/if}
+  {/each}
 </section>

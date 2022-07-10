@@ -34,6 +34,7 @@ const storyGetAll = async (
     const filterAccountId = filters?.find(({ field }) => field === 'user.accountId');
     if (!filterAccountId) {
       findManyParams.where = {
+        ...(findManyParams.where || {}),
         OR: [{ user: { accountId: loggedUser.accountId } }, { published: true }],
       };
       onlyPublished = false;

@@ -4,11 +4,12 @@ import { Filter, Pagination, Sort } from '../schemas';
 
 const orderBy = (sortList?: Sort[], fields?: string[]): any => {
   if (!sortList || !fields) return {};
-  const orderBy: any = {};
-  sortList?.forEach((sort) => {
-    if (fields?.includes(sort.field) && (sort.order === 'asc' || sort.order === 'desc'))
-      set(orderBy, sort.field, sort.order);
-  });
+  const orderBy = sortList
+    ?.map((sort) => {
+      if (fields?.includes(sort.field) && (sort.order === 'asc' || sort.order === 'desc'))
+        return set({}, sort.field, sort.order);
+    })
+    .filter((x) => x);
   return orderBy;
 };
 
@@ -45,10 +46,25 @@ const getFilters = (filters?: Filter[]): any => {
   if (!filters?.length) return where;
 
   filters.forEach((filter) => {
+    const value = (() => {
+      switch (filter.type) {
+        default:
+        case 'string':
+          return filter.value;
+        case 'string[]':
+          return (filter.value as string).split(';');
+        case 'number':
+          return Number(filter.value);
+        case 'number[]':
+          return (filter.value as string).split(';').map(Number);
+        case 'boolean':
+          return filter.value === 'true';
+      }
+    })();
     if (filter.option) {
-      set(where, filter.field, { [filter.option]: filter.value });
+      set(where, filter.field, { [filter.option]: value });
     } else {
-      set(where, filter.field, filter.value);
+      set(where, filter.field, value);
     }
   });
 
