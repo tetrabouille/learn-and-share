@@ -46,11 +46,9 @@ const getFilters = (filters?: Filter[]): any => {
 
   filters.forEach((filter) => {
     if (filter.option) {
-      where[filter.field as string] = {
-        [filter.option]: filter.value,
-      };
+      set(where, filter.field, { [filter.option]: filter.value });
     } else {
-      where[filter.field as string] = filter.value;
+      set(where, filter.field, filter.value);
     }
   });
 

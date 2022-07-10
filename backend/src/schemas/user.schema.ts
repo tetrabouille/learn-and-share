@@ -1,9 +1,16 @@
 import { gql } from 'apollo-server-express';
 
 import { ProfileContext, UserContext } from '../contexts';
+import { Filter, Pagination, Sort } from './commun.schema';
 
 type ParentArgs = {
   id: string;
+};
+
+type UserGetAllArgs = {
+  filters?: Filter[];
+  pagination?: Pagination;
+  sortList?: Sort[];
 };
 
 type UserAddArgs = {
@@ -31,7 +38,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    users: [User!]!
+    users(filters: [Filter!], pagination: Pagination, sortList: [Sort!]): [User!]!
     user(userId: ID, accountId: ID): User
     ownUser: User!
   }
@@ -54,7 +61,8 @@ const resolvers = {
   },
 
   Query: {
-    users: (_: void, __: void, { userGetAll }: UserContext) => userGetAll(),
+    users: (_: void, { filters, pagination, sortList }: UserGetAllArgs, { userGetAll }: UserContext) =>
+      userGetAll(filters, pagination, sortList),
     user: (_: void, { userId, accountId }: UserGetArgs, { userGetById, userGetByAccountId }: UserContext) =>
       accountId ? userGetByAccountId(accountId) : userGetById(userId),
     ownUser: (_: void, __: void, { userGetByAccountId, accountId }: UserContext) =>

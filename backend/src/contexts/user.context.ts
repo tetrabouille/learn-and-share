@@ -1,16 +1,27 @@
 import { prisma } from '../db/prisma';
-import { getSimpleHash } from '../utils/crypto';
 import { userLoader } from '../loaders/user.loader';
+import { getSimpleHash } from '../utils/crypto';
 import { isRegistered } from '../utils/access';
 import { Error, getError } from '../utils/errors';
 import { mapUser } from '../utils/mapping';
 import type { AuthData } from '../utils/auth';
+import { communUtils, logger } from '../utils';
+import type { Filter, Pagination, Sort } from '../schemas/commun.schema';
 
 const error = getError('user');
+const sortFields = ['profile.firstname', 'profile.lastname', 'createdAt'];
 
 // queries
 
-const userGetAll = () => prisma.user.findMany().then((users) => users.map(mapUser));
+const userGetAll = (filters?: Filter[], pagination?: Pagination, sortList?: Sort[]) => {
+  return prisma.user
+    .findMany(communUtils.getFindManyParams(filters, pagination, sortList, sortFields))
+    .then((users) => users.map(mapUser))
+    .catch((e) => {
+      logger.error(e);
+      return [];
+    });
+};
 
 const userGetById = (id: string | number | undefined) => userLoader.load(Number(id));
 

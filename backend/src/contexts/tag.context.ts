@@ -9,13 +9,6 @@ const sortFields = ['name', 'lang', 'createdAt'];
 
 // queries
 const tagGetAll = (filters?: Filter[], pagination?: Pagination, sortList?: Sort[]) => {
-  logger.debug(
-    `tagGetAll findMany params ${JSON.stringify(
-      communUtils.getFindManyParams(filters, pagination, sortList, sortFields),
-      null,
-      2
-    )}`
-  );
   return prisma.tag
     .findMany(communUtils.getFindManyParams(filters, pagination, sortList, sortFields))
     .catch((e) => {
