@@ -32,6 +32,7 @@
   import SelectItems, { type Item } from '@/components/SelectItems.svelte';
   import { handleError } from '@/utils/errors';
   import { GenderEnum, type Profile, type ProfilePayload } from '@/types/profile.type';
+  import Container from '@/components/Container.svelte';
 
   export let params;
 
@@ -173,12 +174,8 @@
 <section class="flex flex-col items-center pt-10">
   {#if $loggedUser.isConnected && $loggedUser.user.validated && $data}
     <h1 class="pb-5 text-3xl font-bold">My profile</h1>
-    <div
-      class={`container max-w-[770px] p-5 md:rounded-md ${
-        editMode ? 'bg-yellow-400/20 md:shadow-md' : 'bg-brown-50/70 md:shadow-sm'
-      }`}
-    >
-      <div class="-mt-8 flex h-7 items-end justify-end gap-2">
+    <Container isInput={editMode} extraClass="p-5">
+      <div class="-mt-[26px] flex h-7 items-end justify-end gap-2">
         {#if loading}
           <div class="flex h-full w-7 items-center justify-center rounded-full bg-yellow-400 text-sm">
             <Fa icon={faSpinner} pulse />
@@ -316,7 +313,7 @@
           {$data.bio}
         </p>
       {/if}
-    </div>
+    </Container>
   {:else}
     <p>User not connected or not validated</p>
   {/if}

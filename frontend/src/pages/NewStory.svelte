@@ -16,6 +16,7 @@
   import InputMultiSelect from '@/components/forms/InputMultiSelect.svelte';
   import SelectItems from '@/components/SelectItems.svelte';
   import Button from '@/components/Button.svelte';
+  import Container from '@/components/Container.svelte';
   import { formatTitle, getLangNameFromCode, NEW_OPTION, type FormOption } from '@/utils/form';
   import { handleError } from '@/utils/errors';
   import { handleLangSelected, langsToOptions, updateLoggedUserLangs } from '@/utils/profile';
@@ -109,7 +110,7 @@
 {#if $loggedUser.isConnected}
   <form class="mb-80 flex flex-col items-center pt-10" on:submit|preventDefault={handleSubmit}>
     <h1 class="pb-5 text-3xl font-bold">Share your story</h1>
-    <div class="container mb-8 max-w-[770px] bg-brown-50/70 px-5 pt-3 pb-5 md:rounded-sm md:shadow-sm">
+    <Container rounded="sm" extraClass="mb-8 pb-5">
       {#if !profile.langs?.length}
         <h2 class="text-xl text-red-600">
           You need at least one language in your <Link to="profile" class="underline">profile</Link> to write a
@@ -129,8 +130,8 @@
           </div>
         {/if}
       {/if}
-    </div>
-    <div class="container max-w-[770px] bg-yellow-400/20 p-5 pb-8 md:mb-8 md:rounded-lg md:shadow-md">
+    </Container>
+    <Container rounded="lg" extraClass="p-5 pb-8 md:mb-8" isInput>
       <h2 class="mb-3 pl-4 text-xl">Title</h2>
       <InputText
         fieldId="title"
@@ -164,8 +165,8 @@
         on:inputsearch={debounce(handleTagSearch, 300)}
         disabled={!profile.langs?.length}
       />
-    </div>
-    <div class="container max-w-[770px] bg-yellow-400/20 p-5 pb-8 md:mb-8 md:rounded-lg md:shadow-md">
+    </Container>
+    <Container rounded="lg" extraClass="p-5 pb-8 md:mb-8" isInput>
       <h2 class="mb-3 pl-4 text-2xl font-bold">Principle for Action</h2>
       <InputTextArea
         fieldId="lesson"
@@ -174,7 +175,7 @@
         disabled={!profile.langs?.length}
         rows={5}
       />
-    </div>
+    </Container>
     <Button buttonClass="text-xl font-bold px-10 py-3 mt-8" type="submit">Share your story</Button>
   </form>
 {/if}
