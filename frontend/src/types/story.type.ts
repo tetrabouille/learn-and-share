@@ -1,4 +1,4 @@
-import type { User } from '@supabase/supabase-js';
+import type { User } from './user.type';
 import type { Tag } from './tag.type';
 import type { Topic } from './topic.type';
 import type { UserError } from './error.type';
@@ -10,6 +10,7 @@ export type Story = {
   lesson?: string;
   published?: boolean;
   lang?: string;
+  isOwn?: boolean;
   user?: User;
   topic?: Topic;
   tags?: Tag[];

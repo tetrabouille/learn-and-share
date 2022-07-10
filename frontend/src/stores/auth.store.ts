@@ -5,7 +5,7 @@ import { supabase } from '@/libs/supabase';
 import decode from 'jwt-decode';
 
 import { routeConfigs } from '@/configs/routes';
-import { getFile } from '@/utils/file';
+import { addAvatarToProfile } from '@/utils/profile';
 
 import type { LoggedUser, User } from '@/types/user.type';
 
@@ -43,14 +43,7 @@ const setLoggedUser = async (token: string, query: ReadableQuery<{ user: User }>
       await query.refetch({ accountId: decoded.sub });
       query.subscribe(({ data, loading }) => {
         const user = (() => {
-          if (data?.user?.profile) {
-            const url = data.user.profile.avatarUrl?.split('/').pop();
-            const fileData = url && getFile(data.user, url);
-            if (fileData?.publicURL) {
-              const avatarUrl = fileData.publicURL;
-              return { ...data.user, profile: { ...data.user.profile, avatarUrl } };
-            }
-          }
+          if (data?.user) return { ...data.user, profile: addAvatarToProfile(data.user) };
           return data?.user;
         })();
         loggedUser.set({ user, loading, isConnected: !!user?.id });

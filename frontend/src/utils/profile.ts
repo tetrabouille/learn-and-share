@@ -3,11 +3,12 @@ import { map } from 'lodash';
 
 import { getLangNameFromCode } from './form';
 import { handleError } from './errors';
+import { getFile } from './file';
 import { addAlert } from '@/stores/alert.store';
 import { loggedUser } from '@/stores/auth.store';
 import { GenderEnum } from '@/types/profile.type';
 import { type Profile, Gender } from '@/types/profile.type';
-import type { LoggedUser } from '@/types/user.type';
+import type { LoggedUser, User } from '@/types/user.type';
 
 const getAge = (value: string | number) => {
   if (!value) return;
@@ -97,6 +98,18 @@ const updateLoggedUserLangs = (langs: string[]) => {
   loggedUser.update(getLoggedUserWithNewLangs(langs));
 };
 
+const addAvatarToProfile = (user: User) => {
+  if (user?.profile) {
+    const url = user.profile.avatarUrl?.split('/').pop();
+    const fileData = url && getFile(user, url);
+    if (fileData?.publicURL) {
+      const avatarUrl = fileData.publicURL;
+      return { ...user.profile, avatarUrl };
+    }
+    return user.profile;
+  }
+};
+
 export {
   getAge,
   getGenderLabel,
@@ -107,4 +120,5 @@ export {
   langsToOptions,
   getLoggedUserWithNewLangs,
   updateLoggedUserLangs,
+  addAvatarToProfile,
 };
