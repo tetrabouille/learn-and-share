@@ -22,4 +22,9 @@ const getParamsFromLocation = () => {
   return queryString.parse(search);
 };
 
-export { isInViewport, getUrlWithParams, getParamsFromLocation };
+const getUrlFromParams = (pathname: string, params: any) => {
+  const query = queryString.stringify(params);
+  return `${pathname}?${query}`;
+};
+
+export { isInViewport, getUrlWithParams, getParamsFromLocation, getUrlFromParams };

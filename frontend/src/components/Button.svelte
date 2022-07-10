@@ -21,7 +21,12 @@
     ];
     if (disabled) classes.push('bg-warm-400/60', 'text-warm-700/90');
     else if (!loading)
-      classes.push('text-cold-700', 'bg-yellow-400/90', 'hover:bg-yellow-200/90', 'active:bg-yellow-300/90');
+      classes.push(
+        'text-cold-700',
+        'bg-yellow-400/90',
+        'md:hover:bg-yellow-200/90',
+        'active:bg-yellow-300/90'
+      );
     return classes.join(' ');
   };
 </script>

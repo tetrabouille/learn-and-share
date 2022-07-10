@@ -35,12 +35,13 @@ const USER_VALIDATE = gql`
 `;
 
 const USER_GET_ALL = gql`
-  query Users {
-    users {
+  query Users($sortList: [Sort!], $pagination: Pagination, $filters: [Filter!]) {
+    users(sortList: $sortList, pagination: $pagination, filters: $filters) {
       id
       accountId
       validated
       roles
+      createdAt
       profile {
         id
         firstname
@@ -63,6 +64,7 @@ const USER_GET = gql`
       accountId
       validated
       roles
+      createdAt
       profile {
         id
         firstname

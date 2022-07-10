@@ -12,10 +12,6 @@ const locationStore = writable<LocationStore>({
   params: {},
 });
 
-locationStore.subscribe((l) => {
-  console.log('locationStore', l);
-});
-
 const setLocation = (location: RouteLocation) => {
   locationStore.set({
     pathname: location.pathname,
