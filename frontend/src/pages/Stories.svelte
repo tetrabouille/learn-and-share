@@ -1,11 +1,12 @@
 <script lang="ts">
   import { navigate } from 'svelte-routing';
-  import { query } from 'svelte-apollo';
+  import { mutation, query } from 'svelte-apollo';
   import { faSearch } from '@fortawesome/free-solid-svg-icons';
   import Fa from 'svelte-fa';
 
   import { loggedUser } from '@/stores/auth.store';
   import { locationStore } from '@/stores/location.store';
+  import { addAlert } from '@/stores/alert.store';
   import { setFormContext } from '@/contexts/form.context';
   import { USER_GET_ALL } from '@/queries/user.query';
   import InputSelect from '@/components/forms/InputSelect.svelte';
@@ -13,12 +14,14 @@
   import type { User } from '@/types/user.type';
   import type { GetAllArgs } from '@/types/commun.type';
   import { getLangNameFromCode, type FormOption } from '@/utils/form';
-  import type { Story } from '@/types/story.type';
-  import { getStoryGetAll } from '@/queries/story.query';
+  import type { Story, StoryPayload } from '@/types/story.type';
+  import { getStoryGetAll, STORY_PUBLISH } from '@/queries/story.query';
   import { getUrlFromParams } from '@/utils/commun';
   import { addAvatarToProfile } from '@/utils/profile';
   import Container from '@/components/Container.svelte';
   import Avatar from '@/components/Avatar.svelte';
+  import BorderButtons from '@/components/BorderButtons.svelte';
+  import { clickOutside } from '@/actions/click_outside';
 
   const STORY_GET_ALL = getStoryGetAll(`
       user { id accountId profile { id avatarUrl langs firstname lastname } }
@@ -30,6 +33,8 @@
       sortList: [{ field: 'createdAt', order: 'desc' }],
     },
   });
+
+  let askPublish = -1;
 
   let usersOptions: FormOption[];
   $: usersOptions = ($userGetAllQuery.data?.users || []).map((user) => ({
@@ -48,6 +53,8 @@
     accountId: string;
   };
   $: params = $locationStore.params as typeof params;
+
+  $: storyPublish = mutation<{ storyPublish: StoryPayload }>(STORY_PUBLISH);
 
   $: getFilters = () => {
     const filters = [];
@@ -99,7 +106,31 @@
     const url = getUrlFromParams('/stories', { accountId: $formData.accountId });
     navigate(url);
   };
+
+  $: handleAskPublish = (index: number) => {
+    if (askPublish === index) return (askPublish = -1);
+    askPublish = index;
+  };
+
+  $: handlePublish = async (storyId) => {
+    try {
+      loading = true;
+      await storyPublish({ variables: { id: storyId } });
+      addAlert('Story shared to the world!', 'success');
+    } catch (e) {
+      addAlert('Failed to publish story', 'error');
+    } finally {
+      loading = false;
+      askPublish = -1;
+    }
+  };
 </script>
+
+<svelte:window
+  on:scroll={() => {
+    askPublish = -1;
+  }}
+/>
 
 <section class="flex flex-col items-center pt-10">
   <form class="flex w-full flex-col items-center" on:submit|preventDefault={handleSubmit}>
@@ -134,35 +165,88 @@
         {/if}
       </div>
       <div class="flex w-full flex-col items-center">
-        {#each stories as story}
-          <Container
-            isInput={story.isOwn && !story.published}
-            extraClass="mb-8 flex flex-col sm:flex-row gap-x-5"
-          >
-            <div class="flex-grow">
-              <h2 class="text-xl font-bold">
-                {story.title}
-              </h2>
-              <p class="pb-2 text-sm text-warm-800/70">({getLangNameFromCode(story.lang)})</p>
-              {#if story.topic}<p class="pb-2 underline">{story.topic.name}</p>{/if}
-              {#if story?.tags?.length}
-                <div class="flex flex-wrap gap-2 pb-4 text-sm">
-                  {#each story?.tags || [] as tag}
-                    <span class="inline-block rounded-full bg-brown-800/80 px-2 text-white">{tag.name}</span>
-                  {/each}
+        {#each stories as story, index}
+          <Container isInput={story.isOwn && !story.published} extraClass="mb-8">
+            {#if isOwn && !story.published}
+              {#if askPublish === index}
+                <div
+                  use:clickOutside
+                  on:outclick={() => {
+                    askPublish = -1;
+                  }}
+                >
+                  <BorderButtons
+                    {loading}
+                    styleContainer="justify-end"
+                    options={[
+                      {
+                        id: 'ask',
+                        text: 'Share to the world? This can not be undone',
+                        style: 'bg-yellow-400/90 w-full sm:w-auto',
+                      },
+                      {
+                        id: 'publish',
+                        icon: 'check',
+                        style: 'bg-green-400/90',
+                        handleClick() {
+                          handlePublish(story.id);
+                        },
+                      },
+                      {
+                        id: 'cancel',
+                        icon: 'close',
+                        style: 'bg-red-400/90',
+                        handleClick() {
+                          askPublish = -1;
+                        },
+                      },
+                    ]}
+                  />
                 </div>
+              {:else}
+                <BorderButtons
+                  {loading}
+                  styleContainer="justify-end"
+                  options={[
+                    {
+                      id: 'publish',
+                      icon: 'submit',
+                      style: 'bg-yellow-400/90',
+                      handleClick() {
+                        handleAskPublish(index);
+                      },
+                    },
+                  ]}
+                />
               {/if}
-              <p class="pb-5">{story.content}</p>
-              <h2 class="pb-1 text-xl">Lesson</h2>
-              <p>{story.lesson}</p>
-            </div>
-            <div class="mx-auto mt-3 flex flex-col items-center justify-center self-start">
-              <div class="h-[70px] w-[70px] sm:h-[150px] sm:w-[150px]">
-                <Avatar avatarUrl={story.user.profile.avatarUrl} lang={story.user.profile.langs?.[0]} />
+            {/if}
+            <div class="flex flex-col gap-x-5 sm:flex-row">
+              <div class="flex-grow">
+                <h2 class="text-xl font-bold">
+                  {story.title}
+                </h2>
+                <p class="pb-2 text-sm text-warm-800/70">({getLangNameFromCode(story.lang)})</p>
+                {#if story.topic}<p class="pb-2 underline">{story.topic.name}</p>{/if}
+                {#if story?.tags?.length}
+                  <div class="flex flex-wrap gap-2 pb-4 text-sm">
+                    {#each story?.tags || [] as tag}
+                      <span class="inline-block rounded-full bg-brown-800/80 px-2 text-white">{tag.name}</span
+                      >
+                    {/each}
+                  </div>
+                {/if}
+                <p class="pb-5">{story.content}</p>
+                <h2 class="pb-1 text-xl">Lesson</h2>
+                <p>{story.lesson}</p>
               </div>
-              <div class="whitespace-nowrap text-center">
-                {story.user.profile.firstname || ''}
-                {story.user.profile.lastname || ''}
+              <div class="mx-auto mt-3 flex flex-col items-center justify-center self-start">
+                <div class="h-[70px] w-[70px] sm:h-[150px] sm:w-[150px]">
+                  <Avatar avatarUrl={story.user.profile.avatarUrl} lang={story.user.profile.langs?.[0]} />
+                </div>
+                <div class="whitespace-nowrap text-center">
+                  {story.user.profile.firstname || ''}
+                  {story.user.profile.lastname || ''}
+                </div>
               </div>
             </div>
           </Container>

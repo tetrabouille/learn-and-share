@@ -74,4 +74,25 @@ const STORY_ADD = gql`
   }
 `;
 
-export { STORY_ADD, STORY_GET, STORY_GET_ALL, STORY_GET_OWN, getStoryGetAll };
+const STORY_PUBLISH = gql`
+  mutation StoryPublish($id: ID!) {
+    storyPublish(id: $id) {
+      story {
+        id
+        title
+        content
+        lesson
+        published
+        lang
+        isOwn
+        createdAt
+      }
+      userErrors {
+        message
+        code
+      }
+    }
+  }
+`;
+
+export { STORY_ADD, STORY_GET, STORY_GET_ALL, STORY_GET_OWN, STORY_PUBLISH, getStoryGetAll };

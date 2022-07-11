@@ -2,7 +2,7 @@
   import { mutation } from 'svelte-apollo';
   import Fa from 'svelte-fa';
   import { navigate } from 'svelte-routing';
-  import { faClose, faPen, faSpinner, faCheck, faWarning } from '@fortawesome/free-solid-svg-icons';
+  import { faPen, faSpinner, faWarning } from '@fortawesome/free-solid-svg-icons';
   import { all as locales } from 'locale-codes';
   import country from 'country-list';
 
@@ -33,6 +33,7 @@
   import { handleError } from '@/utils/errors';
   import { GenderEnum, type Profile, type ProfilePayload } from '@/types/profile.type';
   import Container from '@/components/Container.svelte';
+  import BorderButtons from '@/components/BorderButtons.svelte';
 
   export let params;
 
@@ -120,6 +121,17 @@
     }
   };
 
+  const handleBB = (id: string) => {
+    switch (id) {
+      case 'edit':
+        return handleClickEdit();
+      case 'submit':
+        return handleClickEdit(true);
+      case 'cancel':
+        return handleClickEdit(false);
+    }
+  };
+
   const handleFileChange = (fileUrl: string, blob: Blob) => {
     avatarUrl = fileUrl;
     avatarBlob = blob;
@@ -175,27 +187,22 @@
   {#if $loggedUser.isConnected && $loggedUser.user.validated && $data}
     <h1 class="pb-5 text-3xl font-bold">My profile</h1>
     <Container isInput={editMode} extraClass="p-5">
-      <div class="-mt-[26px] flex h-7 items-end justify-end gap-2">
-        {#if loading}
-          <div class="flex h-full w-7 items-center justify-center rounded-full bg-yellow-400 text-sm">
-            <Fa icon={faSpinner} pulse />
-          </div>
-        {:else if !editMode}
-          <button
-            class="flex h-full w-7 items-center justify-center rounded-full bg-yellow-400 text-sm"
-            on:click={() => handleClickEdit()}><Fa icon={faPen} /></button
-          >
-        {:else}
-          <button
-            class="flex grow-0 h-full w-7 items-center justify-center rounded-full bg-green-400 text-sm"
-            on:click={() => handleClickEdit(true)}><Fa icon={faCheck} /></button
-          >
-          <button
-            class="flex grow-0 h-full w-7 items-center justify-center rounded-full bg-red-400 text-sm"
-            on:click={() => handleClickEdit(false)}><Fa icon={faClose} /></button
-          >
-        {/if}
-      </div>
+      {#if !editMode}
+        <BorderButtons
+          {loading}
+          styleContainer="justify-end"
+          options={[{ id: 'edit', icon: 'pen', style: 'bg-yellow-400', handleClick: handleBB }]}
+        />
+      {:else}
+        <BorderButtons
+          {loading}
+          styleContainer="justify-end"
+          options={[
+            { id: 'submit', icon: 'check', style: 'bg-green-400', handleClick: handleBB },
+            { id: 'cancel', icon: 'close', style: 'bg-red-400', handleClick: handleBB },
+          ]}
+        />
+      {/if}
       <div class={`flex flex-col-reverse justify-between gap-5 ${editMode ? 'md:flex-row' : 'xs:flex-row'}`}>
         <div class="md:max-w-[495px]">
           {#if editMode}
