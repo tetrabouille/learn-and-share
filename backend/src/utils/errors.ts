@@ -28,6 +28,8 @@ export enum Error {
   // Topic
   TOPIC_ALREADY_EXISTS = 'TOPIC_ALREADY_EXISTS',
   // Story
+  STORY_NOT_FOUND = 'STORY_NOT_FOUND',
+  STORY_NOT_OWNED = 'STORY_NOT_OWNED',
   TOPIC_NOT_FOUND = 'TOPIC_NOT_FOUND',
   TAG_NOT_FOUND = 'TAG_NOT_FOUND',
 }
@@ -66,6 +68,10 @@ export const getMessage = (error: Error) => {
     case Error.TAG_ALREADY_EXISTS:
       return 'Tag already exists';
     // Story
+    case Error.STORY_NOT_FOUND:
+      return 'Story not found';
+    case Error.STORY_NOT_OWNED:
+      return 'Story not owned';
     case Error.TAG_NOT_FOUND:
       return 'Tag not found';
     case Error.TOPIC_NOT_FOUND:

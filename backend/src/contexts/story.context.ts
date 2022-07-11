@@ -115,8 +115,8 @@ const storyAdd = async (input: StoryAddArgs['input'], authData: AuthData) => {
   const loggedUser = await accessUtils.isRegistered(accountId);
 
   if (!title || !content || !lesson || !topicId || !tagIds || !newTags) return error([Error.FIELD_REQUIRED]);
-  if (!loggedUser) return error([Error.NOT_REGISTERED]);
   if (authError) return error([Error.TOKEN_EXPIRED]);
+  if (!loggedUser) return error([Error.NOT_REGISTERED]);
 
   try {
     if (tagIds.length) {
@@ -148,22 +148,52 @@ const storyAdd = async (input: StoryAddArgs['input'], authData: AuthData) => {
     }
 
     return {
-      story: await prisma.story.create({
-        data: {
-          title,
-          content,
-          lesson,
-          lang: loggedUser.profile.langs[0],
-          userId: loggedUser.id,
-          topicId: Number(topicId),
-          tags: {
-            connect: [
-              ...tagIds.map((id) => ({ id: Number(id) })),
-              ...(createdTags?.tags?.map((t) => ({ id: Number((t as Tag).id) })) || []),
-            ],
+      story: await prisma.story
+        .create({
+          data: {
+            title,
+            content,
+            lesson,
+            lang: loggedUser.profile.langs[0],
+            userId: loggedUser.id,
+            topicId: Number(topicId),
+            tags: {
+              connect: [
+                ...tagIds.map((id) => ({ id: Number(id) })),
+                ...(createdTags?.tags?.map((t) => ({ id: Number((t as Tag).id) })) || []),
+              ],
+            },
           },
-        },
-      }),
+        })
+        .then(getMapStory(loggedUser)),
+      userErrors: [],
+    };
+  } catch (e) {
+    logger.error(e);
+    return error([Error.INTERNAL_ERROR]);
+  }
+};
+
+const storyPublish = async (id: string, authData: AuthData) => {
+  const { accountId, error: authError } = authData;
+  const loggedUser = await accessUtils.isRegistered(accountId);
+
+  if (!id) return error([Error.FIELD_REQUIRED]);
+  if (authError) return error([Error.TOKEN_EXPIRED]);
+  if (!loggedUser) return error([Error.NOT_REGISTERED]);
+
+  try {
+    const story = await prisma.story.findUnique({ where: { id: Number(id) } });
+    if (!story) return error([Error.STORY_NOT_FOUND]);
+    if (story.userId !== loggedUser.id) return error([Error.STORY_NOT_OWNED]);
+
+    return {
+      story: await prisma.story
+        .update({
+          where: { id: Number(id) },
+          data: { published: true },
+        })
+        .then(getMapStory(loggedUser)),
       userErrors: [],
     };
   } catch (e) {
@@ -179,6 +209,7 @@ const context = {
   storyGetById,
   // mutations
   storyAdd,
+  storyPublish,
 };
 type StoryContext = typeof context & AuthData;
 

@@ -12,6 +12,10 @@ type StoryGetByIdArgs = {
   id: string;
 };
 
+type StoryPublishArgs = {
+  id: string;
+};
+
 type ParentArgs = {
   userId: string;
   topicId: string;
@@ -55,6 +59,7 @@ const typeDefs = gql`
 
   type Mutation {
     storyAdd(input: StoryAddInput!): StoryPayload!
+    storyPublish(id: ID!): StoryPayload!
   }
 
   type StoryPayload {
@@ -98,6 +103,8 @@ const resolvers = {
   Mutation: {
     storyAdd: (_: void, { input }: StoryAddArgs, { storyAdd, accountId, error }: StoryContext) =>
       storyAdd(input, { accountId, error }),
+    storyPublish: (_: void, { id }: StoryPublishArgs, { storyPublish, accountId, error }: StoryContext) =>
+      storyPublish(id, { accountId, error }),
   },
 };
 
