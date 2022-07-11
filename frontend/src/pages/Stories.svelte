@@ -1,6 +1,8 @@
 <script lang="ts">
   import { navigate } from 'svelte-routing';
   import { query } from 'svelte-apollo';
+  import { faSearch } from '@fortawesome/free-solid-svg-icons';
+  import Fa from 'svelte-fa';
 
   import { loggedUser } from '@/stores/auth.store';
   import { locationStore } from '@/stores/location.store';
@@ -166,8 +168,14 @@
           </Container>
         {/each}
       </div>
-    {:else if $storyGetAllQuery.loading}
-      loading
     {/if}
   {/each}
+  {#if $storyGetAllQuery.loading}
+    <p class="text-xl">Loading stories</p>
+  {:else if !storiesTab[0].length && !storiesTab[1].length}
+    <Container extraClass="flex flex-col items-center py-5 text-xl">
+      <Fa icon={faSearch} class="mb-2" />
+      <p>No stories found, try a different search</p>
+    </Container>
+  {/if}
 </section>
