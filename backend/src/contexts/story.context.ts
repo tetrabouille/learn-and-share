@@ -1,7 +1,7 @@
 import { Tag } from 'prisma/prisma-client';
 import { prisma } from '../db/prisma';
 
-import { accessUtils, communUtils, errorsUtils, logger } from '../utils';
+import { accessUtils, communUtils, errorsUtils, logger, validationUtils } from '../utils';
 import type { Filter, Pagination, Sort } from '../schemas/commun.schema';
 import type { AuthData } from '../utils/auth';
 import { getMapStory } from '../utils/mapping';
@@ -189,13 +189,15 @@ const storyPublish = async (id: string, authData: AuthData) => {
 };
 
 const storyUpdate = async (id: string, input: StoryUpdateArgs['input'], authData: AuthData) => {
-  const { title, content, lesson, tagIds, newTags, topicId } = input;
+  const { title, content, lesson, lang, tagIds, newTags, topicId } = input;
   const { accountId, error: authError } = authData;
   const loggedUser = await accessUtils.isRegistered(accountId);
 
-  if (!title && !content && !lesson && !topicId && !tagIds && !newTags) return error([Error.FIELD_REQUIRED]);
+  if (!title && !content && !lesson && !topicId && !tagIds && !newTags && !lang)
+    return error([Error.FIELD_REQUIRED]);
   if (authError) return error([Error.TOKEN_EXPIRED]);
   if (!loggedUser) return error([Error.NOT_REGISTERED]);
+  if (!validationUtils.lang(lang)) return error([Error.INVALID_LANG]);
 
   try {
     const story = await prisma.story.findUnique({ where: { id: Number(id) } });
@@ -228,7 +230,7 @@ const storyUpdate = async (id: string, input: StoryUpdateArgs['input'], authData
             title: title || undefined,
             content: content || undefined,
             lesson: lesson || undefined,
-            lang: loggedUser.profile.langs[0],
+            lang: lang || undefined,
             userId: loggedUser.id,
             topicId: topicId ? Number(topicId) : undefined,
             tags: {

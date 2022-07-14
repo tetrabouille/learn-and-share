@@ -33,6 +33,7 @@ export type StoryInput = {
   title?: string;
   content?: string;
   lesson?: string;
+  lang?: string;
   topicId?: number;
   tagIds?: number[];
   newTags?: string[];

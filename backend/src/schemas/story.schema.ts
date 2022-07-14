@@ -32,6 +32,7 @@ export type StoryAddArgs = {
     title?: string;
     content?: string;
     lesson?: string;
+    lang?: string;
     topicId?: number;
     tagIds?: number[];
     newTags?: string[];
@@ -77,6 +78,7 @@ const typeDefs = gql`
     title: String
     content: String
     lesson: String
+    lang: String
     topicId: ID
     tagIds: [ID!]
     newTags: [String!]

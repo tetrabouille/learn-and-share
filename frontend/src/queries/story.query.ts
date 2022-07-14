@@ -79,13 +79,6 @@ const STORY_PUBLISH = gql`
     storyPublish(id: $id) {
       story {
         id
-        title
-        content
-        lesson
-        published
-        lang
-        isOwn
-        createdAt
       }
       userErrors {
         message
@@ -95,4 +88,18 @@ const STORY_PUBLISH = gql`
   }
 `;
 
-export { STORY_ADD, STORY_GET, STORY_GET_ALL, STORY_GET_OWN, STORY_PUBLISH, getStoryGetAll };
+const STORY_UPDATE = gql`
+  mutation StoryUpdate($storyUpdateId: ID!, $input: StoryInput!) {
+    storyUpdate(id: $storyUpdateId, input: $input) {
+      story {
+        id
+      }
+      userErrors {
+        message
+        code
+      }
+    }
+  }
+`;
+
+export { STORY_ADD, STORY_GET, STORY_GET_ALL, STORY_GET_OWN, STORY_PUBLISH, STORY_UPDATE, getStoryGetAll };
