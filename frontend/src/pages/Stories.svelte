@@ -166,7 +166,7 @@
       </div>
       <div class="flex w-full flex-col items-center">
         {#each stories as story, index}
-          <Container isInput={story.isOwn && !story.published} extraClass="mb-8">
+          <Container type={story.isOwn && !story.published ? 'input' : 'card'} extraClass="mb-8">
             {#if isOwn && !story.published}
               {#if askPublish === index}
                 <div
@@ -257,7 +257,7 @@
   {#if $storyGetAllQuery.loading}
     <p class="text-xl">Loading stories</p>
   {:else if !storiesTab[0].length && !storiesTab[1].length}
-    <Container extraClass="flex flex-col items-center py-5 text-xl">
+    <Container extraClass="flex flex-col items-center py-5 text-xl" type="card">
       <Fa icon={faSearch} class="mb-2" />
       <p>No stories found, try a different search</p>
     </Container>

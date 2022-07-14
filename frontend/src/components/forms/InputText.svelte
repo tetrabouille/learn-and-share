@@ -28,7 +28,7 @@
     } ${
       style === 'h1'
         ? 'bg-creme-50/90 placeholder:text-warm-700/70 focus:border-b-cold-500 ' +
-          'disabled:bg-brown-400/30 disabled:placeholder:text-warm-700/90 ' +
+          'disabled:bg-warm-400/60 disabled:placeholder:text-warm-700/90 ' +
           'px-4 py-1 pt-2 pb-2 text-xl shadow-sm focus:border-b-4 focus:pb-1 md:shadow-none'
         : ''
     }`}

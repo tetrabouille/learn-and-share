@@ -113,7 +113,7 @@
           return (
             'px-4 pt-2 pb-2 py-1 text-xl focus:border-b-4 focus:border-b-cold-500 focus:pb-1 ' +
             'shadow-sm md:shadow-none ' +
-            `${disabled ? 'bg-brown-400/30' : 'bg-creme-50/90'}`
+            `${disabled ? 'bg-warm-400/60' : 'bg-creme-50/90'}`
           );
       }
     })();

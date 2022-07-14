@@ -186,7 +186,7 @@
 <section class="flex flex-col items-center pt-10">
   {#if $loggedUser.isConnected && $loggedUser.user.validated && $data}
     <h1 class="pb-5 text-3xl font-bold">My profile</h1>
-    <Container isInput={editMode} extraClass="p-5">
+    <Container type={editMode ? 'input' : 'card'} extraClass="p-5">
       {#if !editMode}
         <BorderButtons
           {loading}
