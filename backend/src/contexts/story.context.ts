@@ -6,7 +6,7 @@ import type { Filter, Pagination, Sort } from '../schemas/commun.schema';
 import type { AuthData } from '../utils/auth';
 import { getMapStory } from '../utils/mapping';
 import { Error, getMessage } from '../utils/errors';
-import type { StoryAddArgs } from '../schemas/story.schema';
+import type { StoryAddArgs, StoryUpdateArgs } from '../schemas/story.schema';
 import { tagContext, topicContext } from '.';
 
 const error = errorsUtils.getError('story');
@@ -117,35 +117,21 @@ const storyAdd = async (input: StoryAddArgs['input'], authData: AuthData) => {
   if (!title || !content || !lesson || !topicId || !tagIds || !newTags) return error([Error.FIELD_REQUIRED]);
   if (authError) return error([Error.TOKEN_EXPIRED]);
   if (!loggedUser) return error([Error.NOT_REGISTERED]);
+  if (!loggedUser.profile) return error([Error.MISSING_PROFILE]);
 
   try {
-    if (tagIds.length) {
-      const tags = await tagContext.tagGetAll([
-        {
-          field: 'id',
-          value: [...tagIds].map((id) => Number(id)),
-          option: 'in',
-        },
-      ]);
-      if (!tags.length) return error([Error.TAG_NOT_FOUND]);
-    }
+    const tags = await tagContext.tagGetAllWithIds(tagIds);
+    if (tags.length !== tagIds.length) return error([Error.TAG_NOT_FOUND]);
 
     const topic = await topicContext.topicGetById(topicId);
     if (!topic) return error([Error.TOPIC_NOT_FOUND]);
-    if (!loggedUser.profile) return error([Error.MISSING_PROFILE]);
 
-    let createdTags;
-    if (newTags.length) {
-      createdTags = await tagContext.tagAddMany(
-        newTags.map((name) => ({ name })),
-        authData
-      );
-      if (createdTags.userErrors.length)
-        return {
-          story: null,
-          userErrors: createdTags.userErrors,
-        };
-    }
+    const createdTags = await tagContext.tagAddManyFromNames(newTags, authData);
+    if (createdTags.userErrors.length)
+      return {
+        story: null,
+        userErrors: createdTags.userErrors,
+      };
 
     return {
       story: await prisma.story
@@ -202,6 +188,66 @@ const storyPublish = async (id: string, authData: AuthData) => {
   }
 };
 
+const storyUpdate = async (id: string, input: StoryUpdateArgs['input'], authData: AuthData) => {
+  const { title, content, lesson, tagIds, newTags, topicId } = input;
+  const { accountId, error: authError } = authData;
+  const loggedUser = await accessUtils.isRegistered(accountId);
+
+  if (!title && !content && !lesson && !topicId && !tagIds && !newTags) return error([Error.FIELD_REQUIRED]);
+  if (authError) return error([Error.TOKEN_EXPIRED]);
+  if (!loggedUser) return error([Error.NOT_REGISTERED]);
+
+  try {
+    const story = await prisma.story.findUnique({ where: { id: Number(id) } });
+    if (!story) return error([Error.STORY_NOT_FOUND]);
+    if (story.userId !== loggedUser.id) return error([Error.STORY_NOT_OWNED]);
+
+    if (tagIds) {
+      const tags = await tagContext.tagGetAllWithIds(tagIds);
+      if (tags.length !== tagIds.length) return error([Error.TAG_NOT_FOUND]);
+    }
+    if (topicId) {
+      const topic = await topicContext.topicGetById(topicId);
+      if (!topic) return error([Error.TOPIC_NOT_FOUND]);
+    }
+
+    let createdTags;
+    if (newTags) {
+      createdTags = await tagContext.tagAddManyFromNames(newTags, authData);
+      if (createdTags.userErrors.length)
+        return {
+          story: null,
+          userErrors: createdTags.userErrors,
+        };
+    }
+    return {
+      story: await prisma.story
+        .update({
+          where: { id: Number(id) },
+          data: {
+            title: title || undefined,
+            content: content || undefined,
+            lesson: lesson || undefined,
+            lang: loggedUser.profile.langs[0],
+            userId: loggedUser.id,
+            topicId: topicId ? Number(topicId) : undefined,
+            tags: {
+              set: [
+                ...(tagIds?.map((id) => ({ id: Number(id) })) || []),
+                ...(createdTags?.tags?.map((t) => ({ id: Number((t as Tag).id) })) || []),
+              ],
+            },
+          },
+        })
+        .then(getMapStory(loggedUser)),
+      userErrors: [],
+    };
+  } catch (e) {
+    logger.error(e);
+    return error([Error.INTERNAL_ERROR]);
+  }
+};
+
 const context = {
   // queries
   storyGetAll,
@@ -210,6 +256,7 @@ const context = {
   // mutations
   storyAdd,
   storyPublish,
+  storyUpdate,
 };
 type StoryContext = typeof context & AuthData;
 

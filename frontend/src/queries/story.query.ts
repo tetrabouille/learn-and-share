@@ -61,7 +61,7 @@ const getStoryGetAll = (extraQuery: string) => {
 const STORY_GET_ALL = getStoryGetAll('');
 
 const STORY_ADD = gql`
-  mutation StoryAdd($input: StoryAddInput!) {
+  mutation StoryAdd($input: StoryInput!) {
     storyAdd(input: $input) {
       story {
         id

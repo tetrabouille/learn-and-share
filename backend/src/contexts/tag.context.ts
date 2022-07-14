@@ -17,6 +17,19 @@ const tagGetAll = (filters?: Filter[], pagination?: Pagination, sortList?: Sort[
     });
 };
 
+const tagGetAllWithIds = (ids: (string | number)[]) => {
+  if (ids.length) {
+    return tagGetAll([
+      {
+        field: 'id',
+        value: [...ids].map((id) => Number(id)),
+        option: 'in',
+      },
+    ]);
+  }
+  return [];
+};
+
 // mutations
 const tagAdd = async (input: TagAddArgs['input'], authData: AuthData) => {
   const { name } = input;
@@ -105,12 +118,26 @@ const tagAddMany = async (inputs: TagAddArgs['input'][], authData: AuthData) => 
   }
 };
 
+const tagAddManyFromNames = async (newTags: string[], authData: AuthData) => {
+  if (!newTags.length)
+    return {
+      tags: [],
+      userErrors: [],
+    };
+  return tagAddMany(
+    newTags.map((name) => ({ name })),
+    authData
+  );
+};
+
 const context = {
   // queries
   tagGetAll,
+  tagGetAllWithIds,
   // mutations
   tagAdd,
   tagAddMany,
+  tagAddManyFromNames,
 };
 type TagContext = typeof context & AuthData;
 

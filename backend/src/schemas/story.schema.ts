@@ -22,14 +22,19 @@ type ParentArgs = {
   id: string;
 };
 
+export type StoryUpdateArgs = {
+  id: string;
+  input: StoryAddArgs['input'];
+};
+
 export type StoryAddArgs = {
   input: {
-    title: string;
-    content: string;
-    lesson: string;
-    topicId: number;
-    tagIds: number[];
-    newTags: string[];
+    title?: string;
+    content?: string;
+    lesson?: string;
+    topicId?: number;
+    tagIds?: number[];
+    newTags?: string[];
   };
 };
 
@@ -58,8 +63,9 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    storyAdd(input: StoryAddInput!): StoryPayload!
+    storyAdd(input: StoryInput!): StoryPayload!
     storyPublish(id: ID!): StoryPayload!
+    storyUpdate(id: ID!, input: StoryInput!): StoryPayload!
   }
 
   type StoryPayload {
@@ -67,13 +73,13 @@ const typeDefs = gql`
     userErrors: [UserError!]!
   }
 
-  input StoryAddInput {
-    title: String!
-    content: String!
-    lesson: String!
-    topicId: ID!
-    tagIds: [ID!]!
-    newTags: [String!]!
+  input StoryInput {
+    title: String
+    content: String
+    lesson: String
+    topicId: ID
+    tagIds: [ID!]
+    newTags: [String!]
   }
 `;
 
@@ -105,6 +111,8 @@ const resolvers = {
       storyAdd(input, { accountId, error }),
     storyPublish: (_: void, { id }: StoryPublishArgs, { storyPublish, accountId, error }: StoryContext) =>
       storyPublish(id, { accountId, error }),
+    storyUpdate: (_: void, { id, input }: StoryUpdateArgs, { storyUpdate, accountId, error }: StoryContext) =>
+      storyUpdate(id, input, { accountId, error }),
   },
 };
 

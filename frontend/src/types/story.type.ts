@@ -26,14 +26,14 @@ export type StoryPayload = {
 };
 
 export type StoryAddArgs = {
-  input: StoryAddInput;
+  input: StoryInput;
 };
 
-export type StoryAddInput = {
-  title: string;
-  content: string;
-  lesson: string;
-  topicId: number;
-  tagIds: number[];
-  newTags: string[];
+export type StoryInput = {
+  title?: string;
+  content?: string;
+  lesson?: string;
+  topicId?: number;
+  tagIds?: number[];
+  newTags?: string[];
 };
