@@ -1,18 +1,25 @@
-import random from 'node-random-name';
-import { mutation } from 'svelte-apollo';
+import { NEW_OPTION } from '@/utils/form';
+import type { Filter } from '@/types/commun.type';
+import type { Tag } from '@/types/tag.type';
+import type { FormOption } from './form';
 
-import { addAlert } from '@/stores/alert.store';
-import { TAG_ADD } from '@/queries/tag.query';
-import type { TagPayload } from '@/types/tag.type';
-
-const tagAddMutation = mutation<TagPayload>(TAG_ADD);
-
-const addRandomTags = async (n: number) => {
-  const tags = Array.from({ length: n }).map(() => random({ seed: String(Math.random()), last: true }));
-
-  await Promise.all(tags.map((tag) => tagAddMutation({ variables: { input: { name: tag, lang: 'en' } } })))
-    .then(() => addAlert(`Tags added : ${n}`, 'success'))
-    .catch(() => addAlert('Error adding tags', 'error'));
+const getTagIdsAndNewTags = (tags: FormOption[]) => {
+  return tags.reduce(
+    (acc: [number[], string[]], tag: FormOption) => {
+      if (tag.id.includes(NEW_OPTION)) {
+        acc[1].push(tag.text);
+      } else {
+        acc[0].push(Number(tag.id));
+      }
+      return acc;
+    },
+    [[], []]
+  );
 };
 
-export { addRandomTags };
+const getSearchTagsFilter = (value: string) => [{ field: 'name', value, option: 'contains' } as Filter];
+
+const getTagOptions = (tags: Tag[]): FormOption[] =>
+  tags.map(({ id, name }: Tag) => ({ id: String(id), text: name }));
+
+export { getTagIdsAndNewTags, getSearchTagsFilter, getTagOptions };

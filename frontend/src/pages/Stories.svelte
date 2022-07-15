@@ -140,7 +140,7 @@
         {/if}
       </div>
       <div class="flex w-full flex-col items-center">
-        {#each stories as story, index}
+        {#each stories as story (story.id)}
           <StoryCard {story} {loading} {refetchStories} />
         {/each}
       </div>

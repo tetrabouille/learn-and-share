@@ -3,7 +3,6 @@
   import Fa from 'svelte-fa';
   import { navigate } from 'svelte-routing';
   import { faPen, faSpinner, faWarning } from '@fortawesome/free-solid-svg-icons';
-  import { all as locales } from 'locale-codes';
   import country from 'country-list';
 
   import { loggedUser } from '@/stores/auth.store';
@@ -22,7 +21,7 @@
   } from '@/utils/profile';
   import { uploadFile, onFileSelected, getUserFileName } from '@/utils/file';
   import { dateFromTimestamp } from '@/utils/date';
-  import { formatTitle } from '@/utils/form';
+  import { formatTitle, getCountryOptions, getLangOptions } from '@/utils/form';
   import InputText from '@/components/forms/InputText.svelte';
   import InputDate from '@/components/forms/InputDate.svelte';
   import InputSelect from '@/components/forms/InputSelect.svelte';
@@ -47,8 +46,6 @@
   let searchLangInput = '';
   let searchCountryInput = '';
   let isCustomGender = false;
-
-  const localesFiltered = locales.filter(({ tag }) => !tag.includes('-'));
 
   $: avatarUrl = $loggedUser.user?.profile?.avatarUrl;
 
@@ -151,36 +148,9 @@
     handleLangSelected(langId, profile, profileUpdate, updateLoggedUserLangs, navigate);
   };
 
-  $: getLangOptions = () => {
-    return localesFiltered
-      .filter((l) => l.name.toLowerCase().includes(searchLangInput.toLowerCase()))
-      .map((l) => ({
-        id: l.tag,
-        text: l.name,
-      }))
-      .slice(0, 20);
-  };
+  $: langOptions = getLangOptions(searchLangInput);
 
-  $: getCountryOptions = () => {
-    const current = $data.country
-      ? {
-          id: $data.country,
-          text: country.getName($data.country),
-        }
-      : null;
-
-    const opts = country
-      .getData()
-      .filter((c) => c.name.toLowerCase().includes(searchCountryInput.toLowerCase()))
-      .map((c) => ({
-        id: c.code,
-        text: c.name,
-      }))
-      .slice(0, 20);
-
-    if (current && !opts.find(({ id }) => id === current.id)) opts.unshift(current);
-    return opts;
-  };
+  $: countryOptions = getCountryOptions(searchCountryInput, $data.country);
 </script>
 
 <section class="flex flex-col items-center pt-10">
@@ -243,7 +213,7 @@
               style="h1"
               on:inputsearch={handleCountrySearch}
               formatInput={formatTitle}
-              options={getCountryOptions()}
+              options={countryOptions}
               placeholder="Select where you live"
               label="Country"
             />
@@ -292,9 +262,9 @@
         <InputMultiSelect
           fieldId="langs"
           style="h1"
-          options={getLangOptions()}
+          options={langOptions}
           on:inputsearch={handleTagSearch}
-          placeholder={!$data.langs?.length ? 'Select the languages you know' : ''}
+          placeholder={'Select the languages you know'}
           messageEmpty="No languages found"
           messageMax="Maximum languages reached"
           formatInput={formatTitle}

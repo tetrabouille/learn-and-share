@@ -89,8 +89,8 @@ const STORY_PUBLISH = gql`
 `;
 
 const STORY_UPDATE = gql`
-  mutation StoryUpdate($storyUpdateId: ID!, $input: StoryInput!) {
-    storyUpdate(id: $storyUpdateId, input: $input) {
+  mutation StoryUpdate($id: ID!, $input: StoryInput!) {
+    storyUpdate(id: $id, input: $input) {
       story {
         id
       }

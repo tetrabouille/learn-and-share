@@ -17,16 +17,17 @@
   import SelectItems from '@/components/SelectItems.svelte';
   import Button from '@/components/Button.svelte';
   import Container from '@/components/Container.svelte';
-  import { formatTitle, getLangNameFromCode, NEW_OPTION, type FormOption } from '@/utils/form';
+  import { formatTitle, getLangNameFromCode } from '@/utils/form';
   import { handleError } from '@/utils/errors';
   import { handleLangSelected, langsToOptions, updateLoggedUserLangs } from '@/utils/profile';
   import { getPaginationQueryVar } from '@/utils/commun';
   import type { Item } from '@/components/SelectItems.svelte';
   import type { Topic } from '@/types/topic.type';
   import type { Tag } from '@/types/tag.type';
-  import type { Filter, GetAllArgs } from '@/types/commun.type';
+  import type { GetAllArgs } from '@/types/commun.type';
   import type { Profile, ProfilePayload } from '@/types/profile.type';
   import type { StoryAddArgs, StoryPayload } from '@/types/story.type';
+  import { getSearchTagsFilter, getTagIdsAndNewTags } from '@/utils/tag';
 
   let profile: Profile;
 
@@ -51,7 +52,7 @@
 
   const handleTagSearch = (e: CustomEvent<{ value: string }>) => {
     return tagGetAllQuery.refetch({
-      filters: [{ field: 'name', value: e.detail.value, option: 'contains' } as Filter],
+      filters: getSearchTagsFilter(e.detail.value),
       ...tagGetAllVar,
     });
   };
@@ -62,17 +63,7 @@
   };
 
   const handleSubmit = () => {
-    const [tagIds, newTags] = $data.tags.reduce(
-      (acc: unknown, tag: FormOption) => {
-        if (tag.id.includes(NEW_OPTION)) {
-          acc[1].push(tag.text);
-        } else {
-          acc[0].push(tag.id);
-        }
-        return acc;
-      },
-      [[], []]
-    );
+    const [tagIds, newTags] = getTagIdsAndNewTags($data.tags);
 
     storyAddMutation({
       variables: {

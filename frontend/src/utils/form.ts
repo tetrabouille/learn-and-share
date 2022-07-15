@@ -1,7 +1,8 @@
 import type { Writable } from 'svelte/store';
 import type { ObjectSchema, ValidationError } from 'yup';
 import { v4 as uuid } from 'uuid';
-import { getByTag } from 'locale-codes';
+import { getByTag, all as locales } from 'locale-codes';
+import countryList from 'country-list';
 
 export type Error = {
   key: string;
@@ -92,5 +93,57 @@ const formatTitle = (input: string) =>
 
 const getLangNameFromCode = (code: string) => formatTitle(getByTag(code)?.name) || 'Unknown';
 
-export { validateSchema, getError, addError, getNewOption, formatTitle, getLangNameFromCode, NEW_OPTION };
+const getLangOptions = (search: string, currentLang?: string) => {
+  const current = currentLang
+    ? {
+        id: currentLang,
+        text: getLangNameFromCode(currentLang),
+      }
+    : null;
+
+  const localesFiltered = locales.filter(({ tag }) => !tag.includes('-'));
+  const opts = localesFiltered
+    .filter((l) => l.name.toLowerCase().includes(search.toLowerCase()))
+    .map((l) => ({
+      id: l.tag,
+      text: l.name,
+    }))
+    .slice(0, 20);
+
+  if (current && !opts.find(({ id }) => id === current.id)) opts.unshift(current);
+  return opts;
+};
+
+const getCountryOptions = (search: string, currentCountry?: string) => {
+  const current = currentCountry
+    ? {
+        id: currentCountry,
+        text: countryList.getName(currentCountry),
+      }
+    : null;
+
+  const opts = countryList
+    .getData()
+    .filter((c) => c.name.toLowerCase().includes(search.toLowerCase()))
+    .map((c) => ({
+      id: c.code,
+      text: c.name,
+    }))
+    .slice(0, 20);
+
+  if (current && !opts.find(({ id }) => id === current.id)) opts.unshift(current);
+  return opts;
+};
+
+export {
+  validateSchema,
+  getError,
+  addError,
+  getNewOption,
+  formatTitle,
+  getLangNameFromCode,
+  getLangOptions,
+  getCountryOptions,
+  NEW_OPTION,
+};
 export type {};
