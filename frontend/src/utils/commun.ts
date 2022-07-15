@@ -1,5 +1,7 @@
 import queryString from 'query-string';
 
+import type { Pagination, GetAllArgs } from '@/types/commun.type';
+
 const isInViewport = (element: any, { top = 0, left = 0, bottom = 0, right = 0 }) => {
   if (!element) return;
   const rect = element.getBoundingClientRect();
@@ -27,4 +29,11 @@ const getUrlFromParams = (pathname: string, params: any) => {
   return query ? `${pathname}?${query}` : pathname;
 };
 
-export { isInViewport, getUrlWithParams, getParamsFromLocation, getUrlFromParams };
+const getPaginationQueryVar = ({ take, cursor, skip }: Pagination): GetAllArgs => {
+  return {
+    pagination: { take, cursor, skip },
+    sortList: [{ field: 'createdAt', order: 'desc' }],
+  };
+};
+
+export { isInViewport, getUrlWithParams, getParamsFromLocation, getUrlFromParams, getPaginationQueryVar };

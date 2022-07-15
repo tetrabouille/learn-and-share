@@ -20,6 +20,7 @@
   import { formatTitle, getLangNameFromCode, NEW_OPTION, type FormOption } from '@/utils/form';
   import { handleError } from '@/utils/errors';
   import { handleLangSelected, langsToOptions, updateLoggedUserLangs } from '@/utils/profile';
+  import { getPaginationQueryVar } from '@/utils/commun';
   import type { Item } from '@/components/SelectItems.svelte';
   import type { Topic } from '@/types/topic.type';
   import type { Tag } from '@/types/tag.type';
@@ -27,22 +28,11 @@
   import type { Profile, ProfilePayload } from '@/types/profile.type';
   import type { StoryAddArgs, StoryPayload } from '@/types/story.type';
 
-  let tagGetAllVar: GetAllArgs = {
-    pagination: { take: 6 },
-    sortList: [{ field: 'createdAt', order: 'desc' }],
-  };
   let profile: Profile;
 
   const profileUpdate = mutation<{ profileUpdate: ProfilePayload }>(PROFILE_UPDATE);
 
   $: profile = $loggedUser.user?.profile;
-
-  $: tagGetAllVar.pagination.take = 6 + Number($data.tags.length);
-
-  const storyAddMutation = mutation<{ storyAdd: StoryPayload }>(STORY_ADD);
-
-  const topicGetAllQuery = query<{ topics: Topic[] }>(TOPIC_GET_ALL);
-  const tagGetAllQuery = query<{ tags: Tag[] }, GetAllArgs>(TAG_GET_ALL, { variables: tagGetAllVar });
 
   const { data } = setFormContext({
     title: '',
@@ -51,6 +41,13 @@
     tags: [],
     topic: '',
   });
+
+  $: tagGetAllVar = getPaginationQueryVar({ take: 6 + Number($data.tags.length) });
+
+  const storyAddMutation = mutation<{ storyAdd: StoryPayload }>(STORY_ADD);
+
+  const topicGetAllQuery = query<{ topics: Topic[] }>(TOPIC_GET_ALL);
+  const tagGetAllQuery = query<{ tags: Tag[] }, GetAllArgs>(TAG_GET_ALL, { variables: tagGetAllVar });
 
   const handleTagSearch = (e: CustomEvent<{ value: string }>) => {
     return tagGetAllQuery.refetch({
