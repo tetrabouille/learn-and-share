@@ -119,7 +119,7 @@
       </Container>
     {/if}
     <div class="mb-10 flex flex-col gap-x-4 lg:flex-row-reverse">
-      <div class="flex flex-shrink flex-grow-0 flex-col">
+      <div class="flex flex-col lg:w-[26rem]">
         <Container extraClass="mb-8 lg:mb-[40px]">
           <h1 class="mb-2 text-2xl font-bold">How to write a good story</h1>
           <p>
@@ -149,7 +149,7 @@
           </p>
         </Container>
       </div>
-      <div class="flex w-full max-w-[770px] flex-grow flex-col">
+      <div class="flex flex-col lg:w-[36rem]">
         <Container rounded="lg" extraClass="p-5 pb-8 md:mb-8" type="input">
           <h2 class="mb-3 pl-4 text-xl">Title</h2>
           <InputText
