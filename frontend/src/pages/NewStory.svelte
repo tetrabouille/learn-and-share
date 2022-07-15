@@ -91,7 +91,7 @@
     })
       .then(handleError('Failed to add new story', 'storyAdd', navigate))
       .then(({ isError }) => {
-        if (!isError) addAlert('Your story have been registered', 'success');
+        if (!isError) addAlert('Your story has been registered', 'success');
       })
       .catch(() => addAlert('Failed to add new story', 'error'));
   };
