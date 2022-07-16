@@ -28,7 +28,7 @@
       alt="avatar"
     />
   {:else}
-    <div class="text-4xl rounded-full bg-yellow-400/90 h-full flex justify-center items-center text-black">
+    <div class="flex h-full items-center justify-center rounded-full bg-yellow-400/90 text-4xl text-black">
       {getInitials()}
     </div>
   {/if}

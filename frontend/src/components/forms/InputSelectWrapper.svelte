@@ -179,7 +179,7 @@
           </li>
         {/each}
       {:else}
-        <li class={`${getClass()} text-sm text-warm-700/70 cursor-default`}>{messageEmpty}</li>
+        <li class={`${getClass()} cursor-default text-sm text-warm-700/70`}>{messageEmpty}</li>
       {/if}
     </ul>
   {/if}

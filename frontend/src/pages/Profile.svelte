@@ -275,9 +275,9 @@
         <h1 class="mt-5 text-2xl">Languages</h1>
         <SelectItems items={$data.langs} on:select={(e) => handleFavLangSelected(e.detail)} />
       {:else}
-        <div class="text-red-600 flex items-center gap-x-2">
+        <div class="flex items-center gap-x-2 text-red-600">
           <Fa icon={faWarning} />
-          <span class="text-xl hover:underline cursor-pointer" on:click={() => handleClickEdit(true)}
+          <span class="cursor-pointer text-xl hover:underline" on:click={() => handleClickEdit(true)}
             >Add languages to share stories</span
           >
         </div>

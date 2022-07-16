@@ -200,10 +200,10 @@
     </form>
   {:else}
     <div class="container mx-auto mt-10 flex max-w-sm flex-col gap-5">
-      <Fa class="text-green-500/90 text-7xl" icon={faCheckCircle} />
+      <Fa class="text-7xl text-green-500/90" icon={faCheckCircle} />
       <div>
-        <p class="w-full text-center text-xl m-1">Your account has been created.</p>
-        <p class="w-full text-center text-xl m-1">Please check your email to validate your account.</p>
+        <p class="m-1 w-full text-center text-xl">Your account has been created.</p>
+        <p class="m-1 w-full text-center text-xl">Please check your email to validate your account.</p>
       </div>
       <Button buttonClass="text-lg min-w-[150px] justify-center" on:click={() => navigate('login')}>
         Login

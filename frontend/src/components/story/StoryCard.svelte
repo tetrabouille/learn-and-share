@@ -229,7 +229,7 @@
           style="h1"
         />
       {:else}
-        <p class="text-warm-800/70 pb-2 text-sm">({getLangNameFromCode(story.lang)})</p>
+        <p class="pb-2 text-sm text-warm-800/70">({getLangNameFromCode(story.lang)})</p>
       {/if}
 
       {#if editMode}
@@ -251,7 +251,7 @@
       {:else if story?.tags?.length}
         <div class="flex flex-wrap gap-2 pb-4 text-sm">
           {#each story?.tags || [] as tag}
-            <span class="bg-brown-800/80 inline-block rounded-full px-2 text-white">{tag.name}</span>
+            <span class="inline-block rounded-full bg-brown-800/80 px-2 text-white">{tag.name}</span>
           {/each}
         </div>
       {/if}

@@ -56,6 +56,6 @@
   {:else if info}
     <div class="text-xs text-warm-800">{info}</div>
   {:else}
-    <div class="text-xs invisible">_X_</div>
+    <div class="invisible text-xs">_X_</div>
   {/if}
 </div>

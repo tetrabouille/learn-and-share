@@ -138,7 +138,7 @@
         {#if tagHovered === value.id}
           <Fa icon={faTimes} class="ml-1 w-[13px] pt-[2px]" />
         {:else}
-          <Fa icon={faTag} class="ml-1 pt-[2px] w-[13px]" />
+          <Fa icon={faTag} class="ml-1 w-[13px] pt-[2px]" />
         {/if}
       </span>
     {/each}

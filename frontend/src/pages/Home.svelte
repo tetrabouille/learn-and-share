@@ -6,6 +6,7 @@
   import { checkUserRoles } from '@/utils/access';
   import { loggedUser } from '@/stores/auth.store';
   import { addAlert } from '@/stores/alert.store';
+  import { getLangNameFromCode } from '@/utils/form';
 
   const users = query<{ users: User[] }>(USER_GET_ALL);
 </script>
@@ -19,6 +20,10 @@
           {profile.lastname}
         </h3>
         <p>Validated : {validated ? 'yes' : 'no'}</p>
+        <p>
+          Languages :
+          {profile.langs.map(getLangNameFromCode).join(', ')}
+        </p>
         <Button
           buttonClass="ml-auto mt-6 text-md"
           on:click={() => addAlert(`${profile.firstname} ${profile.lastname} clicked !`, 'success')}

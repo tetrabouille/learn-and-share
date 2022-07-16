@@ -141,14 +141,14 @@
               {:else}
                 <div class="absolute left-0 right-0 top-0" in:fade|local={{ duration: 200 }}>
                   <button
-                    class="bg-green-500/30 border-2 border-green-500 rounded-md px-5 py-[0.10rem]"
+                    class="rounded-md border-2 border-green-500 bg-green-500/30 px-5 py-[0.10rem]"
                     type="button"
                     on:click={() => {
                       message = '';
                       emailSent = false;
                     }}
                   >
-                    <Fa icon={faCheck} class="text-green-600/80 text-[1rem] mx-auto" />
+                    <Fa icon={faCheck} class="mx-auto text-[1rem] text-green-600/80" />
                   </button>
                 </div>
               {/if}

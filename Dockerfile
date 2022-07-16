@@ -3,7 +3,7 @@ ARG NODE_PATH="./frontend/dist"
 FROM node:16-alpine as frontend-build
 ENV NODE_ENV=production
 WORKDIR /app
-COPY frontend/package.json ./
+COPY frontend/package*.json ./
 RUN npm i && npm cache clean --force
 COPY frontend/ .
 ARG SERVER_HOST
@@ -19,7 +19,7 @@ ENV NODE_ENV=production
 ARG DATABASE_URL
 ARG NODE_PATH
 WORKDIR /app
-COPY backend/package.json ./
+COPY backend/package*.json ./
 RUN npm i && npm cache clean --force && apk add --no-cache tini
 COPY backend/ .
 COPY --from=frontend-build /app/dist ./frontend/dist/

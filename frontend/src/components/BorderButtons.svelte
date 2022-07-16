@@ -46,7 +46,7 @@
   {:else}
     {#each options as { id, text, icon, style, handleClick } (id)}
       <button
-        class={`flex grow-0 h-full ${icon ? 'w-7 h-7' : 'px-3'} items-center justify-center rounded-full ${
+        class={`flex h-full grow-0 ${icon ? 'h-7 w-7' : 'px-3'} items-center justify-center rounded-full ${
           !handleClick ? 'cursor-default' : ''
         } ${styleButtons} ${style}`}
         on:click={() => handleClick && handleClick(id)}

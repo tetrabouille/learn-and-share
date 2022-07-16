@@ -97,14 +97,14 @@
       </div>
     {:else if langMenuOpen && $loggedUser.user.profile?.langs?.length > 1}
       <div
-        class="text-center absolute top-[100%] left-2 right-2 z-10 mt-5 bg-yellow-400 text-lg font-bold text-black shadow-2xl md:right-0 md:left-auto md:w-[150px] md:rounded-md md:shadow-lg"
+        class="absolute top-[100%] left-2 right-2 z-10 mt-5 bg-yellow-400 text-center text-lg font-bold text-black shadow-2xl md:right-0 md:left-auto md:w-[150px] md:rounded-md md:shadow-lg"
         in:slide|local={{ duration: 150 }}
       >
-        <Fa icon={faExchange} class="w-full mt-2 mb-1" />
+        <Fa icon={faExchange} class="mt-2 mb-1 w-full" />
         {#each $loggedUser.user.profile?.langs as lang, index}
           {#if index}
             <div
-              class={`lang-option cursor-pointer px-5 py-2 hover:text-yellow-500 hover:font-bold ${
+              class={`lang-option cursor-pointer px-5 py-2 hover:font-bold hover:text-yellow-500 ${
                 index === $loggedUser.user.profile.langs.length - 1 ? 'rounded-b-lg' : ''
               }`}
               on:click={() =>
@@ -116,7 +116,7 @@
                   navigate
                 )}
             >
-              <span class="px-2 py-1 rounded-full bg-creme-50/60">{getLangNameFromCode(lang)}</span>
+              <span class="rounded-full bg-creme-50/60 px-2 py-1">{getLangNameFromCode(lang)}</span>
             </div>
           {/if}
         {/each}

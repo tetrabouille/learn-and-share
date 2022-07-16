@@ -1,0 +1,54 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Login to heroku
+        run: |
+          cat > ~/.netrc <<EOF
+            machine api.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+            machine git.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+          EOF
+          heroku whoami
+          heroku container:login
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+
+      - name: Build image
+        run: |
+          docker build --target prod -t registry.heroku.com/$HEROKU_APP_NAME/web \
+            --build-arg SERVER_HOST=https://the-constellation-assets.herokuapp.com \
+            --build-arg SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+            --build-arg SUPABASE_URL=$SUPABASE_URL \
+            .
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+
+      - name: Push image
+        run: |
+          docker push registry.heroku.com/$HEROKU_APP_NAME/web
+
+      - name: Deploy image
+        run: |
+          heroku container:release web --app $HEROKU_APP_NAME
