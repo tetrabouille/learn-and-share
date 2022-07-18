@@ -6,6 +6,7 @@ WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm i && npm cache clean --force
 COPY frontend/ .
+
 ARG SERVER_HOST
 ARG SUPABASE_ANON_KEY
 ARG SUPABASE_URL
@@ -13,6 +14,7 @@ ENV VITE_SERVER_HOST=${SERVER_HOST}
 ENV VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
 ENV VITE_SUPABASE_URL=${SUPABASE_URL}
 RUN npm run build
+
 
 FROM node:16-alpine as prod
 ENV NODE_ENV=production
@@ -26,9 +28,21 @@ COPY --from=frontend-build /app/dist ./frontend/dist/
 ENV NODE_PATH=${NODE_PATH}
 ENV DATABASE_URL=${DATABASE_URL}
 RUN npx prisma generate && npm run build
+
+ARG GOOGLE_PRIVATE_KEY_ID
+ARG GOOGLE_PRIVATE_KEY
+ARG GOOGLE_CLIENT_ID
+ENV GOOGLE_PRIVATE_KEY_ID=${GOOGLE_PRIVATE_KEY_ID}
+ENV GOOGLE_PRIVATE_KEY=${GOOGLE_PRIVATE_KEY}
+ENV GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+COPY scripts /app/scripts
+COPY google-credentials*.json ./
+RUN node ./scripts/generate-credentials.js || echo "No credentials generated"
+
 ENTRYPOINT ["/sbin/tini", "--"]
 EXPOSE 4000
 CMD ["node", "dist/server.js"];
+
 
 FROM frontend-build as frontend-dev
 ENV NODE_ENV=development
@@ -38,6 +52,7 @@ ENV VITE_SERVER_HOST="http://localhost:4000"
 ENTRYPOINT ["/sbin/tini", "--"]
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
+
 
 FROM prod as backend-dev
 ENV NODE_ENV=development
@@ -49,4 +64,4 @@ ENV NODE_PATH=${NODE_PATH}
 ENV DATABASE_URL=${DATABASE_URL}
 ENTRYPOINT ["/sbin/tini", "--"]
 EXPOSE 4000
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "dev"]

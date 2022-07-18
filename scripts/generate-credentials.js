@@ -8,7 +8,8 @@ const googleCredentialsPath = path.join(__dirname, "..", "google-credentials.jso
 
 let googleContent = fs.readFileSync(googleTemplatePath, "utf8");
 Object.keys(google).forEach((key) => {
-  const value = google[key].replace(/["']/g, "");
+  const value = google[key]?.replace(/["']/g, "");
+  if (!value) throw new Error(`Missing env : ${key}`);
   googleContent = googleContent.replace(new RegExp(`{{${key}}}`, "g"), value);
 });
 fs.writeFileSync(googleCredentialsPath, googleContent);
