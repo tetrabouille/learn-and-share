@@ -3,3 +3,4 @@ env
 .vscode
 .eslintcache
 docker-compose.prod.yml
+google-credentials.json

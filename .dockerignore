@@ -4,3 +4,4 @@
 env/*
 */*.env
 docker-compose.prod.yml
+google-credentials.json
