@@ -1,7 +1,10 @@
+import { Tag } from 'prisma/prisma-client';
 import { prisma } from '../db/prisma';
 import { Filter, Pagination, Sort, TagAddArgs } from '../schemas';
 import { communUtils, accessUtils, errorsUtils, logger, validationUtils } from '../utils';
 import type { AuthData } from '../utils/auth';
+import { fetchTranslation, translateText } from '../utils/translation';
+
 const { Error } = errorsUtils;
 const error = errorsUtils.getError('tag');
 const errorMany = errorsUtils.getError('tags');
@@ -62,6 +65,32 @@ const tagAdd = async (input: TagAddArgs['input'], authData: AuthData) => {
   } catch (e) {
     logger.error(e);
     return error([Error.INTERNAL_ERROR], method);
+  }
+};
+
+const tagTranslate = async (id: string | number, target: string) => {
+  const method = 'TagTranslate';
+
+  const fetchedTranslation = await fetchTranslation<Tag>(prisma.tag, id, target);
+  if (fetchedTranslation == null) return error([Error.TAG_NOT_FOUND], method);
+  if (fetchedTranslation.translation) return { tag: fetchedTranslation.translation, userErrors: [] };
+
+  try {
+    const tagRef = fetchedTranslation.dataRef as Tag;
+    const translatedName = await translateText(tagRef.name, target);
+    if (translatedName === null) return error([Error.TRANSLATION_FAILED], method);
+    const translation = await prisma.tag.create({
+      data: {
+        name: translatedName,
+        lang: target,
+        translationRef: { connect: { id: tagRef.id } },
+        user: { connect: { id: tagRef.userId } },
+      },
+    });
+    return { tag: translation, userErrors: [] };
+  } catch (e) {
+    logger.error(e);
+    error([Error.INTERNAL_ERROR], method);
   }
 };
 
@@ -140,6 +169,7 @@ const context = {
   tagAdd,
   tagAddMany,
   tagAddManyFromNames,
+  tagTranslate,
 };
 type TagContext = typeof context & AuthData;
 

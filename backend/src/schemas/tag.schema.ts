@@ -14,6 +14,11 @@ export type TagAddArgs = {
   };
 };
 
+export type TagTranslate = {
+  target: string;
+  id: string;
+};
+
 const typeDefs = gql`
   type Tag {
     id: ID!
@@ -33,6 +38,7 @@ const typeDefs = gql`
 
   type Mutation {
     tagAdd(input: TagAddInput!): TagPayload!
+    tagTranslate(id: ID!, target: String!): TagPayload!
   }
 
   type TagPayload {
@@ -56,6 +62,8 @@ const resolvers = {
   Mutation: {
     tagAdd: (_: void, { input }: TagAddArgs, { tagAdd, accountId, error }: TagContext) =>
       tagAdd(input, { accountId, error }),
+    tagTranslate: (_: void, { target, id }: TagTranslate, { tagTranslate }: TagContext) =>
+      tagTranslate(id, target),
   },
 };
 

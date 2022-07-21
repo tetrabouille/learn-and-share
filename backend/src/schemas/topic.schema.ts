@@ -37,7 +37,7 @@ const typeDefs = gql`
 
   type Mutation {
     topicAdd(input: TopicAddInput!): TopicPayload
-    topicTranslate(id: String!, target: String!): TopicPayload
+    topicTranslate(id: ID!, target: String!): TopicPayload
   }
 
   type TopicPayload {
