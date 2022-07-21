@@ -16,6 +16,11 @@ export type TopicAddArgs = {
   };
 };
 
+export type TopicTranslate = {
+  target: string;
+  id: string;
+};
+
 const typeDefs = gql`
   type Topic {
     id: ID!
@@ -32,6 +37,7 @@ const typeDefs = gql`
 
   type Mutation {
     topicAdd(input: TopicAddInput!): TopicPayload
+    topicTranslate(id: String!, target: String!): TopicPayload
   }
 
   type TopicPayload {
@@ -56,6 +62,8 @@ const resolvers = {
   Mutation: {
     topicAdd: (_: void, { input }: TopicAddArgs, { topicAdd, accountId, error }: TopicContext) =>
       topicAdd(input, { accountId, error }),
+    topicTranslate: (_: void, { target, id }: TopicTranslate, { topicTranslate }: TopicContext) =>
+      topicTranslate(id, target),
   },
 };
 
