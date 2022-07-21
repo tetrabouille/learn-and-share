@@ -40,10 +40,17 @@ jobs:
             --build-arg SERVER_HOST=https://the-constellation-assets.herokuapp.com \
             --build-arg SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
             --build-arg SUPABASE_URL=$SUPABASE_URL \
+            --build-arg GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json \
+            --build-arg GOOGLE_PRIVATE_KEY=$GOOGLE_PRIVATE_KEY \
+            --build-arg GOOGLE_PRIVATE_KEY_ID=$GOOGLE_PRIVATE_KEY_ID \
+            --build-arg GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID \
             .
         env:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          GOOGLE_PRIVATE_KEY: ${{ secrets.GOOGLE_PRIVATE_KEY }}
+          GOOGLE_PRIVATE_KEY_ID: ${{ secrets.GOOGLE_PRIVATE_KEY_ID }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
 
       - name: Push image
         run: |
