@@ -32,21 +32,22 @@ const tagGetAllWithIds = (ids: (string | number)[]) => {
 
 // mutations
 const tagAdd = async (input: TagAddArgs['input'], authData: AuthData) => {
+  const method = 'tagAdd';
   const { name } = input;
   const { accountId, error: authError } = authData;
   const loggedUser = await accessUtils.isRegistered(accountId);
 
-  if (!name) return error([Error.FIELD_REQUIRED]);
-  if (authError) return error([Error.TOKEN_EXPIRED]);
-  if (!loggedUser) return error([Error.NOT_REGISTERED]);
+  if (!name) return error([Error.FIELD_REQUIRED], method);
+  if (authError) return error([Error.TOKEN_EXPIRED], method);
+  if (!loggedUser) return error([Error.NOT_REGISTERED], method);
 
   try {
     const { profile } = loggedUser;
 
-    if (!profile?.langs?.length) return error([Error.MISSING_LANGS]);
+    if (!profile?.langs?.length) return error([Error.MISSING_LANGS], method);
     if (!(await validationUtils.unique({ name, lang: profile.langs[0] }, prisma.tag)))
-      return error([Error.TAG_ALREADY_EXISTS]);
-    if (!validationUtils.lang(profile.langs[0])) return error([Error.INVALID_LANG]);
+      return error([Error.TAG_ALREADY_EXISTS], method);
+    if (!validationUtils.lang(profile.langs[0])) return error([Error.INVALID_LANG], method);
 
     return {
       tag: await prisma.tag.create({
@@ -60,30 +61,31 @@ const tagAdd = async (input: TagAddArgs['input'], authData: AuthData) => {
     };
   } catch (e) {
     logger.error(e);
-    return error([Error.INTERNAL_ERROR]);
+    return error([Error.INTERNAL_ERROR], method);
   }
 };
 
 const tagAddMany = async (inputs: TagAddArgs['input'][], authData: AuthData) => {
+  const method = 'tagAddMany';
   const inputValid = inputs.every(({ name }) => name);
   const { accountId, error: authError } = authData;
   const loggedUser = await accessUtils.isRegistered(accountId);
 
-  if (!inputValid) return errorMany([Error.FIELD_REQUIRED]);
-  if (authError) return errorMany([Error.TOKEN_EXPIRED]);
-  if (!loggedUser) return errorMany([Error.NOT_REGISTERED]);
+  if (!inputValid) return errorMany([Error.FIELD_REQUIRED], method);
+  if (authError) return errorMany([Error.TOKEN_EXPIRED], method);
+  if (!loggedUser) return errorMany([Error.NOT_REGISTERED], method);
 
   try {
     const { profile } = loggedUser;
 
-    if (!profile?.langs?.length) return errorMany([Error.MISSING_LANGS]);
+    if (!profile?.langs?.length) return errorMany([Error.MISSING_LANGS], method);
 
     const uniqueTags = await validationUtils.unique(
       { name: { in: inputs.map(({ name }) => name) }, lang: profile.langs[0] },
       prisma.tag
     );
-    if (!uniqueTags) return errorMany([Error.TAG_ALREADY_EXISTS]);
-    if (!validationUtils.lang(profile.langs[0])) return errorMany([Error.INVALID_LANG]);
+    if (!uniqueTags) return errorMany([Error.TAG_ALREADY_EXISTS], method);
+    if (!validationUtils.lang(profile.langs[0])) return errorMany([Error.INVALID_LANG], method);
 
     await prisma.tag.createMany({
       data: [
@@ -114,7 +116,7 @@ const tagAddMany = async (inputs: TagAddArgs['input'][], authData: AuthData) => 
     };
   } catch (e) {
     logger.error(e);
-    return errorMany([Error.INTERNAL_ERROR]);
+    return errorMany([Error.INTERNAL_ERROR], method);
   }
 };
 

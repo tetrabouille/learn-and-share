@@ -33,8 +33,9 @@ const userGetByHash = (hash: string) => prisma.user.findUnique({ where: { hash }
 // mutations
 
 const userValidate = async (accountId?: string) => {
+  const method = 'userValidate';
   const loggedUser = await isRegistered(accountId);
-  if (!loggedUser) return error([Error.NOT_REGISTERED]);
+  if (!loggedUser) return error([Error.NOT_REGISTERED], method);
 
   if (loggedUser.validated) return { user: loggedUser, userErrors: [] };
   const user = prisma.user
@@ -47,12 +48,13 @@ const userValidate = async (accountId?: string) => {
 };
 
 const userAdd = async (accountId: string, email: string, firstname: string, lastname: string) => {
-  if (!accountId || !email || !firstname || !lastname) return error([Error.FIELD_REQUIRED]);
+  const method = 'userAdd';
+  if (!accountId || !email || !firstname || !lastname) return error([Error.FIELD_REQUIRED], method);
 
   const hash = getSimpleHash(email);
   const existingUserAccount = await userGetByAccountId(accountId);
   const existingUserHash = await userGetByHash(hash);
-  if (existingUserAccount || existingUserHash) return error([Error.USER_ALREADY_EXISTS]);
+  if (existingUserAccount || existingUserHash) return error([Error.USER_ALREADY_EXISTS], method);
 
   const user = await prisma.user
     .create({

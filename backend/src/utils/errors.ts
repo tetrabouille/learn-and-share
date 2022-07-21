@@ -10,6 +10,7 @@ export enum Error {
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   INVALID_LANG = 'INVALID_LANG',
   INVALID_COUNTRY = 'INVALID_COUNTRY',
+  TRANSLATION_FAILED = 'TRANSLATION_FAILED',
   // Auth
   TOKEN_EXPIRED = 'TOKEN_EXPIRED',
   // Access
@@ -43,6 +44,8 @@ export const getMessage = (error: Error) => {
       return 'Invalid language';
     case Error.INVALID_COUNTRY:
       return 'Invalid country';
+    case Error.TRANSLATION_FAILED:
+      return 'Translation failed';
     // Auth
     case Error.TOKEN_EXPIRED:
       return 'Token expired';
@@ -82,8 +85,8 @@ export const getMessage = (error: Error) => {
   }
 };
 
-export const getError = (model: string) => (errors: Error[]) => {
-  logger.error(errors.map((e) => getMessage(e)).join(', '), model);
+export const getError = (model: string) => (errors: Error[], method: string) => {
+  logger.error(`${model} _ ${method} _ ${errors.map((e) => getMessage(e)).join(', ')}`);
   return {
     [model]: null,
     userErrors: errors.map((error) => ({ message: getMessage(error), code: error })),

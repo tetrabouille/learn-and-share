@@ -110,21 +110,23 @@ const storyGetById = async (id: string, authData: AuthData = {}) => {
 
 // mutations
 const storyAdd = async (input: StoryAddArgs['input'], authData: AuthData) => {
+  const method = 'storyAdd';
   const { title, content, lesson, tagIds, newTags, topicId } = input;
   const { accountId, error: authError } = authData;
   const loggedUser = await accessUtils.isRegistered(accountId);
 
-  if (!title || !content || !lesson || !topicId || !tagIds || !newTags) return error([Error.FIELD_REQUIRED]);
-  if (authError) return error([Error.TOKEN_EXPIRED]);
-  if (!loggedUser) return error([Error.NOT_REGISTERED]);
-  if (!loggedUser.profile) return error([Error.MISSING_PROFILE]);
+  if (!title || !content || !lesson || !topicId || !tagIds || !newTags)
+    return error([Error.FIELD_REQUIRED], method);
+  if (authError) return error([Error.TOKEN_EXPIRED], method);
+  if (!loggedUser) return error([Error.NOT_REGISTERED], method);
+  if (!loggedUser.profile) return error([Error.MISSING_PROFILE], method);
 
   try {
     const tags = await tagContext.tagGetAllWithIds(tagIds);
-    if (tags.length !== tagIds.length) return error([Error.TAG_NOT_FOUND]);
+    if (tags.length !== tagIds.length) return error([Error.TAG_NOT_FOUND], method);
 
     const topic = await topicContext.topicGetById(topicId);
-    if (!topic) return error([Error.TOPIC_NOT_FOUND]);
+    if (!topic) return error([Error.TOPIC_NOT_FOUND], method);
 
     const createdTags = await tagContext.tagAddManyFromNames(newTags, authData);
     if (createdTags.userErrors.length)
@@ -156,22 +158,23 @@ const storyAdd = async (input: StoryAddArgs['input'], authData: AuthData) => {
     };
   } catch (e) {
     logger.error(e);
-    return error([Error.INTERNAL_ERROR]);
+    return error([Error.INTERNAL_ERROR], method);
   }
 };
 
 const storyPublish = async (id: string, authData: AuthData) => {
+  const method = 'storyPublish';
   const { accountId, error: authError } = authData;
   const loggedUser = await accessUtils.isRegistered(accountId);
 
-  if (!id) return error([Error.FIELD_REQUIRED]);
-  if (authError) return error([Error.TOKEN_EXPIRED]);
-  if (!loggedUser) return error([Error.NOT_REGISTERED]);
+  if (!id) return error([Error.FIELD_REQUIRED], method);
+  if (authError) return error([Error.TOKEN_EXPIRED], method);
+  if (!loggedUser) return error([Error.NOT_REGISTERED], method);
 
   try {
     const story = await prisma.story.findUnique({ where: { id: Number(id) } });
-    if (!story) return error([Error.STORY_NOT_FOUND]);
-    if (story.userId !== loggedUser.id) return error([Error.STORY_NOT_OWNED]);
+    if (!story) return error([Error.STORY_NOT_FOUND], method);
+    if (story.userId !== loggedUser.id) return error([Error.STORY_NOT_OWNED], method);
 
     return {
       story: await prisma.story
@@ -184,33 +187,34 @@ const storyPublish = async (id: string, authData: AuthData) => {
     };
   } catch (e) {
     logger.error(e);
-    return error([Error.INTERNAL_ERROR]);
+    return error([Error.INTERNAL_ERROR], method);
   }
 };
 
 const storyUpdate = async (id: string, input: StoryUpdateArgs['input'], authData: AuthData) => {
+  const method = 'storyUpdate';
   const { title, content, lesson, lang, tagIds, newTags, topicId } = input;
   const { accountId, error: authError } = authData;
   const loggedUser = await accessUtils.isRegistered(accountId);
 
   if (!title && !content && !lesson && !topicId && !tagIds && !newTags && !lang)
-    return error([Error.FIELD_REQUIRED]);
-  if (authError) return error([Error.TOKEN_EXPIRED]);
-  if (!loggedUser) return error([Error.NOT_REGISTERED]);
-  if (!validationUtils.lang(lang)) return error([Error.INVALID_LANG]);
+    return error([Error.FIELD_REQUIRED], method);
+  if (authError) return error([Error.TOKEN_EXPIRED], method);
+  if (!loggedUser) return error([Error.NOT_REGISTERED], method);
+  if (!validationUtils.lang(lang)) return error([Error.INVALID_LANG], method);
 
   try {
     const story = await prisma.story.findUnique({ where: { id: Number(id) } });
-    if (!story) return error([Error.STORY_NOT_FOUND]);
-    if (story.userId !== loggedUser.id) return error([Error.STORY_NOT_OWNED]);
+    if (!story) return error([Error.STORY_NOT_FOUND], method);
+    if (story.userId !== loggedUser.id) return error([Error.STORY_NOT_OWNED], method);
 
     if (tagIds) {
       const tags = await tagContext.tagGetAllWithIds(tagIds);
-      if (tags.length !== tagIds.length) return error([Error.TAG_NOT_FOUND]);
+      if (tags.length !== tagIds.length) return error([Error.TAG_NOT_FOUND], method);
     }
     if (topicId) {
       const topic = await topicContext.topicGetById(topicId);
-      if (!topic) return error([Error.TOPIC_NOT_FOUND]);
+      if (!topic) return error([Error.TOPIC_NOT_FOUND], method);
     }
 
     let createdTags;
@@ -246,7 +250,7 @@ const storyUpdate = async (id: string, input: StoryUpdateArgs['input'], authData
     };
   } catch (e) {
     logger.error(e);
-    return error([Error.INTERNAL_ERROR]);
+    return error([Error.INTERNAL_ERROR], method);
   }
 };
 
